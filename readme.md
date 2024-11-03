@@ -76,23 +76,27 @@ with Mongoose ORM Payment
 - Stripe (for tournament entry fees) 
 
 ### Image
-- Storage: Cloudinary Installation Clone the Repository
+- Storage: Cloudinary 
 
-
+### Installation Clone the Repository
 
 git clone https://github.com/your-username/cricket-club-management.git cd
 cricket-club-management Install Dependencies
 
-For both frontend and backend, run:
+For backend, 
 
-npm install Environment Variables
+run: npm install 
+
+Environment Variables
 
 Create a .env file in the root directory and add the following:
 
 DATABASE_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/your-database
 PORT=5000 JWT_SECRET=your_jwt_secret STRIPE_SECRET_KEY=your_stripe_secret_key
 
-Run the Application npm run dev
+### Run the Application 
+
+npm run dev
 
 ### Usage Admin Panel:
 
