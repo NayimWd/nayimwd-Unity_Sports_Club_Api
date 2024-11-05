@@ -1,21 +1,6 @@
-import mongoose,{Document, Schema} from "mongoose"
+import mongoose,{ Schema} from "mongoose"
+import { IUser } from "../../utils/types/SchemaTypes";
 
-interface IUser extends Document{
-    name: string,
-    email: string,
-    password: string,
-    phoneNumber: string,
-    role: "admin" | "staff" | "player" | "manager" | "umpire",
-    photo: string,
-    refreshToken?: string,
-    resetPasswordToken?: string,
-    resetPasswordExpire?: Date,
-    // methods
-    isPasswordCorrect(password: string): Promise<boolean>,
-    generateAccessToken(): Promise<string>,
-    generateRefreshToken(): Promise<string>,
-    generateResetPasswordToken(): Promise<string>
-};
 
 const userSchema: Schema<IUser> = new Schema(
     {
@@ -56,7 +41,8 @@ const userSchema: Schema<IUser> = new Schema(
         },
         photo: {
             type: String,
-            required: [true, "Photo is required"]
+            required: [true, "Photo is required"],
+            default: "https://i.ibb.co.com/SVwHczH/m-26.jpg"
         },
         refreshToken: String,
         resetPasswordToken: String,
