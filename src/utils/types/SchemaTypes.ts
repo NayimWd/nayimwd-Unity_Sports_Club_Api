@@ -32,9 +32,7 @@ export interface IPlayerProfile extends Document {
 // manager profile type
 export interface IManagerProfile extends Document {
   userId: mongoose.Types.ObjectId;
-  teamsManaged: [
-    type: mongoose.Types.ObjectId
-  ];
+  teamsManaged: [type: mongoose.Types.ObjectId];
 }
 
 // umpire Profile type
@@ -47,24 +45,23 @@ export interface IUmpireProfile extends Document {
 export interface ITeams extends Document {
   teamName: string;
   managerId: mongoose.Types.ObjectId;
-  players: [
-    playerId: mongoose.Types.ObjectId,
-    isCaptain: Boolean
-  ],
-  playing11: [{
-    type: mongoose.Types.ObjectId,
-  }],
-  playerCount: number,
-  status: "active" | "disqualified" | "withdrawn",
-  teamLogo: string,
-  photo: string,
+  players: [playerId: mongoose.Types.ObjectId, isCaptain: Boolean];
+  playing11: [
+    {
+      type: mongoose.Types.ObjectId;
+    },
+  ];
+  playerCount: number;
+  status: "active" | "disqualified" | "withdrawn";
+  teamLogo: string;
+  photo: string;
 }
 
 // venue type
 export interface IVenue extends Document {
   name: string;
   location: string;
-  bookingSlot: [{date: Date, startTime: string, endTime: string}];
+  bookingSlot: [{ date: Date; startTime: string; endTime: string }];
   photo: string;
 }
 
@@ -87,34 +84,38 @@ export interface ITournament extends Document {
     champion: string;
     runnerUp: string;
     thirdPlace: string;
-  },
-  photo?: string
+  };
+  photo?: string;
 }
 
 // tournamentResult
 export interface ITournamentResult extends Document {
-    tournamentId: mongoose.Types.ObjectId,
-    result: {
-        champion: mongoose.Types.ObjectId;
-        runnerUp: mongoose.Types.ObjectId;
-        thirdPlace: mongoose.Types.ObjectId;
-      };
-      manOfTheTournament?: mongoose.Types.ObjectId;
-      photo?: string;
+  tournamentId: mongoose.Types.ObjectId;
+  result: {
+    champion: mongoose.Types.ObjectId;
+    runnerUp: mongoose.Types.ObjectId;
+    thirdPlace: mongoose.Types.ObjectId;
+  };
+  manOfTheTournament?: mongoose.Types.ObjectId;
+  awardFor: string;
+  photo?: string;
 }
 
 // schedule type
 export interface ISchedule extends Document {
-  tournament: mongoose.Types.ObjectId;
+  tournamentId: mongoose.Types.ObjectId;
+  matchId?: mongoose.Types.ObjectId;
+  venueId: mongoose.Types.ObjectId;
   matchNumber: number;
-  round: string;
-  teamA?: mongoose.Types.ObjectId;
-  teamB?: mongoose.Types.ObjectId;
+  round: "round 1" | "Quarter-Final" | "Semi-Final" | "Final";
+  teams: [
+    teamA: { type: mongoose.Types.ObjectId },
+    teamB: { type: mongoose.Types.ObjectId },
+  ];
   date: Date;
   startTime: string;
-  endTime: string;
-  venue: mongoose.Types.ObjectId;
-  status: "upcoming" | "live" | "completed";
+  status: "scheduled" | "cancelled" | "completed";
+  matchResult?: mongoose.Types.ObjectId;
 }
 
 // registration type
@@ -135,12 +136,32 @@ export interface IInningType extends Document {
   runs: number;
   wicket: number;
   overs: number;
-  extras?: {
+  extras: {
     wide: number;
     noBalls: number;
     byes: number;
     totalExtras: number;
   };
+}
+
+// match type
+export interface IMatchTeype extends Document {
+  tournamentId: mongoose.Types.ObjectId;
+  matchType: "knockout" | "series" | "1v1";
+  teams: [
+    teamA: { type: mongoose.Types.ObjectId },
+    teamB: { type: mongoose.Types.ObjectId },
+  ];
+  date: Date;
+  venue: mongoose.Types.ObjectId;
+  status: "upcoming" | "live" | "completed";
+  umpires: [
+    {
+      type: mongoose.Types.ObjectId;
+    },
+  ];
+  matchResult?: mongoose.Types.ObjectId;
+  photos: [{ type: string }];
 }
 
 // match result type
@@ -157,46 +178,25 @@ export interface IMatchResult extends Document {
   manOfTheMatch: mongoose.Types.ObjectId;
 }
 
-// match type
-export interface IMatchTeype extends Document {
-  tournamentId: mongoose.Types.ObjectId;
-  matchType: "knockout" | "series" | "1v1";
-  teams: [{ type: mongoose.Types.ObjectId }, { type: mongoose.Types.ObjectId }];
-  date: Date;
-  venue: mongoose.Types.ObjectId;
-  status: "upcoming" | "live" | "completed";
-  umpires: [
-    {
-      type: mongoose.Types.ObjectId;
-    },
-  ];
-  matchResult?: mongoose.Types.ObjectId;
-  photos: [{ type: string }];
-}
-
 // point table type
 export interface IPoint extends Document {
-    tournameId: mongoose.Types.ObjectId;
-    teamId: mongoose.Types.ObjectId;
-    matchPlayed?: number;
-    wins?: number;
-    losses?: number;
-    ties?: number;
-    points: number;
-  }
+  tournameId: mongoose.Types.ObjectId;
+  teamId: mongoose.Types.ObjectId;
+  matchPlayed?: number;
+  wins?: number;
+  losses?: number;
+  ties?: number;
+  points: number;
+}
 
 // Blog type
 export interface IBlog extends Document {
-    title: string,
-    content: string,
-    author: mongoose.Types.ObjectId,
-    tags: "news" | "highlight" | "tournaments" | "awards",
-    createdAt: Date,
-    likes?: number,
-    comments?: [
-        user: mongoose.Types.ObjectId,
-        comment: string,
-        date: Date 
-    ],
-    isPublished: boolean
+  title: string;
+  content: string;
+  author: mongoose.Types.ObjectId;
+  tags: "news" | "highlight" | "tournaments" | "awards";
+  createdAt: Date;
+  likes?: number;
+  comments?: [user: mongoose.Types.ObjectId, comment: string, date: Date];
+  isPublished: boolean;
 }
