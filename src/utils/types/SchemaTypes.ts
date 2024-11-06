@@ -22,7 +22,7 @@ export interface IUser extends Document {
 export interface IPlayerProfile extends Document {
   userId: mongoose.Types.ObjectId;
   teaamId: mongoose.Types.ObjectId;
-  role: "batsman" | "bowler" | "all-rounder" | "wk batsman";
+  role: "batsman" | "bowler" | "all-rounder" | "wk-batsman";
   batingStyle: "Right Hand" | "Left Hand";
   bowlingArm: "left arm" | "right arm";
   bowlingStyle: "fast" | "spin" | "swing" | "seam";
@@ -32,11 +32,13 @@ export interface IPlayerProfile extends Document {
 // manager profile type
 export interface IManagerProfile extends Document {
   userId: mongoose.Types.ObjectId;
-  teamsManaged: [string];
+  teamsManaged: [
+    type: mongoose.Types.ObjectId
+  ];
 }
 
 // umpire Profile type
-export interface IUnpireProfile extends Document {
+export interface IUmpireProfile extends Document {
   userId: mongoose.Types.ObjectId;
   yearsOfExperience: number;
 }
@@ -45,28 +47,25 @@ export interface IUnpireProfile extends Document {
 export interface ITeams extends Document {
   teamName: string;
   managerId: mongoose.Types.ObjectId;
-  players: [];
-  captain: mongoose.Types.ObjectId;
-  photo: string;
-}
-
-// point table type
-export interface IPoint extends Document {
-  tournameId: mongoose.Types.ObjectId;
-  teamId: mongoose.Types.ObjectId;
-  matchPlayed?: number;
-  wins?: number;
-  losses?: number;
-  ties?: number;
-  points: number;
+  players: [
+    playerId: mongoose.Types.ObjectId,
+    isCaptain: Boolean
+  ],
+  playing11: [{
+    type: mongoose.Types.ObjectId,
+  }],
+  playerCount: number,
+  status: "active" | "disqualified" | "withdrawn",
+  teamLogo: string,
+  photo: string,
 }
 
 // venue type
 export interface IVenue extends Document {
   name: string;
   location: string;
+  bookingSlot: [{date: Date, startTime: string, endTime: string}];
   photo: string;
-  bookingSlot: [date: Date, startTime: string, endTime: string];
 }
 
 // tournament type
@@ -78,9 +77,7 @@ export interface ITournament extends Document {
   ballType: "tape tennis" | "3 star" | "leather";
   matchOver: string;
   registrationDeadline?: Date;
-  teamsRegisterd?: [];
   seats: "16" | "8" | "2" | "3";
-  schedule?: [];
   startDate: Date;
   endDate: Date;
   venue: mongoose.Types.ObjectId;
@@ -90,14 +87,20 @@ export interface ITournament extends Document {
     champion: string;
     runnerUp: string;
     thirdPlace: string;
-  };
-  result?: {
-    champion: mongoose.Types.ObjectId;
-    runnerUp: mongoose.Types.ObjectId;
-    thirdPlace: mongoose.Types.ObjectId;
-  };
-  manOfTheTournament?: mongoose.Types.ObjectId;
-  photo: string;
+  },
+  photo?: string
+}
+
+// tournamentResult
+export interface ITournamentResult extends Document {
+    tournamentId: mongoose.Types.ObjectId,
+    result: {
+        champion: mongoose.Types.ObjectId;
+        runnerUp: mongoose.Types.ObjectId;
+        thirdPlace: mongoose.Types.ObjectId;
+      };
+      manOfTheTournament?: mongoose.Types.ObjectId;
+      photo?: string;
 }
 
 // schedule type
@@ -121,7 +124,7 @@ export interface IRegistration extends Document {
   managerId: mongoose.Types.ObjectId;
   applicationDate?: Date;
   comments?: string;
-  status?: "pending" | "approve" | "rejected";
+  status?: "pending" | "approve" | "rejected" | "withdrawn";
 }
 
 // innings type
@@ -169,4 +172,31 @@ export interface IMatchTeype extends Document {
   ];
   matchResult?: mongoose.Types.ObjectId;
   photos: [{ type: string }];
+}
+
+// point table type
+export interface IPoint extends Document {
+    tournameId: mongoose.Types.ObjectId;
+    teamId: mongoose.Types.ObjectId;
+    matchPlayed?: number;
+    wins?: number;
+    losses?: number;
+    ties?: number;
+    points: number;
+  }
+
+// Blog type
+export interface IBlog extends Document {
+    title: string,
+    content: string,
+    author: mongoose.Types.ObjectId,
+    tags: "news" | "highlight" | "tournaments" | "awards",
+    createdAt: Date,
+    likes?: number,
+    comments?: [
+        user: mongoose.Types.ObjectId,
+        comment: string,
+        date: Date 
+    ],
+    isPublished: boolean
 }
