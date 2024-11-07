@@ -15,7 +15,7 @@ export interface IUser extends Document {
   isPasswordCorrect(password: string): Promise<boolean>;
   generateAccessToken(): Promise<string>;
   generateRefreshToken(): Promise<string>;
-  generateResetPasswordToken(): Promise<string>;
+  generateResetPasswordToken(): string;
 }
 
 // player profile type
