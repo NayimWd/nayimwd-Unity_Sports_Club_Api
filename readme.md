@@ -108,6 +108,7 @@ npm run dev
  - Umpires: Access assigned matches and
 related details.
 
+### Data Model
 - [Model link](https://app.eraser.io/workspace/mmVyA4wj6gLlSyfu72of?origin=share) 
 
 API Documentation To view the API documentation, start the server and access:
@@ -148,3 +149,12 @@ conflicts.
 Schema: Records player awards and achievements.
 
 License This project is licensed under the MIT License.
+
+Thank you for checking out this project! If you have any questions or feedback, feel free to open an issue or contact me. 
+
+### Email
+ **nayim.wd@gmail.com**
+ ##
+### Linkedin
+
+**[Linkedin](https://www.linkedin.com/in/nayim-hasan/)**

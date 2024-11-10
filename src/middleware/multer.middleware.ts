@@ -9,7 +9,7 @@ const storage: StorageEngine = multer.diskStorage({
     file: Express.Multer.File,
     cb: Callback
   ) {
-    const uploadPath = path.join(__dirname, "../../public/temp");
+    const uploadPath = path.join(__dirname, '../../public/temp');
     cb(null, uploadPath);
   },
   filename: function (req: Request, file: Express.Multer.File, cb: Callback) {
