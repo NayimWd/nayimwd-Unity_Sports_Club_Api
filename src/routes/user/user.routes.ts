@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser } from "../../controller/user";
+import { loginUser, registerUser } from "../../controller/user";
 import { upload } from "../../middleware/multer.middleware";
 
 
@@ -7,10 +7,12 @@ const router = Router();
 
 interface IUserRoutes {
     register: "/register"
+    login: "/login"
 }
 
 const user_routes: IUserRoutes = {
-    register: "/register"
+    register: "/register",
+    login: "/login"
 }
 
 // routes
@@ -24,5 +26,7 @@ router.route(user_routes.register).post(
     ]),
     registerUser
 )
+// login route
+router.route(user_routes.login).post(loginUser)
 
 export default router;

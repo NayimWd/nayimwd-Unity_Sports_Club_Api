@@ -1,6 +1,7 @@
 import { registerUser } from "./registerUser.controller";
-import { upload } from "../../middleware/multer.middleware";
+import { loginUser } from "./login.controller";
 
 export {
-    registerUser
+    registerUser,
+    loginUser
 }
