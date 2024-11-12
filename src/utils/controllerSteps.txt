@@ -1,0 +1,71 @@
+------------------------------------------------------------------------
+   ------------------*** Controllers Todo List ***------------------
+------------------------------------------------------------------------
+1. User
+    1 Register 
+    2 Login
+    3 Update Details
+    4 Change Password
+    5 Change Photo
+    6 Get current User
+    7 get All User - accessable for admin and staff
+    8 make admin, staff - admin can make admin or staff
+
+2. Profile (by user id)
+    1 create profile if not exist 
+        player | manager | umpire
+    2 update profile
+    3 get profile by user id
+    4 get all players profile of a team 
+
+3. Team
+    ** create Team
+      1. manager can create team with 12 to 18 player by player Id
+      2. search player by email or playerId add add all 12-18 player
+      3. If any player already exist on a team that player can not be add other team
+      4. Remove player from team by user Id
+      5. while adding player to team update players profile (TeamId ref)
+      6. select playing 11 for Match
+      7. admin can ban team
+
+4. Venue
+   ** create / update / delete venue 
+     1. create/ delete update booking slot
+5. Tournament
+    1. create / delete / update tournament
+    2. get all tournament - get tournament by status upcoming - live - ongoing
+    3. get single tournament with Details 
+    4. get tournament schedule, get tournament result
+
+7. Tournament Register
+    1. manager can apply tournament if tournament seat available
+    2. each team should have minimum 12 players for apply team
+    3. admin or staff can approve / cancel team application request 
+    4. team manager can withdraw their application
+    
+8. schedule
+    1. admin or staff can schedule match if venue is available
+    2. admin or staff can update or delete schedule
+    3. get schedule of tournament
+    4. get schedule of upcoming match
+
+9. Match
+    1. create match with match data if not exist
+    2. staff or admin can update innings score of teams
+    3. staff or admin can update match result, man of the match
+    4. staff or admin can delete match
+    5. get all match, upcoming match, live match, completed match
+    6. get single match and match Details, match score
+    7. winning team will get 2 points looser team will get 0 point and for draw 
+       both team will get 1 point
+
+10. Point Table (tournament table)
+    1. admin or staff can modify point table 
+    2. get point table by tournament id
+    3. table shuld have team name, logo, point, match played, total win total loose, total draw 
+
+
+11. Blog 
+    1. admin or staff can create / update / delete blog
+    2. get all blog
+    3. get single blog and details
