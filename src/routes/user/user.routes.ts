@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { loginUser, logoutUser, refreshAccessToken, registerUser } from "../../controller/user";
+import { loginUser, logoutUser, refreshAccessToken, registerUser, getAllUsers, getCurrentUser, updateAccount, changePassword, updateUserPhoto, forgetPassword, resetPassword } from "../../controller/user";
 import { upload } from "../../middleware/multer.middleware";
-import { veryfyJWT } from "../../middleware/auth.middleware";
+import { isAdmin, veryfyJWT } from "../../middleware/auth.middleware";
 
 const router = Router();
 
@@ -10,13 +10,27 @@ interface IUserRoutes {
   login: "/login";
   logout: "/logout";
   refreshToken: "/refreshToken"
+  all_users: "/all_users",
+  current_user: "/current_user",
+  update_account: "/update_account",
+  photo: "/photo",
+  change_password: "/change_password",
+  forgot_password: "/forgot_password",
+  reset_password: "/reset_password",
 }
 
 const user_routes: IUserRoutes = {
   register: "/register",
   login: "/login",
   logout: "/logout",
-  refreshToken: "/refreshToken"
+  refreshToken: "/refreshToken",
+  all_users: "/all_users",
+  current_user: "/current_user",
+  update_account: "/update_account",
+  photo: "/photo",
+  change_password: "/change_password",
+  forgot_password: "/forgot_password",
+  reset_password: "/reset_password"
 };
 
 // routes
@@ -36,5 +50,20 @@ router.route(user_routes.login).post(loginUser);
 router.route(user_routes.logout).post(veryfyJWT, logoutUser);
 // refresh access token
 router.route(user_routes.refreshToken).post(refreshAccessToken)
+// get all user
+router.route(user_routes.all_users).get(veryfyJWT, isAdmin, getAllUsers);
+// get current user
+router.route(user_routes.current_user).get(veryfyJWT, getCurrentUser);
+// update user details
+router.route(user_routes.update_account).patch(veryfyJWT, updateAccount);
+// change password
+router.route(user_routes.change_password).patch(veryfyJWT, changePassword);
+// update photo
+router.route(user_routes.photo).patch(veryfyJWT, upload.single("photo"), updateUserPhoto);
+// forgot password
+router.route(user_routes.forgot_password).post(veryfyJWT, forgetPassword);
+// reset password
+router.route(user_routes.reset_password).post(veryfyJWT, resetPassword);
+
 
 export default router;
