@@ -9,7 +9,7 @@
     5 Change Photo
     6 Get current User
     7 get All User - accessable for admin and staff
-    8 make admin, staff - admin can make admin or staff
+    8 make admin,  admin can make admin or staff
 
 2. Profile (by user id)
     1 create profile if not exist 
