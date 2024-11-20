@@ -4,38 +4,55 @@ import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
 
 export const updateAccount = asyncHandler(async (req, res) => {
-  // get user Id
-  const userId = (req as any).user._id;
-  if (!userId) {
+  // Get user from request
+  const user = (req as any).user;
+  if (!user || !user._id) {
     throw new ApiError(404, "Invalid token, user not found");
   }
-  // get update fields
-  const { name, phoneNumber } = req.body;
-  if (!name || !phoneNumber) {
-    throw new ApiError(400, "details is missing for update account details");
+
+  // Get update fields from request body
+  const { name, phoneNumber, role } = req.body;
+
+  if (!name && !phoneNumber && !role) {
+    throw new ApiError(400, "Details are missing for updating account details");
   }
 
-  // find and update user
-  const updateDetails = await User.findByIdAndUpdate(
-    userId,
-    {
-      $set: {
-        name,
-        phoneNumber,
-      },
-    },
-    {
-      new: true,
-    }
+  // Validate role if provided
+  if (role && (role === "admin" || role === "staff")) {
+    throw new ApiError(401, "Choose role as player, umpire, or manager");
+  }
+
+  // Prevent request with the same data
+  if (
+    (name && user.name === name) &&
+    (phoneNumber && user.phoneNumber === phoneNumber) &&
+    (role && user.role === role)
+  ) {
+    throw new ApiError(400, "Data already exists");
+  }
+
+  // Build update object dynamically
+  const updateFields: Partial<{ name: string; phoneNumber: string; role: string }> = {};
+  if (name && user.name !== name) updateFields.name = name;
+  if (phoneNumber && user.phoneNumber !== phoneNumber) updateFields.phoneNumber = phoneNumber;
+  if (role && user.role !== role) updateFields.role = role;
+
+  // Find and update user
+  const updatedUser = await User.findByIdAndUpdate(
+    user._id,
+    { $set: updateFields },
+    { new: true }
   ).select("-password");
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        updateDetails,
-        "Account details updated successfully"
-      )
-    );
+  if (!updatedUser) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      updatedUser,
+      "Account details updated successfully"
+    )
+  );
 });

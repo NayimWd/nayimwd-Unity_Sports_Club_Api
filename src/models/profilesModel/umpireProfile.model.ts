@@ -8,6 +8,10 @@ const umpireProfileSchema: Schema<IUmpireProfile> = new Schema({
     required: true,
   },
   yearsOfExperience: Number,
+  photo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  }
 });
 
 export const UmpireProfile = mongoose.model<IUmpireProfile>(

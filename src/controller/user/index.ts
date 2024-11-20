@@ -7,7 +7,7 @@ import { updateAccount } from "./account.controller";
 import { changePassword } from "./password.controller";
 import { updateUserPhoto } from "./userPhoto.controller";
 import { forgetPassword, resetPassword } from "./forgetPassword.controller";
-import { changeRole } from "./role.controller";
+import { adminChangeRole } from "./role.controller";
 
 export {
   registerUser,
@@ -19,7 +19,7 @@ export {
   updateAccount,
   changePassword,
   updateUserPhoto,
-  changeRole,
+  adminChangeRole,
   forgetPassword,
   resetPassword,
 };

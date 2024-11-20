@@ -14,7 +14,7 @@ const teamSchema: Schema<ITeams> = new Schema({
   players: [
     {
       playerId: mongoose.Schema.Types.ObjectId,
-      ref: "PlayerProfile",
+      ref: "User",
       required: true,
     },
     {

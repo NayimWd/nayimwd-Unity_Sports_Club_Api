@@ -36,6 +36,10 @@ const playerProfileSchema: Schema<IPlayerProfile> = new Schema({
     type: Date,
     required: true,
   },
+  photo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  }
 });
 
 

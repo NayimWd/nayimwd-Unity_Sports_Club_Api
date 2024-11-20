@@ -3,7 +3,7 @@ import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
 
-export const changeRole = asyncHandler(async (req, res) => {
+export const adminChangeRole = asyncHandler(async (req, res) => {
   // permission for make admin
   const userRole = (req as any).user?.role;
 
@@ -55,3 +55,11 @@ return res
 
 });
 
+// user role change for update own role
+export const changeMyRole = asyncHandler(async(req, res)=>{
+  // get user id 
+  const userId = (req as any).user.id;
+  if(!userId){
+    
+  }
+})

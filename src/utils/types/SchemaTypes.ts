@@ -27,18 +27,21 @@ export interface IPlayerProfile extends Document {
   bowlingArm: "left arm" | "right arm";
   bowlingStyle: "fast" | "spin" | "swing" | "seam";
   DateOfBirth: Date;
+  photo?: mongoose.Types.ObjectId
 }
 
 // manager profile type
 export interface IManagerProfile extends Document {
   userId: mongoose.Types.ObjectId;
   teamsManaged: [type: mongoose.Types.ObjectId];
+  photo?: mongoose.Types.ObjectId
 }
 
 // umpire Profile type
 export interface IUmpireProfile extends Document {
   userId: mongoose.Types.ObjectId;
   yearsOfExperience: number;
+  photo?: mongoose.Types.ObjectId
 }
 
 // team type
