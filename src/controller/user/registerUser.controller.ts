@@ -17,6 +17,11 @@ export const registerUser = asyncHandler(
       throw new ApiError(400, "All fields are required for Sign Up");
     }
 
+    // controll user to select role player or umpire
+    if(role === "admin" || role === "staff"){
+      throw new ApiError(401, "select user role as player or umpire or manager")
+    }
+
     // check if user exists
     const existUser = await User.findOne({ email });
     if (existUser) {

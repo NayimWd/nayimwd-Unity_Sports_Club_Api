@@ -4,10 +4,20 @@ import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
 
 export const changeRole = asyncHandler(async (req, res) => {
+  // permission for make admin
+  const userRole = (req as any).user?.role;
+
+  // filter admin
+  if(userRole !== "admin"){
+    throw new ApiError(
+      409, "you are not unauthorized for change user role"
+    )
+  }
+  
  // get user id
  const {userId} = req.params;
  if(!userId){
-    
+    throw new ApiError(400, "user id is required")
  }
  // get role
   const { role } = req.body;
@@ -44,3 +54,4 @@ return res
 
 
 });
+
