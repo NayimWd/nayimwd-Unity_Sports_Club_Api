@@ -36,7 +36,6 @@ export const registerUser = asyncHandler(
       throw new ApiError(400, "Photo file is required");
     }
 
-    // upload on cloudinary
     // uploading on cloudinary
   const photo = await uploadOnCloudinary(photoLocalPath);
 

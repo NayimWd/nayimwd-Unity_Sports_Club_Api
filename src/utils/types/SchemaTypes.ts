@@ -48,16 +48,15 @@ export interface IUmpireProfile extends Document {
 export interface ITeams extends Document {
   teamName: string;
   managerId: mongoose.Types.ObjectId;
-  players: [playerId: mongoose.Types.ObjectId, isCaptain: Boolean];
-  playing11: [
-    {
-      type: mongoose.Types.ObjectId;
-    },
-  ];
   playerCount: number;
-  status: "active" | "disqualified" | "withdrawn";
-  teamLogo: string;
-  photo: string;
+  status: "active" | "disqualified";
+  teamLogo?: string;
+}
+
+export interface ITeamPlayer extends Document {
+  teamId: mongoose.Types.ObjectId,
+  playerId: mongoose.Types.ObjectId,
+  isCaptain?: boolean
 }
 
 // venue type

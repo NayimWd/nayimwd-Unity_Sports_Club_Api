@@ -11,36 +11,16 @@ const teamSchema: Schema<ITeams> = new Schema({
     ref: "User",
     required: true,
   },
-  players: [
-    {
-      playerId: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    {
-      isCaptain: false,
-    },
-  ],
-  playing11: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "PlayerProfile",
-    },
-  ],
   playerCount: {
     type: Number,
-    min: 12,
+    default: 0,
     max: 18,
-    required: true,
   },
   status: {
     type: String,
-    enum: ["active", "disqualified", "withdrawn"],
+    enum: ["active", "disqualified"],
   },
   teamLogo: {
-    type: String,
-  },
-  photo: {
     type: String,
   },
 }, {

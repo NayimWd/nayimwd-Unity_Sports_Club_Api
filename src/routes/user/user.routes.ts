@@ -78,7 +78,9 @@ router
   .route(user_routes.photo)
   .patch(veryfyJWT, upload.single("photo"), updateUserPhoto);
 // change role
-router.route(user_routes.change_role).patch(veryfyJWT, isAdmin, adminChangeRole);
+router
+  .route(user_routes.change_role)
+  .patch(veryfyJWT, isAdmin, adminChangeRole);
 // forgot password
 router.route(user_routes.forgot_password).post(veryfyJWT, forgetPassword);
 // reset password
