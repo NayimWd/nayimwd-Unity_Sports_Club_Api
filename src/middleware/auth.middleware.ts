@@ -58,3 +58,15 @@ export const isAdmin = asyncHandler(async (req, res, next) => {
   }
   next();
 });
+
+// manager auth
+export const isManager = asyncHandler(async (req, res, next) => {
+  if ((req as any).user?.role !== "manager") {
+    return res.status(401).json({
+      success: false,
+      message: "This user is not team manager",
+    });
+  }
+  next();
+});
+
