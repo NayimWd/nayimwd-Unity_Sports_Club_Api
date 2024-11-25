@@ -1,9 +1,11 @@
 import { createTeam } from "./createTeam.controller";
 import { updateTeamName } from "./updateTeam.controller";
 import { updateTeamLogo } from "./updateTeam.controller";
+import { getAllTeams } from "./getTeams.controller";
 
 export {
     createTeam,
     updateTeamName,
-    updateTeamLogo
+    updateTeamLogo,
+    getAllTeams
 }
