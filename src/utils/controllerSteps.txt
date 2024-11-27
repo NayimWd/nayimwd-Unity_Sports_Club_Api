@@ -21,7 +21,7 @@
 3. Team
     ** create Team
       1. manager can create team with 12 to 18 player by player Id
-      2. search player by email or playerId add add all 12-18 player
+      2. search player by  playerId add add all 12-18 player
       3. If any player already exist on a team that player can not be add other team
       4. Remove player from team by user Id
       5. while adding player to team update players profile (TeamId ref)
@@ -69,3 +69,5 @@
     1. admin or staff can create / update / delete blog
     2. get all blog
     3. get single blog and details
+
+
