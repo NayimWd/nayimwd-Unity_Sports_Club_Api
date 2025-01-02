@@ -7,7 +7,7 @@ export const updateAccount = asyncHandler(async (req, res) => {
   // Get user from request
   const user = (req as any).user;
   if (!user || !user._id) {
-    throw new ApiError(404, "Invalid token, user not found");
+    throw new ApiError(400, "Invalid token, user not found");
   }
 
   // Get update fields from request body

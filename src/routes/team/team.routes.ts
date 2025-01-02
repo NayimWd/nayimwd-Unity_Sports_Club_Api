@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { isAdmin, isManager, veryfyJWT } from "../../middleware/auth.middleware";
 import { upload } from "../../middleware/multer.middleware";
-import { createTeam, deleteTeam, getAllTeams, getMyteam, getTeamDetails, updateTeamLogo, updateTeamName } from "../../controller/team";
+import { addPlayers, createTeam, deleteTeam, getAllTeams, getMyteam, getTeamDetails, updateTeamLogo, updateTeamName } from "../../controller/team";
 
 const router = Router();
 
@@ -13,6 +13,7 @@ interface ITeamRoutes {
     details: "/details/:teamId",
     my_team: "/my_team",
     delete:"/delete/:teamId",
+    addPlayers: "/addPlayers"
 }
 
 const teamRoutes : ITeamRoutes = {
@@ -22,7 +23,8 @@ const teamRoutes : ITeamRoutes = {
     all_teams: "/all_teams",
     details: "/details/:teamId",
     my_team: "/my_team",
-    delete: "/delete/:teamId"
+    delete: "/delete/:teamId",
+    addPlayers: "/addPlayers"
 }
 
 // create team
@@ -39,5 +41,7 @@ router.route(teamRoutes.details).get(getTeamDetails);
 router.route(teamRoutes.my_team).get(veryfyJWT, isManager, getMyteam);
 // delete team
 router.route(teamRoutes.delete).delete(veryfyJWT, isManager, deleteTeam);
+// add player to team
+router.route(teamRoutes.addPlayers).post(veryfyJWT, isManager, addPlayers);
 
 export default router;

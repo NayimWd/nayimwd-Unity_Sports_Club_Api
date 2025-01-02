@@ -10,11 +10,17 @@ const teamPlayerSchema: Schema<ITeamPlayer> = new Schema({
     playerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true
+        required: true,
+        unique: true
     },
     isCaptain: {
         type: Boolean,
         default: false
+    },
+    status: {
+        type: String,
+        enum: ["active", "benched", "injured"],
+        default: "active"
     }
 });
 

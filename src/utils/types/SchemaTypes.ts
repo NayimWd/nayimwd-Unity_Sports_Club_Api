@@ -21,7 +21,7 @@ export interface IUser extends Document {
 // player profile type
 export interface IPlayerProfile extends Document {
   userId: mongoose.Types.ObjectId;
-  teaamId: mongoose.Types.ObjectId;
+  teamId: mongoose.Types.ObjectId;
   role: "batsman" | "bowler" | "all-rounder" | "wk-batsman";
   batingStyle: "Right Hand" | "Left Hand";
   bowlingArm: "left arm" | "right arm";
@@ -56,7 +56,8 @@ export interface ITeams extends Document {
 export interface ITeamPlayer extends Document {
   teamId: mongoose.Types.ObjectId,
   playerId: mongoose.Types.ObjectId,
-  isCaptain?: boolean
+  isCaptain?: boolean,
+  status: "active" | "benched" | "injured"
 }
 
 // venue type
