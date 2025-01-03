@@ -21,7 +21,8 @@ const teamPlayerSchema: Schema<ITeamPlayer> = new Schema({
         type: String,
         enum: ["active", "benched", "injured"],
         default: "active"
-    }
+    },
+    
 });
 
 export const TeamPlayer = mongoose.model<ITeamPlayer>("TeamPlayer", teamPlayerSchema)

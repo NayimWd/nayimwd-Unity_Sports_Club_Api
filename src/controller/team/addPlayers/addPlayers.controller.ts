@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 import { ApiError } from "../../../utils/ApiError";
 import { asyncHandler } from "../../../utils/asyncHandler";
 import { Team } from "../../../models/teamModel/teams.model";
-import { User } from "../../../models/userModel/user.model";
 import { TeamPlayer } from "../../../models/teamModel/teamPlayer.model";
 import { PlayerProfile } from "../../../models/profilesModel/playerProfile.model";
 import { ApiResponse } from "../../../utils/ApiResponse";
+import { User } from "../../../models/userModel/user.model";
 
 export const addPlayers = asyncHandler(async (req, res) => {
   // starting mongodb session
@@ -21,7 +21,12 @@ export const addPlayers = asyncHandler(async (req, res) => {
     }
 
     // validate request payload
-    const { teamId, players } = req.body;
+    const { teamId, playerId } = req.body;
+
+    // validate players array
+    if (!teamId || !playerId) {
+      throw new ApiError(400, "TeamId and player ID both are required");
+    }
 
     // validate team by team id
     const team = await Team.findById(teamId);
@@ -35,91 +40,48 @@ export const addPlayers = asyncHandler(async (req, res) => {
         "You are not authorized to add players to this team"
       );
     }
-    // validate players array
-    if (!teamId || !Array.isArray(players) || players.length === 0) {
-      throw new ApiError(400, "Team ID and list of player IDs are required");
-    }
-
-    if (players.length > 15) {
-      throw new ApiError(400, "Can not add more that 15 Players at once");
-    }
 
     // prevent adding players if more that 18
-    if (team.playerCount + players.length > 18) {
+    if (team.playerCount >= 18) {
       throw new ApiError(400, "You can not add players more that 18");
     }
 
-    // initialize response array
-    const addedPlayers: string[] = [];
-    const skippedPlayers: string[] = [];
-
-    // array for handle player profile
-    const allPlayerProfiles = [];
-
-    // process each player
-    for (const playerId of players) {
-      // fetch player details for add or reject
-      const player = await User.findById(playerId);
-      // reject players if not a player or not exist
-      if (!player || player.role !== "player") {
-        skippedPlayers.push(playerId);
-        continue;
-      }
-
-      // check if player already exist on the team
-      const existingPlayer = await TeamPlayer.findOne({ playerId });
-      if (existingPlayer) {
-        skippedPlayers.push(playerId);
-        continue;
-      }
-
-      // Add player to the team
-      await TeamPlayer.create(
-        [
-          {
-            teamId,
-            playerId,
-          },
-        ],
-        {
-          session,
-        }
-      );
-
-      // Create or Update player profile with team id
-      // bulk operation for update profile
-      allPlayerProfiles.push({
-        updateOne: {
-          filter: { userId: playerId },
-          update: { teamId },
-          upsert: true,
-        },
-      });
-
-      // add valid players to addedPlayers array
-      addedPlayers.push(playerId);
+    // validate player
+    const player = await User.findOne({ _id: playerId, role: "player" });
+    if (!player) {
+      throw new ApiError(404, "Player not found or not a valid player");
     }
 
-    // create player profile with teamId and player's userId if does not exist
-    if (allPlayerProfiles.length > 0) {
-      await PlayerProfile.bulkWrite(allPlayerProfiles, { session });
+    // check if player alaready exist on team
+    const existingPlayer = await TeamPlayer.findOne({ playerId });
+
+    if (existingPlayer) {
+      throw new ApiError(400, "Player already exist in another team");
     }
+
+    // add player to the team
+    const teamPlayer = new TeamPlayer({ teamId, playerId });
+    await teamPlayer.save({ session });
+
+    // update or create new team player profile
+    await PlayerProfile.updateOne(
+      { userId: playerId },
+      { teamId },
+      { upsert: true, session }
+    );
 
     // update team player count
-    team.playerCount += addedPlayers.length;
+    team.playerCount += 1;
     await team.save({ session });
 
     // commit transaction
     await session.commitTransaction();
-
     session.endSession();
 
-    // return response
-    return res
-      .status(200)
-      .json(new ApiResponse(200, {}, "Players processed successfully"));
+    // Return success response
+    res.status(200).json(new ApiResponse(200, {}, "Player added successfully"));
   } catch (error) {
-    // rollback transaction if any error
+    // Rollback transaction
     await session.abortTransaction();
     session.endSession();
     throw error;
