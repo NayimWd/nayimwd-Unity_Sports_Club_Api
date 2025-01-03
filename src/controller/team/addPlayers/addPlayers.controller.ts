@@ -53,6 +53,9 @@ export const addPlayers = asyncHandler(async (req, res) => {
     const addedPlayers: string[] = [];
     const skippedPlayers: string[] = [];
 
+    // array for handle player profile
+    const allPlayerProfiles = [];
+
     // process each player
     for (const playerId of players) {
       // fetch player details for add or reject
@@ -84,29 +87,24 @@ export const addPlayers = asyncHandler(async (req, res) => {
       );
 
       // Create or Update player profile with team id
-      const playerProfile = await PlayerProfile.findOne({ playerId }).session(
-        session
-      );
-      if (playerProfile) {
-        playerProfile.teamId = teamId;
-        await playerProfile.save({ session });
-      } else {
-        await PlayerProfile.create(
-          [
-            {
-              playerId,
-              teamId,
-            },
-          ],
-          {
-            session,
-          }
-        );
-      }
+      // bulk operation for update profile
+      allPlayerProfiles.push({
+        updateOne: {
+          filter: { userId: playerId },
+          update: { teamId },
+          upsert: true,
+        },
+      });
 
       // add valid players to addedPlayers array
       addedPlayers.push(playerId);
     }
+
+    // create player profile with teamId and player's userId if does not exist
+    if (allPlayerProfiles.length > 0) {
+      await PlayerProfile.bulkWrite(allPlayerProfiles, { session });
+    }
+
     // update team player count
     team.playerCount += addedPlayers.length;
     await team.save({ session });

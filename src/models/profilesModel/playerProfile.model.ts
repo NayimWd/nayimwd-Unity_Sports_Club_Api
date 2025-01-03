@@ -15,32 +15,29 @@ const playerProfileSchema: Schema<IPlayerProfile> = new Schema({
   role: {
     type: String,
     enum: ["batsman", "bowler", "all-rounder", "wk-batsman"],
-    required: true,
   },
   batingStyle: {
     type: String,
     enum: ["Right Hand", "Left Hand"],
-    required: true,
   },
   bowlingArm: {
     type: String,
     enum: ["left arm", "right arm"],
-    required: true,
   },
   bowlingStyle: {
     type: String,
     enum: ["fast", "spin", "swing", "seam"],
-    required: true,
   },
   DateOfBirth: {
     type: Date,
-    required: true,
   },
   photo: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-  }
+    ref: "User",
+  },
 });
 
-
-export const PlayerProfile = mongoose.model<IPlayerProfile>("PlayerProfile", playerProfileSchema)
+export const PlayerProfile = mongoose.model<IPlayerProfile>(
+  "PlayerProfile",
+  playerProfileSchema
+);
