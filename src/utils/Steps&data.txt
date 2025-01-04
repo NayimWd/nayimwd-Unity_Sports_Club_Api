@@ -39,7 +39,7 @@
 
 7. Tournament Register
     1. manager can apply tournament if tournament seat available
-    2. each team should have minimum 12 players for apply team
+    2. each team should have minimum 15 players for apply team
     3. admin or staff can approve / cancel team application request 
     4. team manager can withdraw their application
     

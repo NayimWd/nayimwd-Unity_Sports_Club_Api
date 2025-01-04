@@ -34,6 +34,7 @@ export const getTeamPlayers = asyncHandler(async(req, res)=>{
       success: true,
       data: {
         manager: team.managerId, // Include manager details
+        number: teamMembers.length,
         players: teamMembers, // Include populated player details
       },
       message: "Team members fetched successfully",

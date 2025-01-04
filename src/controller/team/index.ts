@@ -5,6 +5,7 @@ import { getAllTeams, getTeamDetails, getMyteam } from "./getTeams.controller";
 import { deleteTeam } from "./deleteTeam.controller";
 import { addPlayers } from "./addPlayers/addPlayers.controller";
 import { getTeamPlayers } from "./getTeamPlayers.controller";
+import { removePlayers } from "./addPlayers/removePlayers.controller";
 
 export {
     createTeam,
@@ -15,5 +16,6 @@ export {
     getMyteam,
     deleteTeam,
     addPlayers,
+    removePlayers,
     getTeamPlayers
 }
