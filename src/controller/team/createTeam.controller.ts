@@ -1,3 +1,4 @@
+import { ManagerProfile } from "../../models/profilesModel/managerProfile.model";
 import { Team } from "../../models/teamModel/teams.model";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
@@ -45,6 +46,22 @@ export const createTeam = asyncHandler(async (req, res) => {
 
   if (!team) {
     throw new ApiError(500, "Something went wrong while creating team");
+  }
+
+  // update manager profile
+  const profile = await ManagerProfile.findOne({ userId: user._id });
+  // create profile if not exist or update it
+  if (!profile) {
+    await ManagerProfile.create({
+      userId: user._id,
+      teamsManaged: [team._id],
+    });
+  } else {
+    await ManagerProfile.findOneAndUpdate(
+      { userId: user._id },
+      { $addToSet: { teamsManaged: team._id } },
+      { new: true }
+    );
   }
 
   return res

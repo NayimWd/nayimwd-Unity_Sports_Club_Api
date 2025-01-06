@@ -22,7 +22,7 @@ export interface IUser extends Document {
 export interface IPlayerProfile extends Document {
   userId: mongoose.Types.ObjectId;
   teamId: mongoose.Types.ObjectId;
-  role: "batsman" | "bowler" | "all-rounder" | "wk-batsman";
+  player_role: "batsman" | "bowler" | "all-rounder" | "wk-batsman";
   batingStyle: "Right Hand" | "Left Hand";
   bowlingArm: "left arm" | "right arm";
   bowlingStyle: "fast" | "spin" | "swing" | "seam";

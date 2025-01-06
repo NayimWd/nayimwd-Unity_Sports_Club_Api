@@ -9,10 +9,9 @@ const playerProfileSchema: Schema<IPlayerProfile> = new Schema({
   },
   teamId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Team",
-    required: [true, "Team id is required"],
+    ref: "Team"
   },
-  role: {
+  player_role: {
     type: String,
     enum: ["batsman", "bowler", "all-rounder", "wk-batsman"],
   },
