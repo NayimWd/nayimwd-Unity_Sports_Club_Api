@@ -14,7 +14,7 @@ export const create_PlayerProfile = asyncHandler(async (req, res) => {
   // create player profile
   if (player.role !== "player") {
     // check profile already exist or not
-    throw new ApiError(400, "User role is not player");
+    throw new ApiError(403, "User role is not player");
   }
   const existingPlayerProfile = await PlayerProfile.findOne({
     userId: player._id,
@@ -25,15 +25,15 @@ export const create_PlayerProfile = asyncHandler(async (req, res) => {
   }
 
   // get data from req body
-  const { role, batingStyle, bowlingArm, bowlingStyle, DateOfBirth } = req.body;
+  const { player_role, batingStyle, bowlingArm, bowlingStyle, DateOfBirth } = req.body;
   // validate
-  if (!role || !batingStyle || !bowlingArm || !bowlingStyle || !DateOfBirth) {
+  if (!player_role || !batingStyle || !bowlingArm || !bowlingStyle || !DateOfBirth) {
     throw new ApiError(400, "Required fields are missing");
   }
 
   const profile = await PlayerProfile.create({
     userId: player._id,
-    player_role: role,
+    player_role,
     batingStyle,
     bowlingArm,
     bowlingStyle,

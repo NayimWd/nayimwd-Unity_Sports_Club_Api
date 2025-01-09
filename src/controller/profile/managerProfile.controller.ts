@@ -13,11 +13,11 @@ export const createManagerProfile = asyncHandler(async (req, res) => {
 
   // role validation for manager
   if (manager.role !== "manager") {
-    throw new ApiError(400, "user role is not manager");
+    throw new ApiError(403, "user role is not manager");
   }
 
   // check existing profile
-  const existingProfile = await ManagerProfile.findById({
+  const existingProfile = await ManagerProfile.findOne({
     userId: manager._id,
   });
 
@@ -27,6 +27,11 @@ export const createManagerProfile = asyncHandler(async (req, res) => {
 
   // getting data from req body
   const { teamId } = req.body;
+
+  // validate
+  if (!teamId) {
+    throw new ApiError(400, "Team ID field is missing");
+  }
 
   const profile = await ManagerProfile.create({
     userId: manager._id,

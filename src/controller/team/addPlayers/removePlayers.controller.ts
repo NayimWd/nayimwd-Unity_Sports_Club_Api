@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { asyncHandler } from "../../../utils/asyncHandler";
 import { ApiError } from "../../../utils/ApiError";
-import { verify } from "crypto";
 import { Team } from "../../../models/teamModel/teams.model";
 import { TeamPlayer } from "../../../models/teamModel/teamPlayer.model";
 import { PlayerProfile } from "../../../models/profilesModel/playerProfile.model";

@@ -7,7 +7,11 @@ const umpireProfileSchema: Schema<IUmpireProfile> = new Schema({
     ref: "User",
     required: true,
   },
-  yearsOfExperience: Number,
+  yearsOfExperience: {
+    type: Number,
+    enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    required: true,
+  },
   photo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"

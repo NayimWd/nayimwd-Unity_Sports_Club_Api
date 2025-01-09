@@ -11,17 +11,21 @@ export const createUmpireProfile = asyncHandler(async (req, res) => {
   }
 
   if (umpire.role !== "umpire") {
-    throw new ApiError(400, "User role is not umpire");
+    throw new ApiError(403, "User role is not umpire");
   }
 
   // check existing profile
-  const existingProfile = await UmpireProfile.findById({ userId: umpire._id });
+  const existingProfile = await UmpireProfile.findOne({ userId: umpire._id });
 
   if (existingProfile) {
     throw new ApiError(409, "Profile already exists");
   }
   // get data from req body
   const { experience } = req.body;
+  // validate
+  if(!experience){
+    throw new ApiError(400, "Experience field is missing");
+  }
   // create profile
   const profile = await UmpireProfile.create({
     userId: umpire._id,
