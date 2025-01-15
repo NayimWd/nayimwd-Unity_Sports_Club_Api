@@ -63,9 +63,20 @@ export interface ITeamPlayer extends Document {
 // venue type
 export interface IVenue extends Document {
   name: string;
+  city: string;
   location: string;
-  bookingSlot: [{ date: Date; startTime: string; endTime: string }];
+  features: "outdoor" | "indoor" | "floodlight";
   photo: string;
+}
+
+// venue booking type
+export interface IVenueBooking extends Document {
+  venueId: mongoose.Types.ObjectId;
+  bookedBy: mongoose.Types.ObjectId;
+  bookingDate: Date;
+  startTime: string;
+  endTime: string;
+ 
 }
 
 // tournament type

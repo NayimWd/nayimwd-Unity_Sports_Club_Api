@@ -7,26 +7,18 @@ const venueSchema: Schema<IVenue> = new Schema(
       type: String,
       required: [true, "Venue name is required"],
     },
+    city: {
+      type: String,
+      required: [true, "Venue city is required"],
+    },
     location: {
       type: String,
       required: [true, "Venue location is required"],
     },
-    bookingSlot: [
-      {
-        date: {
-          type: Date,
-          required: [true, "vanue booking date is required"],
-        },
-        startTime: {
-          type: String,
-          required: [true, "Start time is required"],
-        },
-        endTime: {
-          type: String,
-          required: [true, "Approx End time is required"],
-        },
-      },
-    ],
+    features: {
+      type: String,
+      enum: ["outdoor", "indoor", "floodlight"],
+    },
     photo: String,
   },
   {
