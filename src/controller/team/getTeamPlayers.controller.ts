@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { TeamPlayer } from "../../models/teamModel/teamPlayer.model";
 import { Team } from "../../models/teamModel/teams.model";
 import { ApiError } from "../../utils/ApiError";
@@ -15,7 +16,7 @@ export const getTeamPlayers = asyncHandler(async(req, res)=>{
     // Fetch team to get manager details
     const team = await Team.findById(teamId).select("managerId").populate({
       path: "managerId",
-      select: "name role photo", // Fetch manager details
+      select: "name photo", // Fetch manager details
     });
   
     if (!team) {
@@ -39,4 +40,45 @@ export const getTeamPlayers = asyncHandler(async(req, res)=>{
       },
       message: "Team members fetched successfully",
     });
-})  
+});
+
+// get team player details
+export const getTeamPlayerDetails = asyncHandler(async(req, res)=>{
+  // get team player id from request params
+  const {playerId} = req.params;
+
+  // validate id
+  if(!playerId || !mongoose.isValidObjectId(playerId)){
+    throw new ApiError(400, "valid player ID is required");
+  };
+
+  // get player details
+  const player = await TeamPlayer.findOne({playerId})
+  .populate({
+    path: "playerId", // Reference to User model
+    model: "User",
+    select: "name role photo", // Fields from User schema
+  })
+  .populate({
+    path: "teamId",
+    model: "Team",
+    select: "teamName teamLogo "
+  })
+  .populate({
+    path: "playerId", // Reference to PlayerProfile
+    populate: {
+      path: "_id", // Assuming PlayerProfile is linked by userId
+      model: "PlayerProfile",
+      select: "player_role batingStyle bowlingArm bowlingStyle DateOfBirth",
+    },
+  })
+
+  if(!player){
+    throw new ApiError(404, "Player not found with this id")
+  }
+
+  // send response
+  res
+    .status(200)
+    .json(new ApiResponse(200, player, "Player details fetched successfully"));
+});
