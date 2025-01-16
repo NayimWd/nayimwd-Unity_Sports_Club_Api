@@ -1,9 +1,11 @@
-import mongoose from "mongoose";
+import mongoose, { model } from "mongoose";
 import { TeamPlayer } from "../../models/teamModel/teamPlayer.model";
 import { Team } from "../../models/teamModel/teams.model";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
+import path from "path";
+import { PlayerProfile } from "../../models/profilesModel/playerProfile.model";
 
 export const getTeamPlayers = asyncHandler(async(req, res)=>{
     const { teamId } = req.params;
@@ -55,30 +57,32 @@ export const getTeamPlayerDetails = asyncHandler(async(req, res)=>{
   // get player details
   const player = await TeamPlayer.findOne({playerId})
   .populate({
-    path: "playerId", // Reference to User model
+    path: "playerId", // Populate User details
     model: "User",
     select: "name role photo", // Fields from User schema
   })
   .populate({
-    path: "teamId",
+    path: "teamId", // Populate Team details
     model: "Team",
-    select: "teamName teamLogo "
-  })
-  .populate({
-    path: "playerId", // Reference to PlayerProfile
-    populate: {
-      path: "_id", // Assuming PlayerProfile is linked by userId
-      model: "PlayerProfile",
-      select: "player_role batingStyle bowlingArm bowlingStyle DateOfBirth",
-    },
-  })
+    select: "teamName teamLogo",
+  });
+
+  // get player profile by player id
+  const playerProfile = await PlayerProfile.findOne({ userId: playerId })
+  .select("player_role batingStyle bowlingArm bowlingStyle DateOfBirth photo");
 
   if(!player){
     throw new ApiError(404, "Player not found with this id")
   }
 
+  // make response
+  const response = {
+    player,
+    playerProfile,
+  }
+
   // send response
   res
     .status(200)
-    .json(new ApiResponse(200, player, "Player details fetched successfully"));
+    .json(new ApiResponse(200, response, "Player details fetched successfully"));
 });
