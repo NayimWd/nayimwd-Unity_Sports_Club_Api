@@ -21,7 +21,8 @@ export const addPlayers = asyncHandler(async (req, res) => {
     }
 
     // validate request payload
-    const { teamId, playerId } = req.body;
+    const {teamId} = req.params;
+    const {  playerId } = req.body;
 
     // validate players array
     if (!teamId || !playerId) {

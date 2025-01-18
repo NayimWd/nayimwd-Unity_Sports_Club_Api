@@ -8,7 +8,7 @@ import { ApiResponse } from "../../utils/ApiResponse";
 export const makeCaptain = asyncHandler(async (req, res) => {
   // auth check for team manager
   const creator = (req as any).user;
-  if (!creator || creator.role !== "teamManager") {
+  if (!creator || creator.role !== "manager") {
     throw new ApiError(401, "Unauthorized request, please login as a team manager");
   }
   // get teamId and playerId from request params and body

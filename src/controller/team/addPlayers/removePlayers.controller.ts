@@ -18,8 +18,9 @@ export const removePlayers = asyncHandler(async (req, res) => {
     if (!managerId) {
       throw new ApiError(400, "Invalid Token, User not found");
     }
-    // get team and player ID from req body
-    const { teamId, playerId } = req.body;
+    // get team and player ID from req body and params
+    const { teamId } = req.params;
+    const { playerId } = req.body;
     // validate
     if (!teamId || !playerId) {
       throw new ApiError(400, "Team ID and Player ID both are required");

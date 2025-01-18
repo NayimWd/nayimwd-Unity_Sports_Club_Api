@@ -181,4 +181,4 @@
 
 21. team name     : Melbourn Stars
     manager Name  : Mostafizur Rahman
-    manager Email : m.mostafiz@gmail.com
+    manager Email : m.mostafiz@gmail.com -*-

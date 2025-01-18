@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { isAdmin, isManager, veryfyJWT } from "../../middleware/auth.middleware";
 import { upload } from "../../middleware/multer.middleware";
-import { addPlayers, createTeam, deleteTeam, getAllTeams, getMyteam, getTeamDetails, getTeamPlayerDetails, getTeamPlayers, removePlayers, updateTeamLogo, updateTeamName } from "../../controller/team";
+import { addPlayers, createTeam, deleteTeam, getAllTeams, getMyteam, getTeamDetails, getTeamPlayerDetails, getTeamPlayers, makeCaptain, removePlayers, updateTeamLogo, updateTeamName } from "../../controller/team";
 
 const router = Router();
 
@@ -13,10 +13,11 @@ interface ITeamRoutes {
     details: "/details/:teamId",
     my_team: "/my_team",
     delete:"/delete/:teamId",
-    addPlayers: "/addPlayers"
-    removePlayer: "/removePlayer",
+    addPlayers: "/addPlayers/:teamId",
+    removePlayer: "/removePlayer/:teamId",
     members: "/members/:teamId"
-    player_details: "/player_details/:playerId"
+    player_details: "/player_details/:playerId",
+    makeCaptain: "/makeCaptain/:teamId"
 }
 
 const teamRoutes : ITeamRoutes = {
@@ -27,10 +28,11 @@ const teamRoutes : ITeamRoutes = {
     details: "/details/:teamId",
     my_team: "/my_team",
     delete: "/delete/:teamId",
-    removePlayer: "/removePlayer",
-    addPlayers: "/addPlayers",
+    removePlayer: "/removePlayer/:teamId",
+    addPlayers: "/addPlayers/:teamId",
     members: "/members/:teamId",
-    player_details: "/player_details/:playerId"
+    player_details: "/player_details/:playerId",
+    makeCaptain: "/makeCaptain/:teamId"
 }
 
 // create team
@@ -55,5 +57,7 @@ router.route(teamRoutes.removePlayer).post(veryfyJWT, isManager, removePlayers)
 router.route(teamRoutes.members).get(getTeamPlayers);
 // get player details
 router.route(teamRoutes.player_details).get(getTeamPlayerDetails);
+// make team captain
+router.route(teamRoutes.makeCaptain).put(veryfyJWT, isManager, makeCaptain);
 
 export default router;

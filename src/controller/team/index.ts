@@ -6,6 +6,8 @@ import { deleteTeam } from "./deleteTeam.controller";
 import { addPlayers } from "./addPlayers/addPlayers.controller";
 import { getTeamPlayers, getTeamPlayerDetails } from "./getTeamPlayers.controller";
 import { removePlayers } from "./addPlayers/removePlayers.controller";
+import { makeCaptain } from "./makeCaptain.controller";
+
 
 export {
     createTeam,
@@ -18,5 +20,6 @@ export {
     addPlayers,
     removePlayers,
     getTeamPlayers,
-    getTeamPlayerDetails
+    getTeamPlayerDetails,
+    makeCaptain
 }
