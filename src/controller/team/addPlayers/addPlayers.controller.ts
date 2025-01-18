@@ -34,6 +34,7 @@ export const addPlayers = asyncHandler(async (req, res) => {
     if (!team) {
       throw new ApiError(404, "Team not found by this ID");
     }
+  
     // validate manager authority
     if (team.managerId.toString() !== managerId.toString()) {
       throw new ApiError(

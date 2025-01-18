@@ -1,8 +1,8 @@
 import { getAvailablePlayers } from "./availablePlayers.controller";
-import {availablePlayerDetails} from "./availablePlayerDetails.controller";
+import { getPlayerDetails } from "./availablePlayerDetails.controller";
 
 
 export {
      getAvailablePlayers,
-     availablePlayerDetails
+     getPlayerDetails
     };

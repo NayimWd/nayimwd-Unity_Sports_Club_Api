@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { availablePlayerDetails, getAvailablePlayers } from "../../controller/players";
+import { getPlayerDetails, getAvailablePlayers } from "../../controller/players";
 
 
 const router = Router();
@@ -7,19 +7,19 @@ const router = Router();
 // interface
 interface IPlayer {
   available_players: "/available_players";
-  available_player_details: "/available_player_details/:playerId";
+  player_details: "/player_details/:playerId";
 };
 
 // routes
 const playerRoutes: IPlayer = {
   available_players: "/available_players",
-  available_player_details: "/available_player_details/:playerId"
+  player_details: "/player_details/:playerId" 
 };
 
 // available players
 router.route(playerRoutes.available_players).get(getAvailablePlayers);
 // available player details
-router.route(playerRoutes.available_player_details).get(availablePlayerDetails);
+router.route(playerRoutes.player_details).get(getPlayerDetails);
 
 
 export default router;
