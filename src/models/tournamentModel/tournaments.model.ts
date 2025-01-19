@@ -9,18 +9,18 @@ const tournamentSchema: Schema<ITournament> = new Schema(
     },
     tournamentType: {
       type: String,
-      enum: ["knockout", "series", "1v1"],
+      enum: ["knockout", "series", "1v1", "points"],
       required: true,
     },
     description: {
       type: String,
       required: true,
-      max: 400,
-      min: 20,
+      max: [400, "Description cannot exceed 400 characters"],
+      min: [20, "Description must be at least 20 characters long"],
     },
     format: {
-      type: String,
-      enum: ["8 teams", "16 teams"],
+      type: Number,
+      enum: [4 | 6 | 8 | 12 | 16],
       required: true,
     },
     ballType: {
@@ -29,7 +29,7 @@ const tournamentSchema: Schema<ITournament> = new Schema(
       default: "tape tennis",
     },
     matchOver: {
-      type: String,
+      type: Number,
       required: true,
     },
     registrationDeadline: {
@@ -37,22 +37,34 @@ const tournamentSchema: Schema<ITournament> = new Schema(
       required: [true, "Registration deadline is required"],
     },
     seats: {
-      type: String,
-      enum: ["16", "8", "2", "3"],
+      type: Number,
       required: true,
+      validate: {
+        validator: function (seat: Number) {
+          return seat === this.format;
+        },
+        message: "Seats must be equal to the format",
+      },
     },
     startDate: {
       type: Date,
-      required: [true, "tournament starting date is required"],
+      required: [true, "Tournament start date is required"],
+      validate: {
+        validator: function (value: Date) {
+          return value > this.registrationDeadline;
+        },
+        message: "Start date must be after the registration deadline",
+      },
     },
     endDate: {
       type: Date,
-      required: [true, "tournament end date is required"],
-    },
-    venue: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Venue",
-      required: [true, "Venue is required"],
+      required: [true, "Tournament end date is required"],
+      validate: {
+        validator: function (value: Date) {
+          return value > this.startDate;
+        },
+        message: "End date must be after the start date",
+      },
     },
     status: {
       type: String,
@@ -62,6 +74,7 @@ const tournamentSchema: Schema<ITournament> = new Schema(
     entryFee: {
       type: Number,
       required: [true, "Entry Fee is required"],
+      min: [0, "Entry fee cannot be negative"],
     },
     prize: {
       champion: {

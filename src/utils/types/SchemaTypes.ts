@@ -82,16 +82,15 @@ export interface IVenueBooking extends Document {
 // tournament type
 export interface ITournament extends Document {
   tournamentName: string;
-  tournamentType: "knockout" | "series" | "1v1";
+  tournamentType: "knockout" | "series" | "1v1" | "points";
   description: string;
-  format: "8 teams" | "16 teams";
+  format: 4 | 6 | 8 | 12 | 16;
   ballType: "tape tennis" | "3 star" | "leather";
-  matchOver: string;
-  registrationDeadline?: Date;
-  seats: "16" | "8" | "2" | "3";
+  matchOver: number;
+  registrationDeadline: Date;
+  seats: number;
   startDate: Date;
   endDate: Date;
-  venue: mongoose.Types.ObjectId;
   status: "upcoming" | "ongoing" | "completed";
   entryFee: number;
   prize: {
@@ -156,39 +155,30 @@ export interface IInningType extends Document {
     byes: number;
     totalExtras: number;
   };
+  wickets: number;
+  run: number;
+  totalRuns: number;
 }
 
 // match type
 export interface IMatchTeype extends Document {
   tournamentId: mongoose.Types.ObjectId;
-  matchType: "knockout" | "series" | "1v1";
-  teams: [
-    teamA: { type: mongoose.Types.ObjectId },
-    teamB: { type: mongoose.Types.ObjectId },
-  ];
+  teams: mongoose.Types.ObjectId[]; 
   date: Date;
   venue: mongoose.Types.ObjectId;
   status: "upcoming" | "live" | "completed";
-  umpires: [
-    {
-      type: mongoose.Types.ObjectId;
-    },
-  ];
-  matchResult?: mongoose.Types.ObjectId;
-  photos: [{ type: string }];
+  umpires: mongoose.Types.ObjectId[]; 
+  photo: string; 
 }
 
 // match result type
 export interface IMatchResult extends Document {
   tournamentId: mongoose.Types.ObjectId;
   matchId: mongoose.Types.ObjectId;
-  champion: mongoose.Types.ObjectId;
-  runnerUp: mongoose.Types.ObjectId;
-  margin: {
-    runs: number;
-    wicket: number;
-  };
-  method: "normal" | "DLS" | "tie" | "no result";
+  winner: mongoose.Types.ObjectId;
+  defeated: mongoose.Types.ObjectId;
+  margin: string;
+  method: "normal" | "DLS" | "tie" | "no result" | "super over";
   manOfTheMatch: mongoose.Types.ObjectId;
 }
 

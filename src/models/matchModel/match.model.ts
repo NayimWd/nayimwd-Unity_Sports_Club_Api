@@ -8,27 +8,22 @@ const matchSchema: Schema<IMatchTeype> = new Schema(
       ref: "Tournament",
       required: true,
     },
-    matchType: {
-      type: String,
-      enum: ["knockout", "series", "1v1"],
-      default: "knockout",
+    teams: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Team",
+          required: true, 
+        },
+      ],
+      validate: {
+        validator: function (team) {
+          return team.length === 2; // Ensure exactly 2 teams
+        },
+        message: "A match must have exactly 2 teams.",
+      },
+      required: [true, "Teams are required"],
     },
-    teams: [
-      {
-        teamA: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Team",
-          required: true,
-        },
-      },
-      {
-        teamB: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Team",
-          required: true,
-        },
-      },
-    ],
     date: {
       type: Date,
       required: [true, "match date is required"],
@@ -50,15 +45,7 @@ const matchSchema: Schema<IMatchTeype> = new Schema(
         required: true,
       },
     ],
-    matchResult: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "MatchResult",
-    },
-    photos: [
-      {
-        type: String,
-      },
-    ],
+    photo: String,
   },
   {
     timestamps: true,

@@ -101,59 +101,59 @@
 ---------------------------------------------------------------------
 1. team name     : WR Rapids
    manager Name  : Nahid Islam
-   manager Email : m.nahid@gmail.com
+   manager Email : m.nahid@gmail.com -*-
 
 2. team name     : Hampshire Cricket
    manager Name  : Rehman Shofiq
-   manager Email : m.rehman@gmail.com
+   manager Email : m.rehman@gmail.com -*- 
 
 3. team name     : NY Rapids
    manager Name  : Mushfiqur Rahim
-   manager Email : m.rahim@gmail.com
+   manager Email : m.rahim@gmail.com -*-
 
 4. team name     : Leicester Tigers
    manager Name  : Anamul Haque
-   manager Email : m.anamul@gmail.com
+   manager Email : m.anamul@gmail.com -*- 
 
 5. team name     : Amazom Warriors
    manager Name  : Mashrafi Mortuza
-   manager Email : m.mashrafi@gmail.com
+   manager Email : m.mashrafi@gmail.com -*-
 
 6. team name     : Sydney Thunder
    manager Name  : Mahmudullah Riyad
-   manager Email : m.mahmudullah@gmail.com
+   manager Email : m.mahmudullah@gmail.com -*-
 
 7. team name     : Bangla Tigers
    manager Name  : Tamin Iqbal
-   manager Email : m.tamim@gmail.com
+   manager Email : m.tamim@gmail.com -*-
 
 8. team name     : Bolt Ajman
    manager Name  : Nasir Hussain
-   manager Email : m.nasir@gmail.com
+   manager Email : m.nasir@gmail.com -*-
 
 9. team name     : Brave Jaguars
    manager Name  : Arman Malik
-   manager Email : m.arman@gmail.com
+   manager Email : m.arman@gmail.com -*-
 
 10. team name     : Deccan Gladiators
     manager Name  : Arsad Ali
-    manager Email : m.arsad@gmail.com
+    manager Email : m.arsad@gmail.com -*-
 
 11. team name     : Delhi Buls
     manager Name  : Manik Hasan
-    manager Email : m.manik@gmail.com
+    manager Email : m.manik@gmail.com -*-
 
 12. team name     : Northern Warriors 
     manager Name  : Fakhrul Ahmed
-    manager Email : m.fakhrul@gmail.com
+    manager Email : m.fakhrul@gmail.com -*-
 
 13. team name     : NEW YORK STRIKERS 
     manager Name  : Nazmul Hasan
-    manager Email : m.nazmul@gmail.com
+    manager Email : m.nazmul@gmail.com -*-
 
 14. team name     : Galle Marvels
     manager Name  : Fahad Ahmed
-    manager Email : m.fahad@gmail.com
+    manager Email : m.fahad@gmail.com -*-
 
 15. team name     : Kandy Falcons 
     manager Name  : Rayhan Rafi

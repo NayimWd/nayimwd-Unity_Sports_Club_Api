@@ -13,29 +13,23 @@ const matchResultSchema: Schema<IMatchResult> = new Schema(
       ref: "Match",
       required: true,
     },
-    champion: {
+    winner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Team",
       required: true,
     },
-    runnerUp: {
+    defeated: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Team",
       required: true,
     },
     margin: {
-      runs: {
-        type: String,
-        required: true,
-      },
-      wicket: {
-        type: String,
-        required: true,
-      },
+      type: String,
+      required: true,
     },
     method: {
       type: String,
-      enum: ["normal", "DLS", "tie", "no result"],
+      enum: ["normal", "DLS", "tie", "no result", "super over"],
       default: "normal",
     },
     manOfTheMatch: {

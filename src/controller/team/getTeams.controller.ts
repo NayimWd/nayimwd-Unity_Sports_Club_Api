@@ -14,7 +14,7 @@ export const getAllTeams = asyncHandler(async (req, res) => {
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)
-    .select("_id teamName teamLogo")
+    .select("_id teamName teamLogo playerCount");
 
 
   // total count of team for pagination
