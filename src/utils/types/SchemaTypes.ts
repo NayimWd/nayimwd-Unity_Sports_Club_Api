@@ -73,7 +73,7 @@ export interface IVenue extends Document {
 export interface IVenueBooking extends Document {
   venueId: mongoose.Types.ObjectId;
   bookedBy: mongoose.Types.ObjectId;
-  bookingDate: Date;
+  bookingDate: string;
   startTime: string;
   endTime: string;
  
@@ -87,10 +87,10 @@ export interface ITournament extends Document {
   format: 4 | 6 | 8 | 12 | 16;
   ballType: "tape tennis" | "3 star" | "leather";
   matchOver: number;
-  registrationDeadline: Date;
+  registrationDeadline: string;
   seats: number;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   status: "upcoming" | "ongoing" | "completed";
   entryFee: number;
   prize: {
@@ -120,15 +120,14 @@ export interface ISchedule extends Document {
   matchId?: mongoose.Types.ObjectId;
   venueId: mongoose.Types.ObjectId;
   matchNumber: number;
-  round: "round 1" | "Quarter-Final" | "Semi-Final" | "Final";
-  teams: [
+  round: "round 1" | "round 2" | "Quarter-Final" | "Semi-Final" | "Final" | "Playoff";
+  teams: {
     teamA: { type: mongoose.Types.ObjectId },
     teamB: { type: mongoose.Types.ObjectId },
-  ];
-  date: Date;
-  startTime: string;
-  status: "scheduled" | "cancelled" | "completed";
-  matchResult?: mongoose.Types.ObjectId;
+  };
+  matchDate: string;
+  matchTime: string;
+  status: "scheduled" | "rescheduled" | "in-progress" | "cancelled" | "completed";
 }
 
 // registration type
@@ -164,7 +163,8 @@ export interface IInningType extends Document {
 export interface IMatchTeype extends Document {
   tournamentId: mongoose.Types.ObjectId;
   teams: mongoose.Types.ObjectId[]; 
-  date: Date;
+  date: string;
+  time: string;
   venue: mongoose.Types.ObjectId;
   status: "upcoming" | "live" | "completed";
   umpires: mongoose.Types.ObjectId[]; 

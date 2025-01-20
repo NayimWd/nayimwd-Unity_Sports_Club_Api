@@ -5,7 +5,7 @@ const tournamentSchema: Schema<ITournament> = new Schema(
   {
     tournamentName: {
       type: String,
-      required: [true, "tournament name is required"],
+      required: [true, "Tournament name is required"],
     },
     tournamentType: {
       type: String,
@@ -20,7 +20,7 @@ const tournamentSchema: Schema<ITournament> = new Schema(
     },
     format: {
       type: Number,
-      enum: [4 | 6 | 8 | 12 | 16],
+      enum: [4, 6, 8, 12, 16],
       required: true,
     },
     ballType: {
@@ -33,37 +33,43 @@ const tournamentSchema: Schema<ITournament> = new Schema(
       required: true,
     },
     registrationDeadline: {
-      type: Date,
+      type: String,
       required: [true, "Registration deadline is required"],
+      validate: {
+        validator: function (value: string) {
+          return /^\d{2}-\d{2}-\d{4}$/.test(value); // Format: DD-MM-YYYY
+        },
+        message: "Registration deadline must be in the format DD-MM-YYYY.",
+      },
     },
     seats: {
       type: Number,
       required: true,
       validate: {
-        validator: function (seat: Number) {
+        validator: function (seat: number) {
           return seat === this.format;
         },
         message: "Seats must be equal to the format",
       },
     },
     startDate: {
-      type: Date,
+      type: String,
       required: [true, "Tournament start date is required"],
       validate: {
-        validator: function (value: Date) {
-          return value > this.registrationDeadline;
+        validator: function (value: string) {
+          return /^\d{2}-\d{2}-\d{4}$/.test(value); // Format: DD-MM-YYYY
         },
-        message: "Start date must be after the registration deadline",
+        message: "Start date must be in the format DD-MM-YYYY.",
       },
     },
     endDate: {
-      type: Date,
+      type: String,
       required: [true, "Tournament end date is required"],
       validate: {
-        validator: function (value: Date) {
-          return value > this.startDate;
+        validator: function (value: string) {
+          return /^\d{2}-\d{2}-\d{4}$/.test(value); // Format: DD-MM-YYYY
         },
-        message: "End date must be after the start date",
+        message: "End date must be in the format DD-MM-YYYY.",
       },
     },
     status: {
