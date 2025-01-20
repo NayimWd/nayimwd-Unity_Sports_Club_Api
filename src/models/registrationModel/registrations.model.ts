@@ -8,7 +8,7 @@ const registrationSchema: Schema<IRegistration> = new Schema(
       ref: "Tournament",
       required: true,
     },
-    teamtId: {
+    teamId: { // Corrected typo from `teamtId`
       type: mongoose.Schema.Types.ObjectId,
       ref: "Team",
       required: true,
@@ -20,28 +20,28 @@ const registrationSchema: Schema<IRegistration> = new Schema(
     },
     applicationDate: {
       type: Date,
-      default: Date.now(),
-    },
-    comments: {
-      type: String,
-      max: 250,
-      min: 10,
+      default: Date.now, // Use function reference for dynamic execution
     },
     status: {
       type: String,
-      enum: ["pending", "approve", "rejected", "withdrawn"],
+      enum: ["pending", "approved", "rejected", "withdrawn"], // Changed "approve" to "approved" for consistency
+      default: "pending",
     },
   },
   {
-    timestamps: true,
+    timestamps: true, // Includes createdAt and updatedAt fields
   }
 );
 
-// converting Date.now() to readable format
-registrationSchema.virtual("DD/MM/YYYY").get(function () {
-  return this.applicationDate?.toLocaleDateString();
+// Unique index to prevent duplicate registrations for the same team and tournament
+registrationSchema.index({ tournamentId: 1, teamId: 1 }, { unique: true });
+
+// Virtual property for formatted application date
+registrationSchema.virtual("formattedApplicationDate").get(function () {
+  return this.applicationDate?.toLocaleDateString("en-GB"); // Returns in DD/MM/YYYY format
 });
-// enable vertual
+
+// Enable virtuals in JSON output
 registrationSchema.set("toJSON", { virtuals: true });
 
 export const Registration = mongoose.model<IRegistration>(

@@ -133,7 +133,7 @@ export interface ISchedule extends Document {
 // registration type
 export interface IRegistration extends Document {
   tournamentId: mongoose.Types.ObjectId;
-  teamtId: mongoose.Types.ObjectId;
+  teamId: mongoose.Types.ObjectId;
   managerId: mongoose.Types.ObjectId;
   applicationDate?: Date;
   comments?: string;
