@@ -10,7 +10,7 @@ const tournamentSchema: Schema<ITournament> = new Schema(
     tournamentType: {
       type: String,
       enum: ["knockout", "series", "1v1", "points"],
-      required: true,
+      required: [true, "Invalid tournament type"],
     },
     description: {
       type: String,
@@ -21,7 +21,7 @@ const tournamentSchema: Schema<ITournament> = new Schema(
     format: {
       type: Number,
       enum: [4, 6, 8, 12, 16],
-      required: true,
+      required: [true, "Invalid format"],
     },
     ballType: {
       type: String,
@@ -40,16 +40,6 @@ const tournamentSchema: Schema<ITournament> = new Schema(
           return /^\d{2}-\d{2}-\d{4}$/.test(value); // Format: DD-MM-YYYY
         },
         message: "Registration deadline must be in the format DD-MM-YYYY.",
-      },
-    },
-    seats: {
-      type: Number,
-      required: true,
-      validate: {
-        validator: function (seat: number) {
-          return seat === this.format;
-        },
-        message: "Seats must be equal to the format",
       },
     },
     startDate: {
@@ -72,6 +62,14 @@ const tournamentSchema: Schema<ITournament> = new Schema(
         message: "End date must be in the format DD-MM-YYYY.",
       },
     },
+    seat: {
+      type: Number,
+      required: [true, "Seat is required"],
+    },
+    teamCount: {
+      type: Number,
+      default: 0,
+    },
     status: {
       type: String,
       enum: ["upcoming", "ongoing", "completed"],
@@ -82,7 +80,6 @@ const tournamentSchema: Schema<ITournament> = new Schema(
       required: [true, "Entry Fee is required"],
       min: [0, "Entry fee cannot be negative"],
     },
-    prize: {
       champion: {
         type: String,
         required: [true, "Champion prize is required"],
@@ -94,7 +91,6 @@ const tournamentSchema: Schema<ITournament> = new Schema(
       thirdPlace: {
         type: String,
       },
-    },
     photo: {
       type: String,
     },

@@ -91,13 +91,14 @@ export interface ITournament extends Document {
   seats: number;
   startDate: string;
   endDate: string;
+  seat: number;
+  teamCount: number;
   status: "upcoming" | "ongoing" | "completed";
   entryFee: number;
-  prize: {
     champion: string;
     runnerUp: string;
     thirdPlace: string;
-  };
+
   photo?: string;
 }
 

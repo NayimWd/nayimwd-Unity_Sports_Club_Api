@@ -4,6 +4,7 @@ import teamRoutes from "./team/team.routes";
 import profileRoutes from "./profile/profile.routes"
 import playerRoutes from "./player/player.routes";
 import venueRoutes from "./venue/venue.routes";
+import tournamentRoutes from "./tournament/tournament.routes";
 
 const router = Router();
 
@@ -15,6 +16,7 @@ interface IRoutePath {
   profile: "/api/v1/profile";
   player: "/api/v1/player";
   venue: "/api/v1/venue";
+  tournament: "/api/v1/tournament";
 }
 
 // creating routes for semi root routes path
@@ -25,6 +27,7 @@ const route_path: IRoutePath = {
   profile: "/api/v1/profile",
   player: "/api/v1/player",
   venue: "/api/v1/venue",
+  tournament: "/api/v1/tournament",
 };
 
 // Health check route with proper typing
@@ -44,5 +47,7 @@ router.use(route_path.profile, profileRoutes)
 router.use(route_path.player, playerRoutes)
 // ---------- venue routes ----------------
 router.use(route_path.venue, venueRoutes);
+// ---------- tournament routes ----------------
+router.use(route_path.tournament, tournamentRoutes);
 
 export default router;

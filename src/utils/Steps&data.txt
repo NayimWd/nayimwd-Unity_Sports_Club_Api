@@ -182,3 +182,20 @@
 21. team name     : Melbourn Stars
     manager Name  : Mostafizur Rahman
     manager Email : m.mostafiz@gmail.com -*-
+
+{
+    "tournamentName": "Grassroots Cricket League (GCL)",
+    "tournamentType": "knockout",
+    "description": " Grassroots Cricket League (GCL) is a dynamic and inclusive cricket tournament designed to celebrate local talent, build community spirit, and ignite a passion for the game. The GCL brings together players of all skill levels, from budding amateurs to seasoned enthusiasts, offering an exciting platform to showcase their abilities. /n Join us in building a legacy of cricketing excellence and fostering the spirit of the game in our community!",
+    "format": "8",
+    "ballType": "ballType",
+    "matchOver": "15",
+    "registrationDeadline": "26-01-2025",
+    "startDate": "01-02-2025",
+    "endDate": "endDate",
+    "status": "upcoming",
+    "entryFee": 10000,
+    "champion": "BDT 45000 Taka",
+    "runnerUp": "BDT 25000 Taka",
+    "thirdPlace": "N/A"
+}
