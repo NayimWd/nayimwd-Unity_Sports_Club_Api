@@ -17,7 +17,7 @@ const playerProfileSchema: Schema<IPlayerProfile> = new Schema({
   },
   batingStyle: {
     type: String,
-    enum: ["Right Hand", "Left Hand"],
+    enum: ["right hand", "left hand"],
   },
   bowlingArm: {
     type: String,

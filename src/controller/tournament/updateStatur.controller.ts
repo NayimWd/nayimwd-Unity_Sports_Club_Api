@@ -26,8 +26,8 @@ export const updateTournamentStatus = asyncHandler(async (req, res) => {
   // get status from req body
   const { status } = req.body;
 
-  if(!status){
-    throw new ApiError(400, "Please select one to update status")
+  if (!status) {
+    throw new ApiError(400, "Please select one to update status");
   }
 
   const updateStatus = await Tournament.findByIdAndUpdate(

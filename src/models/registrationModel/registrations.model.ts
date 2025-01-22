@@ -20,7 +20,7 @@ const registrationSchema: Schema<IRegistration> = new Schema(
     },
     applicationDate: {
       type: Date,
-      default: Date.now, // Use function reference for dynamic execution
+      default: Date.now(), // Use function reference for dynamic execution
     },
     status: {
       type: String,
