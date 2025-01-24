@@ -62,7 +62,7 @@ const tournamentSchema: Schema<ITournament> = new Schema(
         message: "End date must be in the format DD-MM-YYYY.",
       },
     },
-    seat: {
+    seats: {
       type: Number,
       required: [true, "Seat is required"],
     },

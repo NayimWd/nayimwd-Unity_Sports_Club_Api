@@ -88,10 +88,9 @@ export interface ITournament extends Document {
   ballType: "tape tennis" | "3 star" | "leather";
   matchOver: number;
   registrationDeadline: string;
-  seats: number;
   startDate: string;
   endDate: string;
-  seat: number;
+  seats: number;
   teamCount: number;
   status: "upcoming" | "ongoing" | "completed";
   entryFee: number;
@@ -138,7 +137,7 @@ export interface IRegistration extends Document {
   managerId: mongoose.Types.ObjectId;
   applicationDate?: Date;
   comments?: string;
-  status?: "pending" | "approve" | "rejected" | "withdrawn";
+  status?: "pending" | "approved" | "rejected" | "withdrawn";
 }
 
 // innings type
