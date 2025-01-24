@@ -5,7 +5,7 @@ import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
 
-export const applyForTournament = asyncHandler(async (req, res) => {
+export const reApplyForTournament = asyncHandler(async (req, res) => {
   // Authentication
   const registrar = (req as any).user;
   if (!registrar || registrar.role !== "manager") {
@@ -26,11 +26,6 @@ export const applyForTournament = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Tournament not found");
   }
 
-  // Check if tournament is open for registration
-  if (tournament.teamCount >= tournament.format) {
-    throw new ApiError(400, "Tournament registration is full");
-  }
-
   // Check if the registrar is the manager of the team
   const team = await Team.findById(teamId);
   if (!team) {
@@ -46,30 +41,31 @@ export const applyForTournament = asyncHandler(async (req, res) => {
     tournamentId,
     teamId,
   });
-  if (existingRegistration) {
-    throw new ApiError(
-      400,
-      "This team is already registered for the tournament"
-    );
+  if (!existingRegistration) {
+    throw new ApiError(400, "This team not registered for the tournament");
   }
 
-  // Apply or register for tournament
-  const registration = await Registration.create({
-    tournamentId,
-    teamId,
-    managerId: registrar._id,
-  });
+  if (existingRegistration.status !== "withdrawn") {
+    throw new ApiError(400, "Your Application is not withdrawn");
+  }
 
-  // Increment team count in the tournament
-  await Tournament.updateOne(
-    { _id: tournamentId },
-    { $inc: { teamCount: 1 } }
+  const reApply = await Registration.findOneAndUpdate(
+    {
+      tournamentId,
+      teamId,
+    },
+    {
+      status: "pending",
+    },
+    { new: true }
   );
 
-  // Return response
+  if (!reApply) {
+    throw new ApiError(500, "Re-register failed");
+  }
+
+  // return response
   return res
-    .status(201)
-    .json(
-      new ApiResponse(201, registration, "Tournament registration successful")
-    );
+    .status(200)
+    .json(new ApiResponse(200, reApply.status, "Re-register successfull"));
 });

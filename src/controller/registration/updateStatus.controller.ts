@@ -56,18 +56,18 @@ export const updateStatus = asyncHandler(async (req, res) => {
   }
 
   // Increment or decrement seats count in the tournament based on status
-  if (status === "approved") {
-    if (tournament.seats >= tournament.format) {
+  if (updatedRegistration.status === "approved") {
+    if (tournament.teamCount >= tournament.format) {
       throw new ApiError(400, "No seats available");
     }
-    tournament.seats += 1; // Increment seat count for approved status
+    tournament.teamCount += 1; // Increment seat count for approved status
     await tournament.save();
   } else if (
     existingRegistration.status === "approved" &&
-    ["rejected", "withdrawn"].includes(status)
+    ["rejected"].includes(status)
   ) {
     // Decrement seat count if status changes from approved to rejected/withdrawn
-    tournament.seats -= 1;
+    tournament.teamCount -= 1;
     await tournament.save();
   }
 

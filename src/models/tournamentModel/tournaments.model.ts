@@ -64,7 +64,6 @@ const tournamentSchema: Schema<ITournament> = new Schema(
     },
     seats: {
       type: Number,
-      required: [true, "Seat is required"],
     },
     teamCount: {
       type: Number,
