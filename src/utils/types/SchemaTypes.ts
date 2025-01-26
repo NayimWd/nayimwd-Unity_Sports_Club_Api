@@ -117,7 +117,6 @@ export interface ITournamentResult extends Document {
 // schedule type
 export interface ISchedule extends Document {
   tournamentId: mongoose.Types.ObjectId;
-  matchId?: mongoose.Types.ObjectId;
   venueId: mongoose.Types.ObjectId;
   matchNumber: number;
   round: "round 1" | "round 2" | "Quarter-Final" | "Semi-Final" | "Final" | "Playoff";

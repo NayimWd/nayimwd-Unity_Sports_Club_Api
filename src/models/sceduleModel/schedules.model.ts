@@ -9,11 +9,6 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
       required: true,
       index: true, // Index for faster querying
     },
-    matchId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Match",
-      required: true,
-    },
     venueId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Venue",
@@ -38,14 +33,12 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
     },
     teams: {
       teamA: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Team",
-        required: true,
       },
       teamB: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Team",
-        required: true,
       },
     },
     matchDate: {
@@ -85,7 +78,10 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
   }
 );
 
-// Add compound index for tournament and match number
+// Compound index to ensure unique match numbers within a tournament
 scheduleSchema.index({ tournamentId: 1, matchNumber: 1 }, { unique: true });
+
+// Compound index to prevent venue conflicts
+scheduleSchema.index({ venueId: 1, matchDate: 1, matchTime: 1 }, { unique: true });
 
 export const Schedule = mongoose.model<ISchedule>("Schedule", scheduleSchema);
