@@ -16,7 +16,14 @@ export const getTournamentApplication = asyncHandler(async (req, res) => {
   }
 
   // find registration
-  const registration = await Registration.findOne({ tournamentId });
+  const registration = await Registration.findOne({ tournamentId }).populate({
+    path: "managerId",
+    select: "name"
+  })
+  .populate({
+    path: "teamId",
+    select: "teamName"
+  })
 
   if (!registration) {
     throw new ApiError(404, "No registration found for this tournament");

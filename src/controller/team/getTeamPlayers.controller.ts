@@ -4,7 +4,6 @@ import { Team } from "../../models/teamModel/teams.model";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
-import path from "path";
 import { PlayerProfile } from "../../models/profilesModel/playerProfile.model";
 
 export const getTeamPlayers = asyncHandler(async(req, res)=>{
