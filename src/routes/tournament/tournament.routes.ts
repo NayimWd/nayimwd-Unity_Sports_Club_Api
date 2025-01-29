@@ -46,12 +46,12 @@ router.route(tournament.get_by_status).get(getTournamentsByStatus);
 // get tournament by id
 router.route(tournament.details).get(getTournamentById);
 // update tournament details
-router.route(tournament.update_details).put(veryfyJWT, updateTournamentDetails);
+router.route(tournament.update_details).patch(veryfyJWT, updateTournamentDetails);
 // update photo
 router
   .route(tournament.update_photo)
-  .put(veryfyJWT, upload.single("photo"), updateTournamentPhoto);
+  .patch(veryfyJWT, upload.single("photo"), updateTournamentPhoto);
 // update status
-router.route(tournament.update_status).put(veryfyJWT, updateTournamentStatus);
+router.route(tournament.update_status).patch(veryfyJWT, updateTournamentStatus);
 
 export default router;

@@ -65,11 +65,6 @@ export const applyForTournament = asyncHandler(async (req, res) => {
     managerId: registrar._id,
   });
 
-  // Increment team count in the tournament
-  await Tournament.updateOne(
-    { _id: tournamentId },
-    { $inc: { teamCount: 1 } }
-  );
 
   // Return response
   return res

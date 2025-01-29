@@ -38,9 +38,9 @@ const teamRoutes : ITeamRoutes = {
 // create team
 router.route(teamRoutes.create).post(veryfyJWT, upload.single("logo"), createTeam);
 // update team name
-router.route(teamRoutes.updateName).put(veryfyJWT, isManager, updateTeamName);
+router.route(teamRoutes.updateName).patch(veryfyJWT, isManager, updateTeamName);
 // update team logo
-router.route(teamRoutes.updateLogo).put(veryfyJWT, isManager, upload.single("logo"), updateTeamLogo)
+router.route(teamRoutes.updateLogo).patch(veryfyJWT, isManager, upload.single("logo"), updateTeamLogo)
 // get all teams 
 router.route(teamRoutes.all_teams).get(getAllTeams);
 // get team details
@@ -58,6 +58,6 @@ router.route(teamRoutes.members).get(getTeamPlayers);
 // get player details
 router.route(teamRoutes.player_details).get(getTeamPlayerDetails);
 // make team captain
-router.route(teamRoutes.makeCaptain).put(veryfyJWT, isManager, makeCaptain);
+router.route(teamRoutes.makeCaptain).patch(veryfyJWT, isManager, makeCaptain);
 
 export default router;

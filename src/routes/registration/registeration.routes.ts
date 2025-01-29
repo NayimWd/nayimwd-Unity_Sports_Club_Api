@@ -7,6 +7,7 @@ import {
   updateStatus,
   withdrawApplication,
 } from "../../controller/registration";
+import { getPendingRegistration } from "../../controller/registration/getApplications.controller";
 
 const router = Router();
 
@@ -16,6 +17,7 @@ interface IRegistration {
   withdraw: "/withdraw/:tournamentId";
   reApply: "/reApply/:tournamentId";
   get_all: "/get_all/:tournamentId";
+  pending: "/pending/:tournamentId";
 }
 
 const registrationRoutes: IRegistration = {
@@ -24,20 +26,24 @@ const registrationRoutes: IRegistration = {
   withdraw: "/withdraw/:tournamentId",
   reApply: "/reApply/:tournamentId",
   get_all: "/get_all/:tournamentId",
+  pending: "/pending/:tournamentId"
 };
 
 // routes
 // apply for tournament
 router.route(registrationRoutes.apply).post(veryfyJWT, applyForTournament);
 // update status
-router.route(registrationRoutes.update_status).put(veryfyJWT, updateStatus);
+router.route(registrationRoutes.update_status).patch(veryfyJWT, updateStatus);
 // withdraw application
-router.route(registrationRoutes.withdraw).put(veryfyJWT, withdrawApplication);
+router.route(registrationRoutes.withdraw).patch(veryfyJWT, withdrawApplication);
 // re registration
-router.route(registrationRoutes.reApply).put(veryfyJWT, reApplyForTournament);
+router.route(registrationRoutes.reApply).patch(veryfyJWT, reApplyForTournament);
 // get all application by tournament
 router
   .route(registrationRoutes.get_all)
   .get(veryfyJWT, getTournamentApplication);
+// get pending registration
+router.route(registrationRoutes.pending).get(veryfyJWT, getPendingRegistration);
+
 
 export default router;
