@@ -11,7 +11,7 @@ import { getPendingRegistration } from "../../controller/registration/getApplica
 
 const router = Router();
 
-interface IRegistration {
+type Registration = {
   apply: "/apply/:tournamentId";
   update_status: "/update_status/:tournamentId";
   withdraw: "/withdraw/:tournamentId";
@@ -20,7 +20,7 @@ interface IRegistration {
   pending: "/pending/:tournamentId";
 }
 
-const registrationRoutes: IRegistration = {
+const registrationRoutes: Registration = {
   apply: "/apply/:tournamentId",
   update_status: "/update_status/:tournamentId",
   withdraw: "/withdraw/:tournamentId",

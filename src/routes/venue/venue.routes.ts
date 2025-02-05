@@ -12,7 +12,7 @@ import { upload } from "../../middleware/multer.middleware";
 const router = Router();
 
 // interface
-interface IVenueRoutes {
+type VenueRoutes = {
   create: "/create";
   all: "/all";
   details: "/details/:venueId";
@@ -20,7 +20,7 @@ interface IVenueRoutes {
   delete: "/delete/:venueId";
 }
 
-const venue_routes: IVenueRoutes = {
+const venue_routes: VenueRoutes = {
   create: "/create",
   all: "/all",
   details: "/details/:venueId",

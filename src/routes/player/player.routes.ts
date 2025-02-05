@@ -5,13 +5,13 @@ import { getPlayerDetails, getAvailablePlayers } from "../../controller/players"
 const router = Router();
 
 // interface
-interface IPlayer {
+type Player = {
   available_players: "/available_players";
   player_details: "/player_details/:playerId";
 };
 
 // routes
-const playerRoutes: IPlayer = {
+const playerRoutes: Player = {
   available_players: "/available_players",
   player_details: "/player_details/:playerId" 
 };

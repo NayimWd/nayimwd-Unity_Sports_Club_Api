@@ -5,7 +5,7 @@ import { addPlayers, createTeam, deleteTeam, getAllTeams, getMyteam, getTeamDeta
 
 const router = Router();
 
-interface ITeamRoutes {
+type TeamRoutes = {
     create: "/create",
     updateName: "/update_name/:teamId",
     updateLogo: "/update_logo/:teamId",
@@ -20,7 +20,7 @@ interface ITeamRoutes {
     makeCaptain: "/makeCaptain/:teamId"
 }
 
-const teamRoutes : ITeamRoutes = {
+const teamRoutes : TeamRoutes = {
     create: "/create",
     updateName: "/update_name/:teamId",
     updateLogo: "/update_logo/:teamId",

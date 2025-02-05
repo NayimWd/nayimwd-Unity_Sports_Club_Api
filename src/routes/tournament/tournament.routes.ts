@@ -14,7 +14,7 @@ import {
 const router = Router();
 
 // interface
-interface ITournament {
+type Tournament = {
   create: "/create";
   get_all: "/all";
   get_by_status: "/status";
@@ -25,7 +25,7 @@ interface ITournament {
 }
 
 // routes
-const tournament: ITournament = {
+const tournament: Tournament = {
   create: "/create",
   get_all: "/all",
   get_by_status: "/status",

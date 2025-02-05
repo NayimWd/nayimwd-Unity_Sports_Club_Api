@@ -1,11 +1,12 @@
 import { Router, Request, Response } from "express";
 import userRoutes from "./user/user.routes";
 import teamRoutes from "./team/team.routes";
-import profileRoutes from "./profile/profile.routes"
+import profileRoutes from "./profile/profile.routes";
 import playerRoutes from "./player/player.routes";
 import venueRoutes from "./venue/venue.routes";
 import tournamentRoutes from "./tournament/tournament.routes";
 import RegistrationRoutes from "./registration/registeration.routes";
+import scheduleRoutes from "./schedule/schedule.routes";
 
 const router = Router();
 
@@ -18,7 +19,8 @@ interface IRoutePath {
   player: "/api/v1/player";
   venue: "/api/v1/venue";
   tournament: "/api/v1/tournament";
-  registration: "/api/v1/tournamentRegister"
+  registration: "/api/v1/tournamentRegister";
+  schedule: "/api/v1/schedule";
 }
 
 // creating routes for semi root routes path
@@ -30,7 +32,8 @@ const route_path: IRoutePath = {
   player: "/api/v1/player",
   venue: "/api/v1/venue",
   tournament: "/api/v1/tournament",
-  registration: "/api/v1/tournamentRegister"
+  registration: "/api/v1/tournamentRegister",
+  schedule: "/api/v1/schedule",
 };
 
 // Health check route with proper typing
@@ -45,14 +48,16 @@ router.use(route_path.user, userRoutes);
 // ---------- team routes ----------------
 router.use(route_path.team, teamRoutes);
 // ---------- profile routes ----------------
-router.use(route_path.profile, profileRoutes)
+router.use(route_path.profile, profileRoutes);
 // ---------- player routes ----------------
-router.use(route_path.player, playerRoutes)
+router.use(route_path.player, playerRoutes);
 // ---------- venue routes ----------------
 router.use(route_path.venue, venueRoutes);
 // ---------- tournament routes ----------------
 router.use(route_path.tournament, tournamentRoutes);
 // ---------- registration routes ----------------
 router.use(route_path.registration, RegistrationRoutes);
+// ---------- schedule routes ----------------
+router.use(route_path.schedule, scheduleRoutes);
 
 export default router;

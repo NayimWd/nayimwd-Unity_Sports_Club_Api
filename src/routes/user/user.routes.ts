@@ -18,7 +18,7 @@ import { isAdmin, veryfyJWT } from "../../middleware/auth.middleware";
 
 const router = Router();
 
-interface IUserRoutes {
+type UserRoutes = {
   register: "/register";
   login: "/login";
   logout: "/logout";
@@ -33,7 +33,7 @@ interface IUserRoutes {
   reset_password: "/reset_password/:token";
 }
 
-const user_routes: IUserRoutes = {
+const user_routes: UserRoutes = {
   register: "/register",
   login: "/login",
   logout: "/logout",

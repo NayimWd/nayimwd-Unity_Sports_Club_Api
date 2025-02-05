@@ -14,7 +14,7 @@ import {
 
 const router = Router();
 
-interface IProfile {
+type Profile = {
   create_player_profile: "/create_player_profile";
   create_manager_profile: "/create_manager_profile";
   create_umpire_profile: "/create_umpire_profile";
@@ -27,7 +27,7 @@ interface IProfile {
   get_profile_details: "/get_profile_details/:id";
 }
 
-const profileRoutes: IProfile = {
+const profileRoutes: Profile = {
   create_player_profile: "/create_player_profile",
   create_manager_profile: "/create_manager_profile",
   create_umpire_profile: "/create_umpire_profile",
