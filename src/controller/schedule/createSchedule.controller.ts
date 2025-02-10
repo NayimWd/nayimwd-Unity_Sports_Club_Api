@@ -15,7 +15,7 @@ export const createSchedule = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid token, please login");
   }
 
-  if (!["admin", "staff"].includes(author.role)) {
+  if (author || !["admin", "staff"].includes(author.role)) {
     throw new ApiError(403, "You are not authorized to create a schedule");
   }
   // get data from req params and body
