@@ -1,33 +1,35 @@
 import { Router } from "express";
 import { veryfyJWT } from "../../middleware/auth.middleware";
-import { createSchedule } from "../../controller/schedule";
+import { createSchedule, getSchedules, updateDetails, updateStatus, changeTeams, reSchedule } from "../../controller/schedule";
+
 
 const router = Router();
 
 // route types 
 type Schedule = {
     create: "/create/:tournamentId",
-    update_details: "/update_details/:tournamentId",
-    update_timing: "/update_timing/:tournamentId",
-    update_status: "/update_status/:tournamentId",
-    delete: "/delete/:tournamentId",
+    update_details: "/update_details/:tournamentId/:scheduleId",
+    update_timing: "/update_timing/:tournamentId/:scheduleId",
+    update_status: "/update_status/:tournamentId/:scheduleId",
     all: "/all/:tournamentId",
-    details: "/:tournamentId/:id"
+  
 }
 
 // endpoints
 const ScheduleRoutes: Schedule = {
     create: "/create/:tournamentId",
-    update_details: "/update_details/:tournamentId",
-    update_timing: "/update_timing/:tournamentId",
-    update_status: "/update_status/:tournamentId",
-    delete: "/delete/:tournamentId",
-    all: "/all/:tournamentId",
-    details: "/:tournamentId/:id"
+    update_details: "/update_details/:tournamentId/:scheduleId",
+    update_timing: "/update_timing/:tournamentId/:scheduleId",
+    update_status: "/update_status/:tournamentId/:scheduleId",
+    all: "/all/:tournamentId"
 };
 
 // create schedule
-router.route(ScheduleRoutes.create).post(veryfyJWT, createSchedule)
+router.route(ScheduleRoutes.create).post(veryfyJWT, createSchedule);
+// get all schedules
+router.route(ScheduleRoutes.all).get(getSchedules);
+// update schedule details
+router.route(ScheduleRoutes.update_details).put(veryfyJWT, updateDetails);
 
 
 export default router;
