@@ -21,13 +21,17 @@ export const getSchedules = asyncHandler(async (req, res) => {
 
   // fetch schedules with populate team details and venue
   const schedules = await Schedule.find(filter)
+    .select(" -createdAt -updatedAt")
     .populate("teams.teamA", "teamName teamLogo")
     .populate("teams.teamB", "teamName teamLogo")
-    .populate("venueId", "venueName")
+    .populate("venueId", "name")
     .sort({ matchDate: 1, matchTime: 1 });
 
   // send response
   res
     .status(200)
-    .json(new ApiResponse(200, schedules, "Schedules fetched successfully"));
+    .json(new ApiResponse(200, {
+      total: schedules.length,
+      schedules
+    }, "Schedules fetched successfully"));
 });

@@ -15,12 +15,12 @@ export const createSchedule = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid token, please login");
   }
 
-  if (author || !["admin", "staff"].includes(author.role)) {
+  if (!author || !["admin", "staff"].includes(author.role)) {
     throw new ApiError(403, "You are not authorized to create a schedule");
   }
   // get data from req params and body
   const { tournamentId } = req.params;
-  const { venueId, round, teamA, teamB, matchDate, matchTime, endTime } =
+  const { venueId, round, teamA, teamB, matchNumber, matchDate, matchTime, endTime } =
     req.body;
   // validate
   if (
@@ -30,6 +30,7 @@ export const createSchedule = asyncHandler(async (req, res) => {
     !teamA ||
     !teamB ||
     !matchDate ||
+    !matchNumber ||
     !matchTime ||
     !endTime
   ) {
@@ -112,7 +113,7 @@ export const createSchedule = asyncHandler(async (req, res) => {
   }
 
   // Create schedule
-  const matchNumber = (await Schedule.countDocuments({ tournamentId })) + 1;
+  // const matchNumber = (await Schedule.countDocuments({ tournamentId })) + 1;
 
   const newSchedule = await Schedule.create({
     tournamentId,

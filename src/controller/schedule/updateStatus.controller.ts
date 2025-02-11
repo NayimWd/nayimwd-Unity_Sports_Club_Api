@@ -8,7 +8,7 @@ export const updateStatus = asyncHandler(async(req, res)=>{
     // authentication 
     const author = (req as any).user;
     // check if the user is an admin or staff
-    if(author || !["admin", "staff"].includes(author.role)){
+    if(!author || !["admin", "staff"].includes(author.role)){
         throw new ApiError(403, "You are not authorized to change the schedule");
     };
 
