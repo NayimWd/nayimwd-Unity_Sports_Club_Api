@@ -92,7 +92,7 @@ export interface ITournament extends Document {
   endDate: string;
   seats: number;
   teamCount: number;
-  status: "upcoming" | "ongoing" | "completed";
+  status: "upcoming" | "ongoing" | "completed" | "cancelled";
   entryFee: number;
     champion: string;
     runnerUp: string;
@@ -123,6 +123,10 @@ export interface ISchedule extends Document {
   teams: {
     teamA: { type: mongoose.Types.ObjectId },
     teamB: { type: mongoose.Types.ObjectId },
+  };
+  previousMatches: {
+    matchA: { type: mongoose.Types.ObjectId },
+    matchB: { type: mongoose.Types.ObjectId },
   };
   matchDate: string;
   matchTime: string;

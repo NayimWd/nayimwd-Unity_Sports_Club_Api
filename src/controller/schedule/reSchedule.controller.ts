@@ -80,6 +80,13 @@ export const reSchedule = asyncHandler(async (req, res) => {
     );
   }
 
+   // cancel venue booking
+   await VenueBooking.findOneAndDelete({
+    venueId: schedule.venueId,
+    bookingDate: schedule.matchDate,
+    startTime: schedule.matchTime
+})
+
   // update the schedule
   schedule.matchDate = newMatchDate;
   schedule.matchTime = newMatchTime;

@@ -51,7 +51,7 @@ const matchSchema: Schema<IMatchTeype> = new Schema(
     },
     status: {
       type: String,
-      enum: ["upcoming", "live", "completed"],
+      enum: ["upcoming", "live", "completed", "cancelled"],
       default: "upcoming",
     },
     umpires: [
@@ -59,7 +59,7 @@ const matchSchema: Schema<IMatchTeype> = new Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
-      },
+      }
     ],
     photo: String,
   },

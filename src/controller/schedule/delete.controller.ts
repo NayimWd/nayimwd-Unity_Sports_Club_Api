@@ -1,4 +1,5 @@
 import { Schedule } from "../../models/sceduleModel/schedules.model";
+import { VenueBooking } from "../../models/venueModel/venueBooking.model";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
@@ -25,6 +26,13 @@ export const deleteSchedule = asyncHandler(async(req, res)=>{
     if(!schedule){
         throw new ApiError(404, "Schedule not found");
     };
+
+    // cancel venue booking
+    await VenueBooking.findOneAndDelete({
+        venueId: schedule.venueId,
+        bookingDate: schedule.matchDate,
+        startTime: schedule.matchTime
+    })
 
     // delete the schedule
    await Schedule.findByIdAndDelete(scheduleId);

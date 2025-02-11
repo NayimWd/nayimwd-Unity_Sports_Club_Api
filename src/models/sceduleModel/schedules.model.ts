@@ -41,6 +41,10 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
         ref: "Team",
       },
     },
+    previousMatches: {  
+      matchA: { type: mongoose.Schema.Types.ObjectId, ref: "Match" },
+      matchB: { type: mongoose.Schema.Types.ObjectId, ref: "Match" }
+    },
     matchDate: {
       type: String,
       required: true,
