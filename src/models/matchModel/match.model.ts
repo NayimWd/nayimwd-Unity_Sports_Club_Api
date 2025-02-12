@@ -1,66 +1,45 @@
 import mongoose, { Schema } from "mongoose";
-import { IMatchTeype } from "../../utils/types/SchemaTypes";
+import { IMatch } from "../../utils/types/SchemaTypes";
+import { Schedule } from "../sceduleModel/schedules.model";
 
-const matchSchema: Schema<IMatchTeype> = new Schema(
+const matchSchema: Schema<IMatch> = new Schema(
   {
     tournamentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Tournament",
       required: true,
     },
-    teams: {
-      type: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Team",
-          required: true,
-        },
-      ],
-      validate: {
-        validator: function (teams: mongoose.Schema.Types.ObjectId[]) {
-          return teams.length === 2; // Ensure exactly 2 teams
-        },
-        message: "A match must have exactly 2 teams.",
-      },
-      required: [true, "Teams are required"],
-    },
-    date: {
-      type: String,
-      required: [true, "Match date is required"],
-      validate: {
-        validator: function (value: string) {
-          return /^\d{2}-\d{2}-\d{4}$/.test(value); // Format: DD-MM-YYYY
-        },
-        message: "Match date must be in the format DD-MM-YYYY.",
-      },
-    },
-    time: {
-      type: String,
-      required: [true, "Match time is required"],
-      validate: {
-        validator: function (value: string) {
-          return /^(1[0-2]|0?[1-9])(am|pm)$/.test(value.toLowerCase()); // Format: h(am/pm)
-        },
-        message: "Match time must be in the format h(am/pm).",
-      },
-    },
-    venue: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Venue",
+    matchNumber: {
+      type: Number,
       required: true,
+      unique: true, // Ensure unique match numbers per tournament
+    },
+    teamA: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Team",
+    },
+    teamB: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Team",
+    },
+    previousMatches: {
+      matchA: { type: mongoose.Schema.Types.ObjectId, ref: "Match" },
+      matchB: { type: mongoose.Schema.Types.ObjectId, ref: "Match" },
+    },
+    winner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Team",
     },
     status: {
       type: String,
-      enum: ["upcoming", "live", "completed", "cancelled"],
+      enum: ["upcoming", "live", "completed"],
       default: "upcoming",
     },
-    umpires: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-      }
-    ],
+    umpires: {
+      firstUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      secondUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      thirdUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    },
     photo: String,
   },
   {
@@ -68,4 +47,33 @@ const matchSchema: Schema<IMatchTeype> = new Schema(
   }
 );
 
-export const Match = mongoose.model<IMatchTeype>("Match", matchSchema);
+// Ensure either (teamA & teamB) or (previousMatches.matchA & matchB) is present
+matchSchema.pre("validate", function (next) {
+  if ((!this.teamA || !this.teamB) && (!this.previousMatches.matchA || !this.previousMatches.matchB)) {
+    next(new Error("Either teams (teamA, teamB) or previousMatches (matchA, matchB) must be provided."));
+  } else {
+    next();
+  }
+});
+
+// When a match is completed, update the next round's Schedule with the winner
+matchSchema.post("save", async function (doc) {
+  if (doc.status === "completed" && doc.winner) {
+    await Schedule.updateMany(
+      {
+        $or: [
+          { "previousMatches.matchA": doc._id },
+          { "previousMatches.matchB": doc._id },
+        ],
+      },
+      {
+        $set: {
+          "teams.teamA": doc.previousMatches.matchA ? doc.winner : undefined,
+          "teams.teamB": doc.previousMatches.matchB ? doc.winner : undefined,
+        },
+      }
+    );
+  }
+});
+
+export const Match = mongoose.model<IMatch>("Match", matchSchema);

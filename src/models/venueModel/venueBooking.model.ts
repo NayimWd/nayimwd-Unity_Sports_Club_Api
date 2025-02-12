@@ -49,6 +49,11 @@ const venueBookingSchema: Schema<IVenueBooking> = new Schema(
   }
 );
 
+venueBookingSchema.index(
+  { venueId: 1, bookingDate: 1, startTime: 1, endTime: 1 },
+  { unique: true }
+);
+
 export const VenueBooking = mongoose.model<IVenueBooking>(
   "VenueBooking",
   venueBookingSchema

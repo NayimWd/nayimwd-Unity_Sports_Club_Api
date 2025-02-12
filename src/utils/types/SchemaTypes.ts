@@ -1,4 +1,4 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
 
 // user type
 export interface IUser extends Document {
@@ -163,15 +163,27 @@ export interface IInningType extends Document {
 }
 
 // match type
-export interface IMatchTeype extends Document {
-  tournamentId: mongoose.Types.ObjectId;
-  teams: mongoose.Types.ObjectId[]; 
-  date: string;
-  time: string;
-  venue: mongoose.Types.ObjectId;
+interface PreviousMatches {
+  matchA?: Types.ObjectId;
+  matchB?: Types.ObjectId;
+}
+
+interface Umpires {
+  firstUmpire?: Types.ObjectId;
+  secondUmpire?: Types.ObjectId;
+  thirdUmpire?: Types.ObjectId;
+}
+
+export interface IMatch {
+  tournamentId: Types.ObjectId;
+  matchNumber: number;
+  teamA?: Types.ObjectId;
+  teamB?: Types.ObjectId;
+  previousMatches: PreviousMatches; 
+  winner?: Types.ObjectId;
   status: "upcoming" | "live" | "completed";
-  umpires: mongoose.Types.ObjectId[]; 
-  photo: string; 
+  umpires: Umpires; 
+  photo?: string;
 }
 
 // match result type
