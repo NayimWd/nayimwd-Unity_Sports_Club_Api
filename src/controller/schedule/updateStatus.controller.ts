@@ -5,54 +5,72 @@ import { asyncHandler } from "../../utils/asyncHandler";
 import moment from "moment";
 
 export const updateStatus = asyncHandler(async(req, res)=>{
-    // authentication 
-    const author = (req as any).user;
-    // check if the user is an admin or staff
-    if(!author || !["admin", "staff"].includes(author.role)){
-        throw new ApiError(403, "You are not authorized to change the schedule");
-    };
+     // Authentication
+     const author = (req as any).user;
 
-    // get the schedule id and status from the request params and body 
-    const {scheduleId} = req.params;
-    const {status} = req.body;
-
-    // check data
-    if(!scheduleId || !status){
-        throw new ApiError(400, "Please provide schedule id and status");
-    };
-
-    // validate status
-    const validStatus = ["scheduled", "rescheduled", "in-progress", "cancelled", "completed"];
-    if(!validStatus.includes(status)){
-        throw new ApiError(400, "Invalid status");
-    };
-
-    // find the schedule
-    const schedule = await Schedule.findById(scheduleId);
-    if(!schedule){
-        throw new ApiError(404, "Schedule not found");
-    };
-
-    // convert the match date and time to a moment object
-    const matchStart = moment(`${schedule.matchDate} ${schedule.matchTime}`, "DD-MM-YYYY hA");
-
-    const now = moment();
-
-    // prevent invalid status changes
-    if(now.isAfter(matchStart) && status === "scheduled"){
-        throw new ApiError(400, "Cannot set status to scheduled after match time.");
-    }
-
-    if(now.isBefore(matchStart) && status === "in-progress"){
-        throw new ApiError(400, "Match has not started yet.");
-    }
-
-    // update the status
-    schedule.status = status;
-    await schedule.save();
-
-    // return response
-    res.status(200).json(
-        new ApiResponse(200, schedule.status ,"Schedule status updated")
-    )
+     // Check if the user is an admin or staff
+     if (!author || !["admin", "staff"].includes(author.role)) {
+         throw new ApiError(403, "You are not authorized to change the schedule");
+     }
+ 
+     // Get schedule ID and status from request
+     const { scheduleId } = req.params;
+     const { status } = req.body;
+ 
+     // Check if data is provided
+     if (!scheduleId || !status) {
+         throw new ApiError(400, "Please provide schedule ID and status");
+     }
+ 
+     // Valid status values
+     const validStatus = ["scheduled", "rescheduled", "in-progress", "cancelled", "completed"];
+     if (!validStatus.includes(status)) {
+         throw new ApiError(400, "Invalid status");
+     }
+ 
+     // Find the schedule
+     const schedule = await Schedule.findById(scheduleId);
+     if (!schedule) {
+         throw new ApiError(404, "Schedule not found");
+     }
+ 
+     // Convert match date and time to a moment object
+     const matchStart = moment(`${schedule.matchDate} ${schedule.matchTime}`, "DD-MM-YYYY hA");
+     const now = moment();
+ 
+     // Prevent status changes for completed matches
+     if (schedule.status === "completed") {
+         throw new ApiError(400, "Cannot update a completed match.");
+     }
+ 
+     // Prevent invalid status transitions
+     const allowedTransitions: Record<string, string[]> = {
+         "scheduled": ["rescheduled", "in-progress", "cancelled"],
+         "rescheduled": ["scheduled", "in-progress", "cancelled"],
+         "in-progress": ["completed"],
+         "cancelled": [],
+         "completed": []
+     };
+ 
+     if (!allowedTransitions[schedule.status].includes(status)) {
+         throw new ApiError(400, `Invalid status transition from ${schedule.status} to ${status}`);
+     }
+ 
+     // Time-based restrictions
+     if (now.isAfter(matchStart) && status === "scheduled") {
+         throw new ApiError(400, "Cannot set status to scheduled after match time.");
+     }
+ 
+     if (now.isBefore(matchStart) && status === "in-progress") {
+         throw new ApiError(400, "Match has not started yet.");
+     }
+ 
+     // Update the status
+     schedule.status = status;
+     await schedule.save();
+ 
+     // Return response
+     res.status(200).json(
+         new ApiResponse(200, schedule.status, "Schedule status updated")
+     );
 })
