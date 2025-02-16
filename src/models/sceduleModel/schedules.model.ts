@@ -9,6 +9,7 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
       required: true,
       index: true,
     },
+    matchId: { type: mongoose.Schema.Types.ObjectId, ref: "Match", required: true },
     venueId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Venue",

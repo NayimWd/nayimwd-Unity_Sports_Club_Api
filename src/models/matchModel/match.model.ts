@@ -8,11 +8,11 @@ const matchSchema: Schema<IMatch> = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Tournament",
       required: true,
+      index: true,
     },
     matchNumber: {
       type: Number,
       required: true,
-      unique: true, // Ensure unique match numbers per tournament
     },
     teamA: {
       type: mongoose.Schema.Types.ObjectId,
@@ -32,8 +32,8 @@ const matchSchema: Schema<IMatch> = new Schema(
     },
     status: {
       type: String,
-      enum: ["upcoming", "live", "completed"],
-      default: "upcoming",
+      enum: ["upcoming", "scheduled", "rescheduled", "in-progress", "completed", "cancelled"], 
+    default: "upcoming",
     },
     umpires: {
       firstUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -47,13 +47,22 @@ const matchSchema: Schema<IMatch> = new Schema(
   }
 );
 
+// Ensure matchNumber is unique per tournament
+matchSchema.index({ tournamentId: 1, matchNumber: 1 }, { unique: true });
+
 // Ensure either (teamA & teamB) or (previousMatches.matchA & matchB) is present
 matchSchema.pre("validate", function (next) {
-  if ((!this.teamA || !this.teamB) && (!this.previousMatches.matchA || !this.previousMatches.matchB)) {
-    next(new Error("Either teams (teamA, teamB) or previousMatches (matchA, matchB) must be provided."));
-  } else {
-    next();
+  if (
+    (!this.teamA || !this.teamB) &&
+    (!this.previousMatches || !this.previousMatches.matchA || !this.previousMatches.matchB)
+  ) {
+    return next(
+      new Error(
+        "Either teams (teamA, teamB) or previousMatches (matchA, matchB) must be provided."
+      )
+    );
   }
+  next();
 });
 
 // When a match is completed, update the next round's Schedule with the winner
@@ -62,14 +71,14 @@ matchSchema.post("save", async function (doc) {
     await Schedule.updateMany(
       {
         $or: [
-          { "previousMatches.matchA": doc._id },
-          { "previousMatches.matchB": doc._id },
+          { "teams.teamA": doc._id },
+          { "teams.teamB": doc._id },
         ],
       },
       {
         $set: {
-          "teams.teamA": doc.previousMatches.matchA ? doc.winner : undefined,
-          "teams.teamB": doc.previousMatches.matchB ? doc.winner : undefined,
+          "teams.teamA": doc.previousMatches?.matchA ? doc.winner : undefined,
+          "teams.teamB": doc.previousMatches?.matchB ? doc.winner : undefined,
         },
       }
     );

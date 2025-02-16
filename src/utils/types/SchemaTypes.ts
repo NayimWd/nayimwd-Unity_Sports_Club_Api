@@ -117,6 +117,7 @@ export interface ITournamentResult extends Document {
 // schedule type
 export interface ISchedule extends Document {
   tournamentId: mongoose.Types.ObjectId;
+  matchId: mongoose.Types.ObjectId;
   venueId: mongoose.Types.ObjectId;
   matchNumber: number;
   round: "round 1" | "round 2" | "Quarter-Final" | "Semi-Final" | "Final" | "Playoff";
@@ -179,9 +180,9 @@ export interface IMatch {
   matchNumber: number;
   teamA?: Types.ObjectId;
   teamB?: Types.ObjectId;
-  previousMatches: PreviousMatches; 
+  previousMatches?: PreviousMatches; 
   winner?: Types.ObjectId;
-  status: "upcoming" | "live" | "completed";
+  status: "upcoming" | "scheduled" | "in-progress" | "completed" | "cancelled";
   umpires: Umpires; 
   photo?: string;
 }

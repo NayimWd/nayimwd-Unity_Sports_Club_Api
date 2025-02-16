@@ -1,3 +1,4 @@
+import { Match } from "../../models/matchModel/match.model";
 import { Schedule } from "../../models/sceduleModel/schedules.model";
 import { VenueBooking } from "../../models/venueModel/venueBooking.model";
 import { ApiError } from "../../utils/ApiError";
@@ -7,13 +8,11 @@ import { asyncHandler } from "../../utils/asyncHandler";
 export const reSchedule = asyncHandler(async (req, res) => {
   // Authentication
   const author = (req as any).user;
-
-  // Check if the user is an admin or staff
   if (!author || !["admin", "staff"].includes(author.role)) {
     throw new ApiError(403, "You are not authorized to change the schedule");
   }
 
-  // Get schedule ID and new match date/time
+  // Extract parameters
   const { scheduleId } = req.params;
   const { newMatchDate, newMatchTime, newEndTime } = req.body;
 
@@ -22,15 +21,21 @@ export const reSchedule = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please provide schedule ID, new match date, new match time, and new end time.");
   }
 
-  // Find the schedule by ID
+  // Find the schedule
   const schedule = await Schedule.findById(scheduleId);
   if (!schedule) {
     throw new ApiError(404, "Schedule not found");
   }
 
-  // ❌ Prevent rescheduling if match is already in-progress or completed
-  if (["in-progress", "completed"].includes(schedule.status)) {
-    throw new ApiError(400, "Cannot reschedule a match that is in-progress or completed.");
+  // Find the related match
+  const match = await Match.findById(schedule.matchId);
+  if (!match) {
+    throw new ApiError(404, "Match not found");
+  }
+
+  // ❌ Prevent rescheduling if the match is already in progress or completed
+  if (["live", "completed"].includes(match.status)) {
+    throw new ApiError(400, "Cannot reschedule a match that is live or completed.");
   }
 
   // **Check for venue conflicts**
@@ -92,11 +97,15 @@ export const reSchedule = asyncHandler(async (req, res) => {
     endTime: newEndTime,
   });
 
-  // ✅ Update the schedule with new date, time, and status
+  // ✅ Update the schedule
   schedule.matchDate = newMatchDate;
   schedule.matchTime = newMatchTime;
   schedule.status = "rescheduled";
   await schedule.save();
+
+  // ✅ Update match status to "upcoming" (in case it was set to "scheduled")
+  match.status = "upcoming";
+  await match.save();
 
   // Return response
   res.status(200).json(new ApiResponse(200, schedule, "Match rescheduled successfully"));

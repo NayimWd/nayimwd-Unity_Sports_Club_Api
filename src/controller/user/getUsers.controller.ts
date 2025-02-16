@@ -35,11 +35,15 @@ export const getAllUsers = asyncHandler(async (req, res) => {
   const emailSearch = (req as any).query.email
     ? { email: { $regex: (req as any).query.email, $options: "i" } }
     : {};
+  const roleSearch = (req as any).query.role
+    ? { role: { $regex: (req as any).query.role, $options: "i" } }
+    : {};
   const sortField = (req as any).query.sortField || "name";
   const sortOrder = (req as any).query.sortOrder === "desc" ? -1 : 1;
 
   // combining search query
   const matchQuery = {
+    ...roleSearch,
     ...nameSearch,
     ...emailSearch,
   };
