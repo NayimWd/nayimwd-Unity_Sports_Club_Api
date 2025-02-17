@@ -31,7 +31,8 @@ export const getSchedules = asyncHandler(async (req, res) => {
     .populate("teams.teamA", "teamName teamLogo")
     .populate("teams.teamB", "teamName teamLogo")
     .populate("venueId", "name")
-    .sort({ matchDate: 1, matchTime: 1 });
+    .sort({ matchDate: 1, matchTime: 1 })
+    .lean();
 
   // Send response
   res.status(200).json(

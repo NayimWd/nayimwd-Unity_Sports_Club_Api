@@ -6,7 +6,7 @@ import { asyncHandler } from "../../utils/asyncHandler";
 export const getAllTournaments = asyncHandler(async (req, res) => {
   const tournaments = await Tournament.find().select(
     "tournamentName tournamentType matchOver registrationDeadline seats startDate endDate status entryFee photo"
-  );
+  ).lean();
 
   // validate data
   if (!tournaments) {

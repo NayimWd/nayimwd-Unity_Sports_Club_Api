@@ -23,7 +23,8 @@ export const getTeamProfiles = asyncHandler(async (req, res) => {
   // Fetch team with manager's basic details
   const team = await Team.findById(teamId)
   .populate("managerId", "name photo")
-  .populate("");
+  .populate("")
+  .lean();
 
   if (!team) {
     throw new ApiError(404, "Team not found");

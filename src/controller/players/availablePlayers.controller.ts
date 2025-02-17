@@ -48,7 +48,8 @@ export const getAvailablePlayers = asyncHandler(async (req, res) => {
     .select("name photo") // Only fetch the required fields
     .sort(sortConfig)
     .skip((pageNumber - 1) * limitNumber)
-    .limit(limitNumber);
+    .limit(limitNumber)
+    .lean();
 
   // Step 6: Prepare pagination metadata
   const totalPages = Math.ceil(totalPlayers / limitNumber);

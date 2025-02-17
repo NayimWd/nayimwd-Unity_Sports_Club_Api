@@ -13,7 +13,8 @@ export const getAllVenues = asyncHandler(async (req, res) => {
   const venues = await Venue.find()
     .select("-__v -createdAt -updatedAt -features -location")
     .skip(skip)
-    .limit(Number(limit));
+    .limit(Number(limit))
+    .lean();
 
   // check if no venue found
   if (!venues || venues.length === 0) {

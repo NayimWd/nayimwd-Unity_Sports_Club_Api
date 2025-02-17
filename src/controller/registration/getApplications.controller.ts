@@ -29,6 +29,7 @@ export const getTournamentApplication = asyncHandler(async (req, res) => {
     path: "teamId",
     select: "teamName"
   })
+  .lean();
 
   if (!registration) {
     throw new ApiError(404, "No registration found for this tournament");
@@ -70,6 +71,7 @@ export const getPendingRegistration = asyncHandler(async(req, res)=>{
     path: "teamId",
     select: "teamName"
   })
+  .lean();
 
   if (!registration) {
     throw new ApiError(404, "No registration found for this tournament");

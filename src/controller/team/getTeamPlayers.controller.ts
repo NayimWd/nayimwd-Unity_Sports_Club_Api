@@ -64,7 +64,8 @@ export const getTeamPlayerDetails = asyncHandler(async(req, res)=>{
     path: "teamId", // Populate Team details
     model: "Team",
     select: "teamName teamLogo",
-  });
+  })
+  .lean();
 
   // get player profile by player id
   const playerProfile = await PlayerProfile.findOne({ userId: playerId })
