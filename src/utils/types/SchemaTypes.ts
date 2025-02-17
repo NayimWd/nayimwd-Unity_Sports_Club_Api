@@ -196,6 +196,7 @@ export interface IMatchResult extends Document {
   margin: string;
   method: "normal" | "DLS" | "tie" | "no result" | "super over";
   manOfTheMatch: mongoose.Types.ObjectId;
+  photo?: string;
 }
 
 // point table type

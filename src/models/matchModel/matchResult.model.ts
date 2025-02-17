@@ -37,6 +37,7 @@ const matchResultSchema: Schema<IMatchResult> = new Schema(
       ref: "User",
       required: true,
     },
+    photo: String,
   },
   {
     timestamps: true,

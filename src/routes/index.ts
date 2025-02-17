@@ -7,11 +7,12 @@ import venueRoutes from "./venue/venue.routes";
 import tournamentRoutes from "./tournament/tournament.routes";
 import RegistrationRoutes from "./registration/registeration.routes";
 import scheduleRoutes from "./schedule/schedule.routes";
+import matchRoutes from "./match/match.routes"
 
 const router = Router();
 
 // creating interface for semi root routes path
-interface IRoutePath {
+type RoutePath = {
   health: "/api/v1/health";
   user: "/api/v1/auth";
   team: "/api/v1/team";
@@ -21,10 +22,11 @@ interface IRoutePath {
   tournament: "/api/v1/tournament";
   registration: "/api/v1/tournamentRegister";
   schedule: "/api/v1/schedule";
+  match: "/api/v1/match";
 }
 
 // creating routes for semi root routes path
-const route_path: IRoutePath = {
+const route_path: RoutePath = {
   health: "/api/v1/health",
   user: "/api/v1/auth",
   team: "/api/v1/team",
@@ -34,6 +36,7 @@ const route_path: IRoutePath = {
   tournament: "/api/v1/tournament",
   registration: "/api/v1/tournamentRegister",
   schedule: "/api/v1/schedule",
+  match: "/api/v1/match",
 };
 
 // Health check route with proper typing
@@ -59,5 +62,7 @@ router.use(route_path.tournament, tournamentRoutes);
 router.use(route_path.registration, RegistrationRoutes);
 // ---------- schedule routes ----------------
 router.use(route_path.schedule, scheduleRoutes);
+// ---------- match routes ----------------
+router.use(route_path.match, matchRoutes);
 
 export default router;
