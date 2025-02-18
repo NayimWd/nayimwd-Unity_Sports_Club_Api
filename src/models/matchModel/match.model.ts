@@ -39,8 +39,7 @@ const matchSchema: Schema<IMatch> = new Schema(
       firstUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       secondUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       thirdUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    },
-    photo: String,
+    }
   },
   {
     timestamps: true,
