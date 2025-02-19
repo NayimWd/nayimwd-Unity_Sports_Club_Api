@@ -18,6 +18,7 @@ export const createSchedule = asyncHandler(async (req, res) => {
   // Extract data from request
   const { tournamentId } = req.params;
   const {
+    matchId,
     matchNumber,
     round,
     venueId,
@@ -48,12 +49,13 @@ export const createSchedule = asyncHandler(async (req, res) => {
 
   // Ensure matchNumber is unique per tournament
   const existingMatch = await Match.findOne({ tournamentId, matchNumber });
-  if (existingMatch) {
+  if (existingMatch?.matchNumber !== matchNumber) {
     throw new ApiError(
       400,
-      `Match ${matchNumber} already exists in this tournament.`
+      `Match ${matchNumber} not yet created in this tournament.`
     );
   }
+ 
 
   // Ensure no duplicate match in schedule
   const existingSchedule = await Schedule.findOne({
@@ -75,19 +77,6 @@ export const createSchedule = asyncHandler(async (req, res) => {
   });
   if (venueConflict) {
     throw new ApiError(400, "Venue is already booked at this date and time");
-  }
-
-  // Book the venue
-  const venueBooking = await VenueBooking.create({
-    venueId,
-    bookedBy: author._id,
-    bookingDate: matchDate,
-    startTime: matchTime,
-    endTime,
-  });
-
-  if (!venueBooking) {
-    throw new ApiError(500, "Failed to book the venue");
   }
 
   // Determine teams based on round
@@ -153,12 +142,19 @@ export const createSchedule = asyncHandler(async (req, res) => {
   }
 
   // ✅ **Create the Match First**
-  const newMatch = await Match.create(matchData);
+  let newMatch;
+  if (round === "round 1") {
+    newMatch = await Match.create(matchData);
+
+    if (!newMatch) {
+      throw new ApiError(500, "Failed to create the match");
+    }
+  }
 
   // ✅ **Create Schedule with the matchId**
   const newSchedule = await Schedule.create({
     tournamentId,
-    matchId: newMatch._id,
+    matchId: matchId ? matchId : newMatch?._id,
     matchNumber,
     round,
     venueId,
@@ -168,6 +164,22 @@ export const createSchedule = asyncHandler(async (req, res) => {
     previousMatches: matchData.previousMatches,
     status: "scheduled",
   });
+
+  // ✅ **Book the Venue**
+  if (newSchedule) {
+    // Book the venue
+    const venueBooking = await VenueBooking.create({
+      venueId,
+      bookedBy: author._id,
+      bookingDate: matchDate,
+      startTime: matchTime,
+      endTime,
+    });
+
+    if (!venueBooking) {
+      throw new ApiError(500, "Failed to book the venue");
+    }
+  }
 
   res
     .status(201)
