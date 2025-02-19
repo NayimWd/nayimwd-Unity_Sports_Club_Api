@@ -20,42 +20,42 @@ export interface IUser extends Document {
 
 // player profile type
 export interface IPlayerProfile extends Document {
-  userId: mongoose.Types.ObjectId;
-  teamId: mongoose.Types.ObjectId;
+  userId: Types.ObjectId;
+  teamId: Types.ObjectId;
   player_role: "batsman" | "bowler" | "all-rounder" | "wk-batsman";
   batingStyle: "right hand" | "left hand";
   bowlingArm: "left arm" | "right arm";
   bowlingStyle: "fast" | "spin" | "swing" | "seam";
   DateOfBirth: Date;
-  photo?: mongoose.Types.ObjectId
+  photo?: Types.ObjectId
 }
 
 // manager profile type
 export interface IManagerProfile extends Document {
-  userId: mongoose.Types.ObjectId;
-  teamsManaged: [type: mongoose.Types.ObjectId];
-  photo?: mongoose.Types.ObjectId
+  userId: Types.ObjectId;
+  teamsManaged: [type: Types.ObjectId];
+  photo?: Types.ObjectId
 }
 
 // umpire Profile type
 export interface IUmpireProfile extends Document {
-  userId: mongoose.Types.ObjectId;
+  userId: Types.ObjectId;
   yearsOfExperience: number;
-  photo?: mongoose.Types.ObjectId
+  photo?: Types.ObjectId
 }
 
 // team type
 export interface ITeams extends Document {
   teamName: string;
-  managerId: mongoose.Types.ObjectId;
+  managerId: Types.ObjectId;
   playerCount: number;
   status: "active" | "disqualified";
   teamLogo?: string;
 }
 
 export interface ITeamPlayer extends Document {
-  teamId: mongoose.Types.ObjectId,
-  playerId: mongoose.Types.ObjectId,
+  teamId: Types.ObjectId,
+  playerId: Types.ObjectId,
   isCaptain?: boolean,
   status: "active" | "benched" | "injured"
 }
@@ -71,8 +71,8 @@ export interface IVenue extends Document {
 
 // venue booking type
 export interface IVenueBooking extends Document {
-  venueId: mongoose.Types.ObjectId;
-  bookedBy: mongoose.Types.ObjectId;
+  venueId: Types.ObjectId;
+  bookedBy: Types.ObjectId;
   bookingDate: string;
   startTime: string;
   endTime: string;
@@ -103,31 +103,31 @@ export interface ITournament extends Document {
 
 // tournamentResult
 export interface ITournamentResult extends Document {
-  tournamentId: mongoose.Types.ObjectId;
+  tournamentId: Types.ObjectId;
   result: {
-    champion: mongoose.Types.ObjectId;
-    runnerUp: mongoose.Types.ObjectId;
-    thirdPlace: mongoose.Types.ObjectId;
+    champion: Types.ObjectId;
+    runnerUp: Types.ObjectId;
+    thirdPlace: Types.ObjectId;
   };
-  manOfTheTournament?: mongoose.Types.ObjectId;
+  manOfTheTournament?: Types.ObjectId;
   awardFor: string;
   photo?: string;
 }
 
 // schedule type
 export interface ISchedule extends Document {
-  tournamentId: mongoose.Types.ObjectId;
-  matchId: mongoose.Types.ObjectId;
-  venueId: mongoose.Types.ObjectId;
+  tournamentId: Types.ObjectId;
+  matchId: Types.ObjectId;
+  venueId: Types.ObjectId;
   matchNumber: number;
   round: "round 1" | "round 2" | "Quarter-Final" | "Semi-Final" | "Final" | "Playoff";
   teams: {
-    teamA: { type: mongoose.Types.ObjectId },
-    teamB: { type: mongoose.Types.ObjectId },
+    teamA: { type: Types.ObjectId },
+    teamB: { type: Types.ObjectId },
   };
   previousMatches: {
-    matchA: { type: mongoose.Types.ObjectId },
-    matchB: { type: mongoose.Types.ObjectId },
+    matchA: { type: Types.ObjectId },
+    matchB: { type: Types.ObjectId },
   };
   matchDate: string;
   matchTime: string;
@@ -136,9 +136,9 @@ export interface ISchedule extends Document {
 
 // registration type
 export interface IRegistration extends Document {
-  tournamentId: mongoose.Types.ObjectId;
-  teamId: mongoose.Types.ObjectId;
-  managerId: mongoose.Types.ObjectId;
+  tournamentId: Types.ObjectId;
+  teamId: Types.ObjectId;
+  managerId: Types.ObjectId;
   applicationDate?: Date;
   comments?: string;
   status?: "pending" | "approved" | "rejected" | "withdrawn";
@@ -146,9 +146,9 @@ export interface IRegistration extends Document {
 
 // innings type
 export interface IInningType extends Document {
-  tournamentId: mongoose.Types.ObjectId;
-  teamId: mongoose.Types.ObjectId;
-  matchId: mongoose.Types.ObjectId;
+  tournamentId: Types.ObjectId;
+  teamId: Types.ObjectId;
+  matchId: Types.ObjectId;
   runs: number;
   wicket: number;
   overs: number;
@@ -181,7 +181,6 @@ export interface IMatch {
   teamA?: Types.ObjectId;
   teamB?: Types.ObjectId;
   previousMatches?: PreviousMatches; 
-  winner?: Types.ObjectId;
   status: "upcoming" | "scheduled" | "in-progress" | "completed" | "cancelled";
   umpires: Umpires; 
   photo?: string;
@@ -189,20 +188,21 @@ export interface IMatch {
 
 // match result type
 export interface IMatchResult extends Document {
-  tournamentId: mongoose.Types.ObjectId;
-  matchId: mongoose.Types.ObjectId;
-  winner: mongoose.Types.ObjectId;
-  defeated: mongoose.Types.ObjectId;
+  tournamentId: Types.ObjectId;
+  matchId: Types.ObjectId;
+  winner: Types.ObjectId;
+  defeated: Types.ObjectId;
   margin: string;
   method: "normal" | "DLS" | "tie" | "no result" | "super over";
-  manOfTheMatch: mongoose.Types.ObjectId;
+  manOfTheMatch: Types.ObjectId;
+  matchReport: string;
   photo?: string;
 }
 
 // point table type
 export interface IPoint extends Document {
-  tournameId: mongoose.Types.ObjectId;
-  teamId: mongoose.Types.ObjectId;
+  tournameId: Types.ObjectId;
+  teamId: Types.ObjectId;
   matchPlayed?: number;
   wins?: number;
   losses?: number;
@@ -214,10 +214,10 @@ export interface IPoint extends Document {
 export interface IBlog extends Document {
   title: string;
   content: string;
-  author: mongoose.Types.ObjectId;
+  author: Types.ObjectId;
   tags: "news" | "highlight" | "tournaments" | "awards";
   createdAt: Date;
   likes?: number;
-  comments?: [user: mongoose.Types.ObjectId, comment: string, date: Date];
+  comments?: [user: Types.ObjectId, comment: string, date: Date];
   isPublished: boolean;
 }

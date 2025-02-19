@@ -84,7 +84,6 @@ export const createSchedule = asyncHandler(async (req, res) => {
     tournamentId,
     matchNumber,
     status: "upcoming",
-    winner: null,
     teamA: null,
     teamB: null,
     previousMatches: { matchA: null, matchB: null },

@@ -17,29 +17,27 @@ const matchSchema: Schema<IMatch> = new Schema(
     teamA: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Team",
+      default: null,
     },
     teamB: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Team",
+      default: null, 
     },
     previousMatches: {
-      matchA: { type: mongoose.Schema.Types.ObjectId, ref: "Match" },
-      matchB: { type: mongoose.Schema.Types.ObjectId, ref: "Match" },
-    },
-    winner: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Team",
+      matchA: { type: mongoose.Schema.Types.ObjectId, ref: "Match", default: null },
+      matchB: { type: mongoose.Schema.Types.ObjectId, ref: "Match", default: null },
     },
     status: {
       type: String,
-      enum: ["upcoming", "scheduled", "rescheduled", "in-progress", "completed", "cancelled"], 
-    default: "upcoming",
+      enum: ["upcoming", "scheduled", "rescheduled", "in-progress", "completed", "cancelled"],
+      default: "upcoming",
     },
     umpires: {
-      firstUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      secondUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      thirdUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    }
+      firstUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+      secondUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+      thirdUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    },
   },
   {
     timestamps: true,
@@ -51,33 +49,30 @@ matchSchema.index({ tournamentId: 1, matchNumber: 1 }, { unique: true });
 
 // Ensure either (teamA & teamB) or (previousMatches.matchA & matchB) is present
 matchSchema.pre("validate", function (next) {
-  if (
-    (!this.teamA || !this.teamB) &&
-    (!this.previousMatches || !this.previousMatches.matchA || !this.previousMatches.matchB)
-  ) {
-    return next(
-      new Error(
-        "Either teams (teamA, teamB) or previousMatches (matchA, matchB) must be provided."
-      )
-    );
+  if (!this.teamA && !this.teamB) {
+    if (!this.previousMatches?.matchA || !this.previousMatches?.matchB) {
+      return next(
+        new Error("Either (teamA & teamB) or previousMatches (matchA & matchB) must be provided.")
+      );
+    }
   }
   next();
 });
 
-// When a match is completed, update the next round's Schedule with the winner
+// When a match result is updated, modify the schedule accordingly
 matchSchema.post("save", async function (doc) {
-  if (doc.status === "completed" && doc.winner) {
+  if (doc.status === "completed" && doc.previousMatches) {
     await Schedule.updateMany(
       {
         $or: [
-          { "teams.teamA": doc._id },
-          { "teams.teamB": doc._id },
+          { "teams.teamA": doc.previousMatches.matchA },
+          { "teams.teamB": doc.previousMatches.matchB },
         ],
       },
       {
         $set: {
-          "teams.teamA": doc.previousMatches?.matchA ? doc.winner : undefined,
-          "teams.teamB": doc.previousMatches?.matchB ? doc.winner : undefined,
+          "teams.teamA": doc.previousMatches.matchA ? doc.teamA : undefined,
+          "teams.teamB": doc.previousMatches.matchB ? doc.teamB : undefined,
         },
       }
     );

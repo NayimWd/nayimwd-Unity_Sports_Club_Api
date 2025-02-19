@@ -34,8 +34,8 @@ export const changeTeams = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Match not found.");
   }
 
-  // ❌ Prevent changes if the match is in progress or completed
-  if (["live", "completed"].includes(match.status)) {
+  //  Prevent changes if the match is in progress or completed
+  if (["in-progress", "completed"].includes(match.status)) {
     throw new ApiError(400, "Cannot change teams for a match that is live or completed.");
   }
 
@@ -97,11 +97,16 @@ export const changeTeams = asyncHandler(async (req, res) => {
     schedule.matchId = newMatchId;
   }
 
-  // **Update teams and match reference**
+  // **Update teams in Schedule**
   schedule.teams.teamA = updatedTeamA;
   schedule.teams.teamB = updatedTeamB;
   await schedule.save();
 
+  // **update Match Schema **
+  match.teamA = updatedTeamA;
+  match.teamB = updatedTeamB;
+  await match.save();
+
   // **Return response**
-  res.status(200).json(new ApiResponse(200, schedule, "Schedule updated successfully."));
+  res.status(200).json(new ApiResponse(200, schedule, "Schedule and Match updated successfully."));
 });

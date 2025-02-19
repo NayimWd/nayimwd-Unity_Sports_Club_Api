@@ -113,7 +113,6 @@ export const createMatch = asyncHandler(async (req, res) => {
     teamA: teamA ? teamA : null,
     teamB: teamB ? teamB : null,
     previousMatches,
-    winner: null,
     umpires: {
       firstUmpire: umpire1,
       secondUmpire: umpire2,
