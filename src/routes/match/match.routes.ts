@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { veryfyJWT } from "../../middleware/auth.middleware";
-import { createMatch, getAllMatch } from "../../controller/match";
+import { createMatch, getAllMatch, matchDetails, updateMatchStatus, updateUmpire } from "../../controller/match";
 
 const router = Router();
 
@@ -8,11 +8,11 @@ const router = Router();
 type Match = {
     create: "/create/:tournamentId",
     all: "/all/:tournamentId",
+    details: "/details/:tournamentId/:matchId",
     delete: "/delete/:matchId",
-    updateStatus: "/update_status/:matchId",
+    updateStatus: "/update_status/:tournamentId/:matchId",
     updateTeams: "/update_teams/:matchId",
-    updateUmpires: "/update_umpires/:matchId",
-    updatePhoto: "/update_photo/:matchId",
+    updateUmpires: "/update_umpires/:tournamentId/:matchId",
     updateWinner: "/update_winner/:matchId",
 };
 
@@ -20,11 +20,11 @@ type Match = {
 const MatchRoutes: Match = {
     create: "/create/:tournamentId",
     all: "/all/:tournamentId",
+    details: "/details/:tournamentId/:matchId",
     delete: "/delete/:matchId",
-    updateStatus: "/update_status/:matchId",
+    updateStatus: "/update_status/:tournamentId/:matchId",
     updateTeams: "/update_teams/:matchId",
-    updateUmpires: "/update_umpires/:matchId",
-    updatePhoto: "/update_photo/:matchId",
+    updateUmpires: "/update_umpires/:tournamentId/:matchId",
     updateWinner: "/update_winner/:matchId",
 };
 
@@ -33,5 +33,11 @@ const MatchRoutes: Match = {
 router.route(MatchRoutes.create).post(veryfyJWT, createMatch);
 // get all matches
 router.route(MatchRoutes.all).get(getAllMatch)
+// get match details
+router.route(MatchRoutes.details).get(matchDetails);
+// update match status
+router.route(MatchRoutes.updateStatus).patch(veryfyJWT, updateMatchStatus);
+// update umpires 
+router.route(MatchRoutes.updateUmpires).patch(veryfyJWT, updateUmpire);
 
 export default router;
