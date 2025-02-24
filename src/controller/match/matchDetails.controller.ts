@@ -36,9 +36,9 @@ export const matchDetails = asyncHandler(async (req, res) => {
     )
     .populate("teamA", "teamName teamLogo")
     .populate("teamB", "teamName teamLogo")
-    .populate("umpires.firstUmpire", "name role")
-    .populate("umpires.secondUmpire", "name role")
-    .populate("umpires.thirdUmpire", "name role")
+    .populate("umpires.firstUmpire", "name")
+    .populate("umpires.secondUmpire", "name")
+    .populate("umpires.thirdUmpire", "name")
     .lean();
 
   if (!match) {

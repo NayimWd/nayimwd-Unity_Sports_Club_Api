@@ -47,21 +47,13 @@ export const createSchedule = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Tournament not found");
   }
 
-  // Ensure matchNumber is unique per tournament
-  const existingMatch = await Match.findOne({ tournamentId, matchNumber });
-  if (existingMatch?.matchNumber !== matchNumber) {
-    throw new ApiError(
-      400,
-      `Match ${matchNumber} not yet created in this tournament.`
-    );
-  }
- 
+  // Fetch Match and Schedule in a single query
+  const [existingMatch, existingSchedule] = await Promise.all([
+    Match.findOne({ tournamentId, matchNumber }),
+    Schedule.findOne({ tournamentId, matchNumber }),
+  ]);
 
-  // Ensure no duplicate match in schedule
-  const existingSchedule = await Schedule.findOne({
-    tournamentId,
-    matchNumber,
-  });
+  // Ensure match number validation based on round
   if (existingSchedule) {
     throw new ApiError(
       400,
@@ -69,6 +61,17 @@ export const createSchedule = asyncHandler(async (req, res) => {
     );
   }
 
+  if (round === "round 1" && existingMatch) {
+    throw new ApiError(
+      400,
+      `Match ${matchNumber} already exists in this tournament.`
+    );
+  } else if (round !== "round 1" && !existingMatch) {
+    throw new ApiError(
+      400,
+      `Match ${matchNumber} not yet created in this tournament.`
+    );
+  }
   // Ensure venue is available for booking
   const venueConflict = await VenueBooking.findOne({
     venueId,
@@ -91,7 +94,7 @@ export const createSchedule = asyncHandler(async (req, res) => {
     photo: null,
   };
 
-  //  **First Round: Validate Teams**
+  //  First Round: Validate Teams**
   if (round === "round 1") {
     if (!teamA || !teamB) {
       throw new ApiError(
@@ -118,8 +121,11 @@ export const createSchedule = asyncHandler(async (req, res) => {
     matchData.teamB = teamB;
   }
 
-  // **Later Rounds: Validate Previous Matches**
+  // Later Rounds: Validate Previous Matches**
   if (round !== "round 1") {
+    if (matchId && !(await Match.findById(matchId))) {
+      throw new ApiError(404, "Provided matchId does not exist");
+    }
     if (
       !previousMatches ||
       !previousMatches.matchA ||
@@ -140,7 +146,7 @@ export const createSchedule = asyncHandler(async (req, res) => {
     matchData.previousMatches = { matchA: matchA._id, matchB: matchB._id };
   }
 
-  // ✅ **Create the Match First**
+  // Create the Match First
   let newMatch;
   if (round === "round 1") {
     newMatch = await Match.create(matchData);
@@ -150,7 +156,7 @@ export const createSchedule = asyncHandler(async (req, res) => {
     }
   }
 
-  // ✅ **Create Schedule with the matchId**
+  // Create Schedule with the matchId
   const newSchedule = await Schedule.create({
     tournamentId,
     matchId: matchId ? matchId : newMatch?._id,
@@ -164,7 +170,7 @@ export const createSchedule = asyncHandler(async (req, res) => {
     status: "scheduled",
   });
 
-  // ✅ **Book the Venue**
+  // Book the Venue
   if (newSchedule) {
     // Book the venue
     const venueBooking = await VenueBooking.create({

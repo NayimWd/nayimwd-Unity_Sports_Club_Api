@@ -53,11 +53,13 @@ export const getAllMatch = asyncHandler(async (req, res) => {
   const matches = await Match.find(filter)
     .populate("teamA", "teamName teamLogo")
     .populate("teamB", "teamName teamLogo")
-    .populate("winner", "teamName teamLogo")
     .lean();
 
   // return response
   return res
     .status(200)
-    .json(new ApiResponse(200, matches, "Matches fetched successfully"));
+    .json(new ApiResponse(200,{
+      total: matches.length,
+       matches
+      }, "Matches fetched successfully"));
 });
