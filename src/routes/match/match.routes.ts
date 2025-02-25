@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { veryfyJWT } from "../../middleware/auth.middleware";
-import { createMatch, getAllMatch, matchDetails, updateMatchStatus, updateUmpire } from "../../controller/match";
+import { createMatch, deleteMatch, getAllMatch, matchDetails, updateMatchStatus, updateUmpire } from "../../controller/match";
 
 const router = Router();
 
@@ -39,5 +39,7 @@ router.route(MatchRoutes.details).get(matchDetails);
 router.route(MatchRoutes.updateStatus).patch(veryfyJWT, updateMatchStatus);
 // update umpires 
 router.route(MatchRoutes.updateUmpires).patch(veryfyJWT, updateUmpire);
+// delete match
+router.route(MatchRoutes.delete).delete(veryfyJWT, deleteMatch);
 
 export default router;

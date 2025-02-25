@@ -33,7 +33,7 @@ export const reSchedule = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Match not found");
   }
 
-  // ❌ Prevent rescheduling if the match is already in progress or completed
+  //  Prevent rescheduling if the match is already in progress or completed
   if (["live", "completed"].includes(match.status)) {
     throw new ApiError(400, "Cannot reschedule a match that is live or completed.");
   }
