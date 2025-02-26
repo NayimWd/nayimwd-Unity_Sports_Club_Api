@@ -149,6 +149,7 @@ export interface IInningType extends Document {
   tournamentId: Types.ObjectId;
   teamId: Types.ObjectId;
   matchId: Types.ObjectId;
+  inningsNumber: 1 | 2;
   runs: number;
   wicket: number;
   overs: number;

@@ -70,7 +70,7 @@ export const createMatch = asyncHandler(async (req, res) => {
     );
   }
 
-  // ✅ **Validate Teams in Round 1**
+  // Validate Teams in Round 1
   if (isFirstRound) {
     const registeredTeams = await Registration.find({
       tournamentId,
@@ -86,7 +86,7 @@ export const createMatch = asyncHandler(async (req, res) => {
     }
   }
 
-  // **Validate Previous Matches for Qualifier Rounds**
+  // Validate Previous Matches for Qualifier Rounds
   if (isQualifierRound) {
     const matchA = await Match.findById(previousMatches.matchA);
     const matchB = await Match.findById(previousMatches.matchB);
@@ -96,7 +96,7 @@ export const createMatch = asyncHandler(async (req, res) => {
     }
   }
 
-   // ✅ **Validate Umpires**
+   // Validate Umpires
    const umpireIds = [umpire1, umpire2, umpire3].filter(Boolean); // Remove null values
    if (umpireIds.length > 0) {
      const umpires = await User.find({ _id: { $in: umpireIds }, role: "umpire" });

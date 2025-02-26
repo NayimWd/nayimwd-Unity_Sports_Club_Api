@@ -61,7 +61,7 @@ export const changeTeams = asyncHandler(async (req, res) => {
     throw new ApiError(404, "One or both teams do not exist.");
   }
 
-  // **Check if teams are already scheduled on the same date**
+  // Check if teams are already scheduled on the same date
   const conflictingMatch = await Schedule.findOne({
     matchDate: schedule.matchDate,
     _id: { $ne: scheduleId }, // Exclude current schedule
@@ -77,7 +77,7 @@ export const changeTeams = asyncHandler(async (req, res) => {
     throw new ApiError(400, "One or both new teams are already scheduled on this date.");
   }
 
-  // **If a new match reference is provided, validate it**
+  // If a new match reference is provided, validate it
   if (newMatchId) {
     const matchExists = await Match.findById(newMatchId);
     if (!matchExists) {
@@ -97,16 +97,16 @@ export const changeTeams = asyncHandler(async (req, res) => {
     schedule.matchId = newMatchId;
   }
 
-  // **Update teams in Schedule**
+  // Update teams in Schedule
   schedule.teams.teamA = updatedTeamA;
   schedule.teams.teamB = updatedTeamB;
   await schedule.save();
 
-  // **update Match Schema **
+  // update Match Schema 
   match.teamA = updatedTeamA;
   match.teamB = updatedTeamB;
   await match.save();
 
-  // **Return response**
+  // Return response
   res.status(200).json(new ApiResponse(200, schedule, "Schedule and Match updated successfully."));
 });

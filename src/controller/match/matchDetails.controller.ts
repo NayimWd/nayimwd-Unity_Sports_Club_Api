@@ -62,7 +62,7 @@ export const matchDetails = asyncHandler(async (req, res) => {
   const matchDetails = {
     match: match,
     venue: schedule || null,
-    MatchResult: MatchResult ? match : null,
+    MatchResult: result ? result : null,
     innings: innings ? innings : null,
   };
 
