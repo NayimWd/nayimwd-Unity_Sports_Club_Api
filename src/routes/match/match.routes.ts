@@ -11,9 +11,7 @@ type Match = {
     details: "/details/:tournamentId/:matchId",
     delete: "/delete/:matchId",
     updateStatus: "/update_status/:tournamentId/:matchId",
-    updateTeams: "/update_teams/:matchId",
     updateUmpires: "/update_umpires/:tournamentId/:matchId",
-    updateWinner: "/update_winner/:matchId",
 };
 
 // endpoints
@@ -23,9 +21,7 @@ const MatchRoutes: Match = {
     details: "/details/:tournamentId/:matchId",
     delete: "/delete/:matchId",
     updateStatus: "/update_status/:tournamentId/:matchId",
-    updateTeams: "/update_teams/:matchId",
     updateUmpires: "/update_umpires/:tournamentId/:matchId",
-    updateWinner: "/update_winner/:matchId",
 };
 
 

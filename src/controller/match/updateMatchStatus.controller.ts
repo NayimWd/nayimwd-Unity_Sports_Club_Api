@@ -9,8 +9,7 @@ import { asyncHandler } from "../../utils/asyncHandler";
 const validStatusTransitions: Record<string, string[]> = {
     scheduled: ["in-progress", "cancelled"],
     "in-progress": ["completed", "cancelled"],
-    completed: [], // No further updates allowed
-    cancelled: [], // No further updates allowed
+    completed: [], 
   };
   
 

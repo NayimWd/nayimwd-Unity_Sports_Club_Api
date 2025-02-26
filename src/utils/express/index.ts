@@ -9,6 +9,7 @@ declare global {
         [fieldname: string]: Multer.File[]; // Use Multer's built-in File type
       } | Multer.File[];
       user?: IUser; // Define user property as IUser
+
     }
   }
 }
