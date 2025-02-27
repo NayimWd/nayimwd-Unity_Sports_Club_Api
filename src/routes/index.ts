@@ -8,12 +8,13 @@ import tournamentRoutes from "./tournament/tournament.routes";
 import RegistrationRoutes from "./registration/registeration.routes";
 import scheduleRoutes from "./schedule/schedule.routes";
 import matchRoutes from "./match/match.routes"
+import iningsRoutes from "./innings/innings.routes";
 
 const router = Router();
 
 // creating interface for semi root routes path
 type RoutePath = {
-  health: "/api/v1/health";
+  health: `/api/v1/health`;
   user: "/api/v1/auth";
   team: "/api/v1/team";
   profile: "/api/v1/profile";
@@ -23,6 +24,7 @@ type RoutePath = {
   registration: "/api/v1/tournamentRegister";
   schedule: "/api/v1/schedule";
   match: "/api/v1/match";
+  innings: "/api/v1/innings";
 }
 
 // creating routes for semi root routes path
@@ -37,6 +39,7 @@ const route_path: RoutePath = {
   registration: "/api/v1/tournamentRegister",
   schedule: "/api/v1/schedule",
   match: "/api/v1/match",
+  innings: "/api/v1/innings"
 };
 
 // Health check route with proper typing
@@ -64,5 +67,7 @@ router.use(route_path.registration, RegistrationRoutes);
 router.use(route_path.schedule, scheduleRoutes);
 // ---------- match routes ----------------
 router.use(route_path.match, matchRoutes);
+// ---------- Innings routes ----------------
+router.use(route_path.innings, iningsRoutes)
 
 export default router;

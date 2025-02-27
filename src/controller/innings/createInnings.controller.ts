@@ -7,7 +7,7 @@ import { asyncHandler } from "../../utils/asyncHandler";
 
 export const createInnings = asyncHandler(async (req, res) => {
   // authentication and authorization
-  const author = req.user;
+  const author = (req as any).user;
   if (!author || !["admin", "staff"].includes(author.role)) {
     throw new ApiError(
       403,
