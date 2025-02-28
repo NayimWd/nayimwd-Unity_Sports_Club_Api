@@ -1,5 +1,6 @@
 import { Innings } from "../../models/matchModel/innings.model";
 import { Match } from "../../models/matchModel/match.model";
+import { Schedule } from "../../models/sceduleModel/schedules.model";
 import { Tournament } from "../../models/tournamentModel/tournaments.model";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
@@ -109,8 +110,33 @@ export const createInnings = asyncHandler(async (req, res) => {
     totalRuns: totalRuns,
   });
 
+
   if (!newInnings) {
     throw new ApiError(500, "Failed to create innings.");
+  }
+
+  // update schedule and match status 
+  if(newInnings || inningsNumber === 1){
+   await Promise.all([
+        Match.findByIdAndUpdate(
+          matchId,
+          {
+            status: "in-progress"
+          },
+          {
+            new: true
+          }
+        ),
+        Schedule.findOneAndUpdate(
+         { matchId},
+          {
+            status: "in-progress"
+          },
+          {
+            new: true
+          }
+        )
+    ])
   }
 
   // return response
