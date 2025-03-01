@@ -1,4 +1,8 @@
+import { info } from "console";
+import { Innings } from "../../models/matchModel/innings.model";
 import { Match } from "../../models/matchModel/match.model";
+import { MatchResult } from "../../models/matchModel/matchResult.model";
+import { Schedule } from "../../models/sceduleModel/schedules.model";
 import { Team } from "../../models/teamModel/teams.model";
 import { Tournament } from "../../models/tournamentModel/tournaments.model";
 import { ApiError } from "../../utils/ApiError";
@@ -55,11 +59,53 @@ export const getAllMatch = asyncHandler(async (req, res) => {
     .populate("teamB", "teamName teamLogo")
     .lean();
 
+  // Fetch related match details
+  const enrichedMatches = await Promise.all(
+    matches.map(async (match) => {
+      // Fetch innings data
+      const [innings1, innings2] = await Promise.all([
+        Innings.findOne({ matchId: match._id, inningsNumber: 1 }),
+        Innings.findOne({ matchId: match._id, inningsNumber: 2 }),
+      ]);
+
+      // Fetch match result
+      const matchResult = await MatchResult.findOne({ matchId: match._id });
+
+      // Prepare match summary
+      let matchSummary;
+      if (matchResult) {
+        matchSummary = {
+          teamA_stats: `${(match as any).teamA.teamName} ${innings1?.totalRuns || 0}-${innings1?.wicket || 0}`,
+          teamB_stats: `${(match as any).teamB.teamName} ${innings2?.totalRuns || 0}-${innings2?.wicket || 0}`,
+          margin: matchResult.margin,
+        };
+      } else {
+        // Fetch schedule data if match result is unavailable
+        const schedule = await Schedule.findOne({ matchId: match._id }).select(
+          "matchDate matchTime"
+        );
+        matchSummary = {
+          matchDate: schedule?.matchDate || "TBD",
+          matchTime: schedule?.matchTime || "TBD",
+        };
+      }
+
+      return {
+        ...match,
+        matchSummary,
+      };
+    })
+  );
+
   // return response
-  return res
-    .status(200)
-    .json(new ApiResponse(200,{
-      total: matches.length,
-       matches
-      }, "Matches fetched successfully"));
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        total: matches.length,
+        match: enrichedMatches
+      },
+      "Matches fetched successfully"
+    )
+  );
 });
