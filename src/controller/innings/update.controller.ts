@@ -8,7 +8,7 @@ import { asyncHandler } from "../../utils/asyncHandler";
 
 export const updateInnings = asyncHandler(async(req, res)=>{
     // authentication and authorization 
-    const author = req.user;
+    const author = (req as any).user;
     if (!author || !["admin", "staff"].includes(author.role)) {
       throw new ApiError(403, "Unauthorized! Only admin or staff can update innings.");
     }

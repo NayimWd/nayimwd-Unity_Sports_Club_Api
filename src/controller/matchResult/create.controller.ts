@@ -125,7 +125,7 @@ export const createMatchResult = asyncHandler(async (req, res) => {
           teamId: winner,
         },
         {
-          $inc: { wins: 1, matchPlayed: 1, points: 2 },
+          $inc: { wins: 1, losses: 0, ties: 0, matchPlayed: 1, points: 2 },
         },
         { upsert: true, new: true }
       ),
@@ -135,7 +135,7 @@ export const createMatchResult = asyncHandler(async (req, res) => {
           teamId: defeated,
         },
         {
-          $inc: { losses: 1, matchPlayed: 1 },
+          $inc: { wins: 0, losses: 1, ties: 0, matchPlayed: 1, points: 0 },
         },
         { upsert: true, new: true }
       ),
@@ -148,7 +148,7 @@ export const createMatchResult = asyncHandler(async (req, res) => {
           teamId: match.teamA,
         },
         {
-          $inc: { ties: 1, matchPlayed: 1, points: 1 },
+          $inc: { wins: 0, losses: 0, ties: 1, matchPlayed: 1, points: 1 },
         },
         { upsert: true, new: true }
       ),
@@ -158,7 +158,7 @@ export const createMatchResult = asyncHandler(async (req, res) => {
           teamId: match.teamB,
         },
         {
-          $inc: { ties: 1, matchPlayed: 1, points: 1 },
+          $inc: { wins: 0, losses: 0, ties: 1, matchPlayed: 1, points: 1 },
         },
         { upsert: true, new: true }
       ),

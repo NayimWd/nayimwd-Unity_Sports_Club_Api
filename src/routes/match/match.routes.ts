@@ -4,6 +4,7 @@ import { createMatch, deleteMatch, getAllMatch, matchDetails, updateMatchStatus,
 import { addPlayingSquad } from "../../controller/match/addPlayingSquad.controller";
 import { updatePlayingSquad } from "../../controller/match/updatePlayingSquad.controller";
 import { getPlayingSquad } from "../../controller/match/getPlayinSquad.controller";
+import { createMatchResult } from "../../controller/matchResult";
 
 const router = Router();
 
@@ -17,7 +18,8 @@ type Match = {
     updateUmpires: "/update_umpires/:tournamentId/:matchId",
     createSquad: "/createSquad/:tournamentId/:matchId",
     updateSquad: "/updateSquad/:tournamentId/:matchId/:teamId",
-    getSquad: "/getSquad/:tournamentId/:matchId/:teamId"
+    getSquad: "/getSquad/:tournamentId/:matchId/:teamId";
+    createResult: "/createResult/:tournamentId/:matchId"
 };
 
 // endpoints
@@ -30,7 +32,8 @@ const MatchRoutes: Match = {
     updateUmpires: "/update_umpires/:tournamentId/:matchId",
     createSquad: "/createSquad/:tournamentId/:matchId",
     updateSquad: "/updateSquad/:tournamentId/:matchId/:teamId",
-    getSquad: "/getSquad/:tournamentId/:matchId/:teamId"
+    getSquad: "/getSquad/:tournamentId/:matchId/:teamId",
+    createResult: "/createResult/:tournamentId/:matchId"
 };
 
 
@@ -51,6 +54,8 @@ router.route(MatchRoutes.createSquad).post(veryfyJWT, isManager, addPlayingSquad
 // update squad
 router.route(MatchRoutes.updateSquad).patch(veryfyJWT, isAdmin, updatePlayingSquad);
 // get squad
-router.route(MatchRoutes.getSquad).get(getPlayingSquad)
+router.route(MatchRoutes.getSquad).get(getPlayingSquad);
+// create match result
+router.route(MatchRoutes.createResult).post(veryfyJWT, createMatchResult);
 
 export default router;

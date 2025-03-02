@@ -211,7 +211,7 @@ export interface IMatchResult extends Document {
 
 // point table type
 export interface IPoint extends Document {
-  tournameId: Types.ObjectId;
+  tournamentId: Types.ObjectId;
   teamId: Types.ObjectId;
   matchPlayed?: number;
   wins?: number;

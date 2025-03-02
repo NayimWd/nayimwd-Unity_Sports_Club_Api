@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { veryfyJWT } from "../../middleware/auth.middleware";
-import { createInnings } from "../../controller/innings";
+import { createInnings, getMatchInnings, getTournamentInnings, updateInnings } from "../../controller/innings";
 
 const router = Router();
 // route types
@@ -22,7 +22,12 @@ const innings_routes: Innings = {
 }
 
 // create Match 
-router.route(innings_routes.create).post(veryfyJWT, createInnings)
+router.route(innings_routes.create).post(veryfyJWT, createInnings);
+// get tournament Inningss
+router.route(innings_routes.all).get(getTournamentInnings);
+// get match innings
+router.route(innings_routes.details).get(getMatchInnings);
+router.route(innings_routes.update).post(veryfyJWT, updateInnings)
 
 
 export default router;

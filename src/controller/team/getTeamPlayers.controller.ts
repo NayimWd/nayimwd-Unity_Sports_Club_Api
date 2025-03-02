@@ -28,15 +28,15 @@ export const getTeamPlayers = asyncHandler(async(req, res)=>{
     const teamMembers = await TeamPlayer.find({ teamId })
       .populate({
         path: "playerId", // "playerId" references the User schema
-        select: "name role photo", // Fetch name, role, and photo
+        select: "name role player_role photo", // Fetch name, role, and photo
       });
   
     // Respond with data
     res.status(200).json({
       success: true,
       data: {
-        manager: team.managerId, // Include manager details
         number: teamMembers.length,
+        manager: team.managerId, // Include manager details
         players: teamMembers, // Include populated player details
       },
       message: "Team members fetched successfully",

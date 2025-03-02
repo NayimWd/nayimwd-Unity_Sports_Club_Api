@@ -1,5 +1,11 @@
 import { createInnings } from "./createInnings.controller";
+import { getMatchInnings, getTournamentInnings } from "./getAllInnings.controller";
+import { updateInnings} from "./update.controller";
+
 
 export {
-    createInnings
+    createInnings,
+    getMatchInnings,
+    getTournamentInnings,
+    updateInnings
 }

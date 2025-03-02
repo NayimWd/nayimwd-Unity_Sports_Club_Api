@@ -73,9 +73,8 @@ export const matchDetails = asyncHandler(async (req, res) => {
   // constract response
   const matchDetails = {
     match: match,
-    venue: schedule || null,
+    matchInfo: schedule || null,
     MatchResult: result ? matchSummary : null,
-    // innings: innings ? innings : null,
   };
 
   // return response
