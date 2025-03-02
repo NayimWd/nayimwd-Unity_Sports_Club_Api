@@ -1,6 +1,9 @@
 import { Router } from "express";
-import { veryfyJWT } from "../../middleware/auth.middleware";
+import { isAdmin, isManager, veryfyJWT } from "../../middleware/auth.middleware";
 import { createMatch, deleteMatch, getAllMatch, matchDetails, updateMatchStatus, updateUmpire } from "../../controller/match";
+import { addPlayingSquad } from "../../controller/match/addPlayingSquad.controller";
+import { updatePlayingSquad } from "../../controller/match/updatePlayingSquad.controller";
+import { getPlayingSquad } from "../../controller/match/getPlayinSquad.controller";
 
 const router = Router();
 
@@ -12,6 +15,9 @@ type Match = {
     delete: "/delete/:matchId",
     updateStatus: "/update_status/:tournamentId/:matchId",
     updateUmpires: "/update_umpires/:tournamentId/:matchId",
+    createSquad: "/createSquad/:tournamentId/:matchId",
+    updateSquad: "/updateSquad/:tournamentId/:matchId/:teamId",
+    getSquad: "/getSquad/:tournamentId/:matchId/:teamId"
 };
 
 // endpoints
@@ -22,6 +28,9 @@ const MatchRoutes: Match = {
     delete: "/delete/:matchId",
     updateStatus: "/update_status/:tournamentId/:matchId",
     updateUmpires: "/update_umpires/:tournamentId/:matchId",
+    createSquad: "/createSquad/:tournamentId/:matchId",
+    updateSquad: "/updateSquad/:tournamentId/:matchId/:teamId",
+    getSquad: "/getSquad/:tournamentId/:matchId/:teamId"
 };
 
 
@@ -37,5 +46,11 @@ router.route(MatchRoutes.updateStatus).patch(veryfyJWT, updateMatchStatus);
 router.route(MatchRoutes.updateUmpires).patch(veryfyJWT, updateUmpire);
 // delete match
 router.route(MatchRoutes.delete).delete(veryfyJWT, deleteMatch);
+// create squad
+router.route(MatchRoutes.createSquad).post(veryfyJWT, isManager, addPlayingSquad);
+// update squad
+router.route(MatchRoutes.updateSquad).patch(veryfyJWT, isAdmin, updatePlayingSquad);
+// get squad
+router.route(MatchRoutes.getSquad).get(getPlayingSquad)
 
 export default router;
