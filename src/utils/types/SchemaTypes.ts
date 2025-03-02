@@ -187,6 +187,15 @@ export interface IMatch {
   photo?: string;
 }
 
+export interface IPlayingSquad {
+  tournamentId: mongoose.Types.ObjectId;
+  matchId: mongoose.Types.ObjectId;
+  teamId: mongoose.Types.ObjectId;
+  players: mongoose.Types.ObjectId[]; // Exactly 11 players
+  captain: mongoose.Types.ObjectId;
+  wicketKeeper: mongoose.Types.ObjectId;
+}
+
 // match result type
 export interface IMatchResult extends Document {
   tournamentId: Types.ObjectId;

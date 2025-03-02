@@ -47,23 +47,35 @@ export const matchDetails = asyncHandler(async (req, res) => {
 
   // fetch schedule for match details
   const schedule = await Schedule.findOne({ matchId })
+    .select("-teams -previousMatches -tournamentId -matchId")
     .populate("venueId", "venueName location")
     .lean();
 
   // fetch result if available
   const result = await MatchResult.findOne({ matchId }).lean();
 
-  // fetch innings details if available
-  const innings = await Innings.findOne({ matchId })
-    .populate("teamId", "teamName teamLogo")
-    .lean();
+  // fetch innings details for each team if available
+  const [innings1, innings2] = await Promise.all([
+    Innings.findOne({ matchId, inningsNumber: 1 }).lean(),
+    Innings.findOne({ matchId, inningsNumber: 2 }).lean()
+  ]);
+
+  // match summary
+  let matchSummary;
+  if (result) {
+    matchSummary = {
+      teamA_stats: `${(match as any).teamA.teamName} ${innings1?.totalRuns || 0}-${innings1?.wicket || 0}`,
+      teamB_stats: `${(match as any).teamB.teamName} ${innings2?.totalRuns || 0}-${innings2?.wicket || 0}`,
+      margin: result?.margin,
+    };
+  }
 
   // constract response
   const matchDetails = {
     match: match,
     venue: schedule || null,
-    MatchResult: result ? result : null,
-    innings: innings ? innings : null,
+    MatchResult: result ? matchSummary : null,
+    // innings: innings ? innings : null,
   };
 
   // return response
