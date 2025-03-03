@@ -7,6 +7,7 @@ import {
 import { updateTournamentDetails } from "./updateDetails.controller";
 import { updateTournamentPhoto } from "./updatePhoto.controller";
 import { updateTournamentStatus } from "./updateStatur.controller";
+import { getTeamsOfTournament } from "./getTeamsOfTournament.controller";
 
 export {
   createTournament,
@@ -15,5 +16,6 @@ export {
   getTournamentById,
   updateTournamentDetails,
   updateTournamentPhoto,
-  updateTournamentStatus
+  updateTournamentStatus,
+  getTeamsOfTournament
 };

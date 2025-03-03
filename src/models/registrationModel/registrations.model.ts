@@ -24,7 +24,7 @@ const registrationSchema: Schema<IRegistration> = new Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "approved", "rejected", "withdrawn"], // Changed "approve" to "approved" for consistency
+      enum: ["pending", "approved", "rejected", "withdrawn"], 
       default: "pending",
     },
   },

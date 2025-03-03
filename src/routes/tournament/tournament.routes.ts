@@ -9,6 +9,7 @@ import {
   updateTournamentDetails,
   updateTournamentPhoto,
   updateTournamentStatus,
+  getTeamsOfTournament
 } from "../../controller/tournament";
 
 const router = Router();
@@ -22,6 +23,7 @@ type Tournament = {
   update_details: "/update_details/:tournamentId";
   update_photo: "/update_photo/:tournamentId";
   update_status: "/update_status/:tournamentId";
+  getTeams: "/teams/:tournamentId";
 }
 
 // routes
@@ -33,6 +35,7 @@ const tournament: Tournament = {
   update_details: "/update_details/:tournamentId",
   update_photo: "/update_photo/:tournamentId",
   update_status: "/update_status/:tournamentId",
+  getTeams: "/teams/:tournamentId"
 };
 
 // create tournament
@@ -53,5 +56,7 @@ router
   .patch(veryfyJWT, upload.single("photo"), updateTournamentPhoto);
 // update status
 router.route(tournament.update_status).patch(veryfyJWT, updateTournamentStatus);
+// get tournament teams
+router.route(tournament.getTeams).get(getTeamsOfTournament);
 
 export default router;

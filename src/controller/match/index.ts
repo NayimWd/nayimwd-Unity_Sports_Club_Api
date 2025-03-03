@@ -7,6 +7,7 @@ import { deleteMatch } from "./deleteMatch.controller";
 import { addPlayingSquad } from "./addPlayingSquad.controller";
 import { updatePlayingSquad } from "./updatePlayingSquad.controller";
 import { getPlayingSquad } from "./getPlayinSquad.controller";
+import { getMatchTeams } from "./getMatchTeam.controller";
 
 export {
     createMatch,
@@ -14,5 +15,9 @@ export {
     matchDetails,
     updateMatchStatus,
     updateUmpire,
-    deleteMatch
+    deleteMatch,
+    addPlayingSquad,
+    updatePlayingSquad,
+    getPlayingSquad,
+    getMatchTeams
 }

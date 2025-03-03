@@ -32,11 +32,13 @@ export const getTeamProfiles = asyncHandler(async (req, res) => {
 
   // fetch team players profiles
   const playersProfiles = await PlayerProfile.find({ teamId })
-    .select("userId")
+    .select("userId, player_role batingStyle bowlingArm bowlingStyle")
     .populate({
       path: "userId",
-      select: "name photo",
-    });
+      model: "User",
+      select: "name photo"
+    }).lean();
+  
 
   if (!playersProfiles) {
     throw new ApiError(404, "Players profiles not found");

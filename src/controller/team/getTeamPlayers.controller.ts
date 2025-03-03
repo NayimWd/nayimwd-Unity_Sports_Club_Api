@@ -6,7 +6,7 @@ import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
 import { PlayerProfile } from "../../models/profilesModel/playerProfile.model";
 
-export const getTeamPlayers = asyncHandler(async(req, res)=>{
+export const getAllTeamMembers = asyncHandler(async(req, res)=>{
     const { teamId } = req.params;
 
     // Validate team ID
@@ -28,8 +28,8 @@ export const getTeamPlayers = asyncHandler(async(req, res)=>{
     const teamMembers = await TeamPlayer.find({ teamId })
       .populate({
         path: "playerId", // "playerId" references the User schema
-        select: "name role player_role photo", // Fetch name, role, and photo
-      });
+        select: "name role  photo", // Fetch name, role, and photo
+      })
   
     // Respond with data
     res.status(200).json({
