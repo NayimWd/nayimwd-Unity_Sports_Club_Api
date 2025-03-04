@@ -9,7 +9,8 @@ import {
   updateTournamentDetails,
   updateTournamentPhoto,
   updateTournamentStatus,
-  getTeamsOfTournament
+  getTeamsOfTournament,
+  updateDate
 } from "../../controller/tournament";
 
 const router = Router();
@@ -21,6 +22,7 @@ type Tournament = {
   get_by_status: "/status";
   details: "/details/:tournameId";
   update_details: "/update_details/:tournamentId";
+  update_date: "/update_date/:tournamentId";
   update_photo: "/update_photo/:tournamentId";
   update_status: "/update_status/:tournamentId";
   getTeams: "/teams/:tournamentId";
@@ -32,6 +34,7 @@ const tournament: Tournament = {
   get_all: "/all",
   get_by_status: "/status",
   details: "/details/:tournameId",
+  update_date: "/update_date/:tournamentId",
   update_details: "/update_details/:tournamentId",
   update_photo: "/update_photo/:tournamentId",
   update_status: "/update_status/:tournamentId",
@@ -50,6 +53,8 @@ router.route(tournament.get_by_status).get(getTournamentsByStatus);
 router.route(tournament.details).get(getTournamentById);
 // update tournament details
 router.route(tournament.update_details).patch(veryfyJWT, updateTournamentDetails);
+// update date
+router.route(tournament.update_date).patch(veryfyJWT, updateDate);
 // update photo
 router
   .route(tournament.update_photo)

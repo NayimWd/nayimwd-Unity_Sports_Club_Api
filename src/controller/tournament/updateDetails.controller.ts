@@ -23,6 +23,11 @@ export const updateTournamentDetails = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Tournament Id is required");
   }
 
+  const tournament = await Tournament.findById(tournamentId);
+  if (!tournament) {
+    throw new ApiError(404, "Tournament is required");
+  }
+
   // get data from req body
   const {
     tournamentName,
@@ -31,36 +36,12 @@ export const updateTournamentDetails = asyncHandler(async (req, res) => {
     format,
     ballType,
     matchOver,
-    registrationDeadline,
-    startDate,
-    endDate,
     status,
     entryFee,
     champion,
     runnerUp,
     thirdPlace,
   } = req.body;
-
-  // date validation
-  const regDate = new Date(registrationDeadline.split("-").reverse().join("-"));
-  const start = new Date(startDate.split("-").reverse().join("-"));
-  const end = new Date(endDate.split("-").reverse().join("-"));
-
-  if (
-    isNaN(regDate.getTime()) ||
-    isNaN(start.getTime()) ||
-    isNaN(end.getTime())
-  ) {
-    throw new ApiError(400, "Invalid date format");
-  }
-
-  if (start <= regDate) {
-    throw new ApiError(400, "Start date must be after registration deadline");
-  }
-
-  if (end <= start) {
-    throw new ApiError(400, "End date must be after start date");
-  }
 
   // update details
   const updateDetails = await Tournament.findByIdAndUpdate(
@@ -72,9 +53,6 @@ export const updateTournamentDetails = asyncHandler(async (req, res) => {
       format,
       ballType,
       matchOver,
-      registrationDeadline,
-      startDate,
-      endDate,
       seat: format,
       teamCount: 0,
       status,

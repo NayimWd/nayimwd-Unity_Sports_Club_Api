@@ -15,7 +15,7 @@ export const getAllTeamMembers = asyncHandler(async(req, res)=>{
     }
   
     // Fetch team to get manager details
-    const team = await Team.findById(teamId).select("managerId").populate({
+    const team = await Team.findById(teamId).select("teamName teamLogo managerId").populate({
       path: "managerId",
       select: "name photo", // Fetch manager details
     });
@@ -31,11 +31,17 @@ export const getAllTeamMembers = asyncHandler(async(req, res)=>{
         select: "name role  photo", // Fetch name, role, and photo
       })
   
+      const teamDetails = {
+        teamName: team.teamName,
+        teamLogo: team.teamLogo
+      }
+
     // Respond with data
     res.status(200).json({
       success: true,
       data: {
         number: teamMembers.length,
+        team: teamDetails,
         manager: team.managerId, // Include manager details
         players: teamMembers, // Include populated player details
       },
