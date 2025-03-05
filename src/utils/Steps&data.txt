@@ -95,7 +95,7 @@
 19. Hobart Hurricanes
 20. Melbourn Renegades
 21 Melbourn Stars
-
+naimh6931@gmail.com
 ---------------------------------------------------------------------
     ------------------------- Team Name & Manager -------------------------
 ---------------------------------------------------------------------
@@ -201,24 +201,3 @@
 }
 
 
-{
-  "tournamentId": {
-    "$oid": "6790207c69aa7be5f9cf52e3"
-  },
-  "matchId": {
-    "$oid": "67bce2c08ec8d5999c1f8f7c"
-  },
-  "winner": {
-    "$oid": "67501b71596bcf5e8c7dedc5"
-  },
-  "defeated": {
-    "$oid": "6750c7533ba80718e70d759a"
-  },
-  "margin": "7 runs and 4 wickets",
-  "method": "normal",
-  "manOfTheMatch": {
-    "$oid": "6742fc7e340d029e3ca0dc94"
-  },
-  "matchReport": "Leicester Tigers won the toss and opt to bowl first",
-  "photo": null
-}

@@ -17,11 +17,16 @@ export const getTournamentApplication = asyncHandler(async (req, res) => {
 
    // Get status filter (optional)
    const {status} = req.query;
+ 
+   // Build query dynamically
+  const query: any = { tournamentId };
+  if (status) {
+    query.status = status; // Only add status filter if provided
+  }
 
-   const filter = status ? status : null;
 
   // find registration
-  const registration = await Registration.find({ tournamentId, status: filter }).select("status").populate({
+  const registration = await Registration.find(query).select("status").populate({
     path: "managerId",
     select: "name"
   })

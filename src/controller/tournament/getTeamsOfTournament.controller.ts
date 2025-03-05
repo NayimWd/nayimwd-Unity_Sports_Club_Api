@@ -39,7 +39,10 @@ if(!teams){
 return res.status(200).json(
 new ApiResponse(  
     200,
-    teams,
+    { 
+        total: teams.length,
+        teams
+    },
     "Tournament team found successfully"
 )
 )
