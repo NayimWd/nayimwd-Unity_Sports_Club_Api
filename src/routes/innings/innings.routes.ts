@@ -5,8 +5,8 @@ import { createInnings, getMatchInnings, getTournamentInnings, updateInnings } f
 const router = Router();
 // route types
 type Innings = {
-    create: "/create/:tournamentId",
-    update: "/update/:matchId/inningsId",
+    create: "/create/:tournamentId/:matchId",
+    update: "/update/:tournamentId/:matchId/:inningsId",
     delete: "/delete/:inningsId"
     all: "/all/:tournamentId",
     details: "/details/:matchId"
@@ -14,8 +14,8 @@ type Innings = {
 
 // endpoints
 const innings_routes: Innings = {
-    create: "/create/:tournamentId",
-    update: "/update/:matchId/inningsId",
+    create: "/create/:tournamentId/:matchId",
+    update: "/update/:tournamentId/:matchId/:inningsId",
     delete: "/delete/:inningsId",
     all: "/all/:tournamentId",
     details: "/details/:matchId"
@@ -27,7 +27,7 @@ router.route(innings_routes.create).post(veryfyJWT, createInnings);
 router.route(innings_routes.all).get(getTournamentInnings);
 // get match innings
 router.route(innings_routes.details).get(getMatchInnings);
-router.route(innings_routes.update).post(veryfyJWT, updateInnings)
+router.route(innings_routes.update).patch(veryfyJWT, updateInnings)
 
 
 export default router;

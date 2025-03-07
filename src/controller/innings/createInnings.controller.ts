@@ -17,8 +17,8 @@ export const createInnings = asyncHandler(async (req, res) => {
   }
 
   // extract data from req params and body
-  const { tournamentId } = req.params;
-  const { matchId, teamId, inningsNumber, wicket, runs, over, extras } =
+  const { tournamentId, matchId } = req.params;
+  const {  teamId, inningsNumber, wicket, runs, over, extras } =
     req.body;
 
   // validate data
@@ -63,6 +63,17 @@ export const createInnings = asyncHandler(async (req, res) => {
       400,
       `Innings ${inningsNumber} is already exists for this match`
     );
+  }
+
+   // Ensure team is not repeated for the second innings
+   if (inningsNumber === 2) {
+    const firstInnings = await Innings.findOne({ matchId, inningsNumber: 1 });
+    if (firstInnings && firstInnings.teamId.toString() === teamId) {
+      throw new ApiError(
+        400,
+        "The same team cannot play both the first and second innings."
+      );
+    }
   }
 
   // ensure wicket do not exceed 10
