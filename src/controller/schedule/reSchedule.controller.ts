@@ -38,7 +38,7 @@ export const reSchedule = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Cannot reschedule a match that is live or completed.");
   }
 
-  // **Check for venue conflicts**
+  // Check for venue conflicts
   const conflictingBooking = await VenueBooking.findOne({
     venueId: schedule.venueId,
     bookingDate: newMatchDate,
@@ -53,7 +53,7 @@ export const reSchedule = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Venue is already booked for the given date and time.");
   }
 
-  // **Check if another match is already scheduled at this time in this venue**
+  // Check if another match is already scheduled at this time in this venue
   const existingSchedule = await Schedule.findOne({
     venueId: schedule.venueId,
     matchDate: newMatchDate,
@@ -65,7 +65,7 @@ export const reSchedule = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Another match is already scheduled at this venue at the same time.");
   }
 
-  // **Check if teams are already scheduled for another match on this date**
+  // Check if teams are already scheduled for another match on this date
   const existingTeamSchedule = await Schedule.findOne({
     $or: [
       { "teams.teamA": schedule.teams.teamA },
@@ -81,14 +81,14 @@ export const reSchedule = asyncHandler(async (req, res) => {
     throw new ApiError(400, "One or both teams are already scheduled for another match on this date.");
   }
 
-  // ❌ Cancel old venue booking
+  //  Cancel old venue booking
   await VenueBooking.findOneAndDelete({
     venueId: schedule.venueId,
     bookingDate: schedule.matchDate,
     startTime: schedule.matchTime,
   });
 
-  // ✅ Book new venue
+  // Book new venue
   await VenueBooking.create({
     venueId: schedule.venueId,
     bookedBy: author._id,
@@ -97,13 +97,13 @@ export const reSchedule = asyncHandler(async (req, res) => {
     endTime: newEndTime,
   });
 
-  // ✅ Update the schedule
+  //  Update the schedule
   schedule.matchDate = newMatchDate;
   schedule.matchTime = newMatchTime;
   schedule.status = "rescheduled";
   await schedule.save();
 
-  // ✅ Update match status to "upcoming" (in case it was set to "scheduled")
+  //  Update match status to "upcoming" (in case it was set to "scheduled")
   match.status = "upcoming";
   await match.save();
 

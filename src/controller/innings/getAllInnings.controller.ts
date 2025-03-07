@@ -22,8 +22,16 @@ export const getMatchInnings = asyncHandler(async (req, res) => {
 
   // fetch innings by match Id
   const [innings1, innings2] = await Promise.all([
-    Innings.findOne({ matchId: matchId, inningsNumber: 1 }),
-    Innings.findOne({ matchId: matchId, inningsNumber: 2 }),
+    Innings.findOne({ matchId: matchId, inningsNumber: 1 }).populate({
+      path: "teamId",
+      model: "Team",
+      select: "teamName teamLogo",
+    }),
+    Innings.findOne({ matchId: matchId, inningsNumber: 2 }).populate({
+      path: "teamId",
+      model: "Team",
+      select: "teamName teamLogo",
+    }),
   ]);
 
   if (!innings1 && innings2) {

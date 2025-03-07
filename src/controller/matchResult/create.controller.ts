@@ -64,7 +64,7 @@ export const createMatchResult = asyncHandler(async (req, res) => {
   } else if (innings2.totalRuns > innings1.totalRuns) {
     winner = innings2.teamId;
     defeated = innings1.teamId;
-    margin = `${innings2.totalRuns} - ${innings1.totalRuns} runs`;
+    margin = `{${innings2.totalRuns} - ${innings1.totalRuns}} runs`;
   } else {
     winner = null;
     defeated = null;

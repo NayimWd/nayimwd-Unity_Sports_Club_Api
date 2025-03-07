@@ -28,7 +28,7 @@ export const deleteSchedule = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Schedule not found");
     }
 
-    // ❌ Prevent deletion if match is already in progress or completed
+    //  Prevent deletion if match is already in progress or completed
     if (["in-progress", "completed"].includes(schedule.status)) {
         throw new ApiError(400, "Cannot delete a schedule for an in-progress or completed match.");
     }
@@ -40,7 +40,7 @@ export const deleteSchedule = asyncHandler(async (req, res) => {
         startTime: schedule.matchTime
     });
 
-    // ❗️ Check if there is a match linked to this schedule and delete it
+    //  Check if there is a match linked to this schedule and delete it
     if (schedule.matchId) {
         await Match.findByIdAndDelete(schedule.matchId);
     }

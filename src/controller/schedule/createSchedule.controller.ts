@@ -1,7 +1,6 @@
 import { Match } from "../../models/matchModel/match.model";
 import { Registration } from "../../models/registrationModel/registrations.model";
 import { Schedule } from "../../models/sceduleModel/schedules.model";
-import { Team } from "../../models/teamModel/teams.model";
 import { Tournament } from "../../models/tournamentModel/tournaments.model";
 import { VenueBooking } from "../../models/venueModel/venueBooking.model";
 import { ApiError } from "../../utils/ApiError";
