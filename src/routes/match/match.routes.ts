@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { isAdmin, isManager, veryfyJWT } from "../../middleware/auth.middleware";
 import { createMatch, deleteMatch, getAllMatch, matchDetails, updateMatchStatus, updateUmpire, addPlayingSquad, updatePlayingSquad, getPlayingSquad, getMatchTeams } from "../../controller/match";
-import { createMatchResult } from "../../controller/matchResult";
+import { createMatchResult, getMatchResult } from "../../controller/matchResult";
 
 const router = Router();
 
@@ -17,6 +17,7 @@ type Match = {
     updateSquad: "/updateSquad/:tournamentId/:matchId/:teamId",
     getSquad: "/getSquad/:tournamentId/:matchId/:teamId";
     createResult: "/createResult/:tournamentId/:matchId";
+    matchResult: "/matchResult/:matchId";
     teamOfMatch: "/teamsOfMatch/:matchId"
 };
 
@@ -32,6 +33,7 @@ const MatchRoutes: Match = {
     updateSquad: "/updateSquad/:tournamentId/:matchId/:teamId",
     getSquad: "/getSquad/:tournamentId/:matchId/:teamId",
     createResult: "/createResult/:tournamentId/:matchId",
+    matchResult: "/matchResult/:matchId",
     teamOfMatch: "/teamsOfMatch/:matchId"
 };
 
@@ -56,6 +58,8 @@ router.route(MatchRoutes.updateSquad).patch(veryfyJWT, updatePlayingSquad);
 router.route(MatchRoutes.getSquad).get(getPlayingSquad);
 // create match result
 router.route(MatchRoutes.createResult).post(veryfyJWT, createMatchResult);
+// get match result
+router.route(MatchRoutes.matchResult).get(getMatchResult);
 // get match teams
 router.route(MatchRoutes.teamOfMatch).get(getMatchTeams);
 
