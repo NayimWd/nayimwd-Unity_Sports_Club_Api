@@ -32,27 +32,11 @@ const blogSchema: Schema<IBlog> = new Schema(
       type: Number,
       default: 0,
     },
-    comments: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-          required: true,
-        },
-        comment: {
-          type: String,
-          required: true,
-        },
-        date: {
-          type: Date,
-          default: Date.now(),
-        },
-      },
-    ],
     isPublished: {
       type: Boolean,
       default: true,
     },
+    photo: ["String"],
   },
   {
     timestamps: true,
@@ -62,10 +46,6 @@ const blogSchema: Schema<IBlog> = new Schema(
 // converting blog publis date to human readable format
 blogSchema.virtual("DD/MM/YYYY").get(function () {
   return this.createdAt.toLocaleDateString();
-});
-// converting comment publish date to human readable format
-blogSchema.virtual("DD/MM/YYYY").get(function () {
-  return this.comments?.[2].toLocaleDateString();
 });
 
 // enable vertual

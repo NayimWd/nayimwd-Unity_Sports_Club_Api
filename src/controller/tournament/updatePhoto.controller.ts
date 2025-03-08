@@ -27,6 +27,12 @@ export const updateTournamentPhoto = asyncHandler(async(req, res)=>{
         throw new ApiError(400, "Tournament Id is required")
      };
 
+     // check if tournament exists
+       const tournament = await Tournament.findById(tournamentId);
+         if(!tournament){
+            throw new ApiError(404, "Tournament not found")
+         };
+
      // get photo from req body
      const photoLocalPath = req.file?.path;
      if(!photoLocalPath){

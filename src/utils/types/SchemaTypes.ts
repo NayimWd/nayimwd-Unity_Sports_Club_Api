@@ -27,21 +27,21 @@ export interface IPlayerProfile extends Document {
   bowlingArm: "left arm" | "right arm";
   bowlingStyle: "fast" | "spin" | "swing" | "seam";
   DateOfBirth: Date;
-  photo?: Types.ObjectId
+  photo?: Types.ObjectId;
 }
 
 // manager profile type
 export interface IManagerProfile extends Document {
   userId: Types.ObjectId;
   teamsManaged: [type: Types.ObjectId];
-  photo?: Types.ObjectId
+  photo?: Types.ObjectId;
 }
 
 // umpire Profile type
 export interface IUmpireProfile extends Document {
   userId: Types.ObjectId;
   yearsOfExperience: number;
-  photo?: Types.ObjectId
+  photo?: Types.ObjectId;
 }
 
 // team type
@@ -54,10 +54,10 @@ export interface ITeams extends Document {
 }
 
 export interface ITeamPlayer extends Document {
-  teamId: Types.ObjectId,
-  playerId: Types.ObjectId,
-  isCaptain?: boolean,
-  status: "active" | "benched" | "injured"
+  teamId: Types.ObjectId;
+  playerId: Types.ObjectId;
+  isCaptain?: boolean;
+  status: "active" | "benched" | "injured";
 }
 
 // venue type
@@ -76,7 +76,6 @@ export interface IVenueBooking extends Document {
   bookingDate: string;
   startTime: string;
   endTime: string;
- 
 }
 
 // tournament type
@@ -94,9 +93,9 @@ export interface ITournament extends Document {
   teamCount: number;
   status: "upcoming" | "ongoing" | "completed" | "cancelled";
   entryFee: number;
-    champion: string;
-    runnerUp: string;
-    thirdPlace: string;
+  champion: string;
+  runnerUp: string;
+  thirdPlace: string;
 
   photo?: string;
 }
@@ -120,18 +119,29 @@ export interface ISchedule extends Document {
   matchId: Types.ObjectId;
   venueId: Types.ObjectId;
   matchNumber: number;
-  round: "round 1" | "round 2" | "Quarter-Final" | "Semi-Final" | "Final" | "Playoff";
+  round:
+    | "round 1"
+    | "round 2"
+    | "Quarter-Final"
+    | "Semi-Final"
+    | "Final"
+    | "Playoff";
   teams: {
-    teamA: { type: Types.ObjectId },
-    teamB: { type: Types.ObjectId },
+    teamA: { type: Types.ObjectId };
+    teamB: { type: Types.ObjectId };
   };
   previousMatches: {
-    matchA: { type: Types.ObjectId },
-    matchB: { type: Types.ObjectId },
+    matchA: { type: Types.ObjectId };
+    matchB: { type: Types.ObjectId };
   };
   matchDate: string;
   matchTime: string;
-  status: "scheduled" | "rescheduled" | "in-progress" | "cancelled" | "completed";
+  status:
+    | "scheduled"
+    | "rescheduled"
+    | "in-progress"
+    | "cancelled"
+    | "completed";
 }
 
 // registration type
@@ -181,9 +191,9 @@ export interface IMatch {
   matchNumber: number;
   teamA?: Types.ObjectId;
   teamB?: Types.ObjectId;
-  previousMatches?: PreviousMatches; 
+  previousMatches?: PreviousMatches;
   status: "upcoming" | "scheduled" | "in-progress" | "completed" | "cancelled";
-  umpires: Umpires; 
+  umpires: Umpires;
   photo?: string;
 }
 
@@ -228,6 +238,14 @@ export interface IBlog extends Document {
   tags: "news" | "highlight" | "tournaments" | "awards";
   createdAt: Date;
   likes?: number;
-  comments?: [user: Types.ObjectId, comment: string, date: Date];
   isPublished: boolean;
+  photo?: [string];
+}
+
+// comment type
+export interface IComment extends Document {
+  blog: mongoose.Schema.Types.ObjectId;
+  user: mongoose.Schema.Types.ObjectId;
+  comment: string;
+  createdAt: Date;
 }

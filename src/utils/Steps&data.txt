@@ -200,5 +200,3 @@ naimh6931@gmail.com
     "thirdPlace": "N/A"
 }
 
-
-now generate code for get tournament result in details like real world use case. everything should include, in that, for example, innings1, 2, innings 1 team name, team2 name, winning team & looser team in final with their name, venue name, match time. man of the tournament. etc  

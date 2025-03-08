@@ -41,7 +41,7 @@ export const updateDetails = asyncHandler(async (req, res) => {
       throw new ApiError(400, "Cannot change the round after the match has started.");
   }
 
-  /*** Handle Venue Update ***/
+  /* Handle Venue Update */
   if (newVenueId) {
       const venueExists = await Venue.findById(newVenueId);
       if (!venueExists) {
@@ -61,7 +61,7 @@ export const updateDetails = asyncHandler(async (req, res) => {
       const matchDuration = tournament.matchOver * 4; // Assuming 4 minutes per over (adjust as needed)
       const endTime = matchStart.clone().add(matchDuration, "minutes").format("hA");
 
-      // **Check for venue booking conflicts**
+      // Check for venue booking conflicts
       const venueConflict = await VenueBooking.findOne({
           venueId: newVenueId,
           bookingDate: schedule.matchDate,
@@ -75,7 +75,7 @@ export const updateDetails = asyncHandler(async (req, res) => {
           throw new ApiError(400, "Venue is already booked for this date and time.");
       }
 
-      // **Remove old venue booking (Only if booked by the same user)**
+      // Remove old venue booking (Only if booked by the same user)
       await VenueBooking.findOneAndDelete({
           venueId: schedule.venueId,
           bookingDate: schedule.matchDate,
@@ -84,7 +84,7 @@ export const updateDetails = asyncHandler(async (req, res) => {
           bookedBy: author._id,
       });
 
-      // **Book new venue**
+      // Book new venue
       await VenueBooking.create({
           venueId: newVenueId,
           bookedBy: author._id,
@@ -93,11 +93,11 @@ export const updateDetails = asyncHandler(async (req, res) => {
           endTime: endTime,
       });
 
-      // **Update venue in schedule**
+      // Update venue in schedule
       schedule.venueId = newVenueId;
   }
 
-  /*** Update Round ***/
+  /* Update Round */
   if (newRound) {
       schedule.round = newRound;
   }
