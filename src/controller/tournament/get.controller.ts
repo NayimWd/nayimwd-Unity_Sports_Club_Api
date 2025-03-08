@@ -1,3 +1,4 @@
+import { TournamentResult } from "../../models/tournamentModel/tournamentResult.model";
 import { Tournament } from "../../models/tournamentModel/tournaments.model";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
@@ -5,7 +6,7 @@ import { asyncHandler } from "../../utils/asyncHandler";
 
 export const getAllTournaments = asyncHandler(async (req, res) => {
   const tournaments = await Tournament.find().select(
-    "tournamentName tournamentType matchOver registrationDeadline seats startDate endDate status entryFee photo"
+    "tournamentName tournamentType seats status entryFee photo"
   ).lean();
 
   // validate data
@@ -32,7 +33,7 @@ export const getTournamentsByStatus = asyncHandler(async (req, res) => {
   const { status = "ongoing" } = req.body;
 
   const tournaments = await Tournament.find({ status: status }).select(
-    "tournamentName tournamentType matchOver registrationDeadline seats startDate endDate status entryFee photo"
+    "tournamentName tournamentType seats status entryFee photo"
   );
 
   // validate data
@@ -57,23 +58,37 @@ export const getTournamentsByStatus = asyncHandler(async (req, res) => {
 
 // get tournament by id
 export const getTournamentById = asyncHandler(async (req, res) => {
-  const { tournameId } = req.params;
-  if (!tournameId) {
+  const {  tournamentId } = req.params;
+  if (!tournamentId) {
     throw new ApiError(400, "Tournament id is required");
   };
 
-    const tournament = await Tournament.findById(tournameId)
+    const tournament = await Tournament.findById(tournamentId)
 
     // validate data
     if (!tournament) {
       throw new ApiError(400, "No tournament found");
     }
 
+    // fetch tournament result 
+    const result = await TournamentResult.findOne({tournamentId})
+    .populate("result.champion", "teamName teamLogo")
+    .populate("result.runnerUp", "teamName teamLogo")
+    .populate("result.thirdPlace", "teamName teamLogo")
+    .populate("manOfTheTournament", "name photo")
+    .lean();
+
+    // build response
+    const response = {
+      tournament,
+      result: result ? result : "Tournament is not completed yet"
+    }
+
     // return response
     return res.status(200).json(
         new ApiResponse(
             200,
-            tournament,
+            response,
             "Tournament Fetched successfully"
         )
     )

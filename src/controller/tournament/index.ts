@@ -9,6 +9,7 @@ import { updateDate } from "./updatedate.controller";
 import { updateTournamentPhoto } from "./updatePhoto.controller";
 import { updateTournamentStatus } from "./updateStatur.controller";
 import { getTeamsOfTournament } from "./getTeamsOfTournament.controller";
+import { createTournamentResult } from "./createResult.controller";
 
 export {
   createTournament,
@@ -19,5 +20,6 @@ export {
   updateDate,
   updateTournamentPhoto,
   updateTournamentStatus,
-  getTeamsOfTournament
+  getTeamsOfTournament,
+  createTournamentResult
 };

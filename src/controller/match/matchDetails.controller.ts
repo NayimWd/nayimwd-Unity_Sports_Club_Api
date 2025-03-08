@@ -52,7 +52,9 @@ export const matchDetails = asyncHandler(async (req, res) => {
     .lean();
 
   // fetch result if available
-  const result = await MatchResult.findOne({ matchId }).lean();
+  const result = await MatchResult.findOne({ matchId })
+  .populate("manOfTheMatch", "name photo")
+  .lean();
 
   // fetch innings details for each team if available
   const [innings1, innings2] = await Promise.all([
@@ -67,6 +69,7 @@ export const matchDetails = asyncHandler(async (req, res) => {
       teamA_stats: `${(match as any).teamA.teamName} ${innings1?.totalRuns || 0}-${innings1?.wicket || 0}`,
       teamB_stats: `${(match as any).teamB.teamName} ${innings2?.totalRuns || 0}-${innings2?.wicket || 0}`,
       margin: result?.margin,
+      manOftheMatch: result.manOfTheMatch
     };
   }
 
