@@ -106,9 +106,12 @@ export const createMatchResult = asyncHandler(async (req, res) => {
     photo: null,
   });
 
+
   if (!matchResult) {
     throw new ApiError(500, "Failed to create match result.");
   }
+
+
 
   // update match and schedule status
   await Promise.all([
@@ -197,6 +200,12 @@ export const createMatchResult = asyncHandler(async (req, res) => {
       }
     })
   );
+
+  // update tournament Status after final match completed
+  const schedule = await Schedule.findOne({round: "final", status: "completed"});
+  if(schedule){
+    await Tournament.findByIdAndUpdate(tournamentId, {status: "completed"});
+  }
 
   // return response
   return res

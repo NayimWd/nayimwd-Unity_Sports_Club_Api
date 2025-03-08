@@ -4,7 +4,7 @@ import { getPlayerDetails, getAvailablePlayers } from "../../controller/players"
 
 const router = Router();
 
-// interface
+// type
 type Player = {
   available_players: "/available_players";
   player_details: "/player_details/:playerId";
