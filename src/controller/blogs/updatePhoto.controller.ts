@@ -57,5 +57,5 @@ export const updateBlogPhoto = asyncHandler(async (req, res) => {
   // return response
   return res
     .status(200)
-    .json(new ApiResponse(200, blogPhoto, "Blog Photo updated successfully"));
+    .json(new ApiResponse(200, blogPhoto.photo, "Blog Photo updated successfully"));
 });

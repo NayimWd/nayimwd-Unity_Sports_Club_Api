@@ -42,5 +42,5 @@ export const blogPublish = asyncHandler(async (req, res) => {
   // send response
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedBlog, "Blog updated successfully"));
+    .json(new ApiResponse(200, updatedBlog.isPublished, "Blog updated successfully"));
 });

@@ -3,40 +3,17 @@ import { IBlog } from "../../utils/types/SchemaTypes";
 
 const blogSchema: Schema<IBlog> = new Schema(
   {
-    title: {
-      type: String,
-      required: [true, "blog title is required"],
-      trim: true,
-      min: 10,
-      max: 500,
-    },
-    content: {
-      type: String,
-      required: [true, "blog title is required"],
-    },
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+    title: { type: String, required: true, trim: true, min: 10, max: 500, index: true },
+    content: { type: String, required: true },
+    author: String,
     tags: {
       type: String,
       enum: ["news", "highlight", "tournaments", "awards"],
       default: "news",
+      index: true,
     },
-    createdAt: {
-      type: Date,
-      default: Date.now(),
-    },
-    likes: {
-      type: Number,
-      default: 0,
-    },
-    isPublished: {
-      type: Boolean,
-      default: true,
-    },
-    photo: ["String"],
+    isPublished: { type: Boolean, default: true },
+    photo: [String],
   },
   {
     timestamps: true,

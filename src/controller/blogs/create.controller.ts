@@ -15,7 +15,7 @@ export const createBlog = asyncHandler(async (req, res) => {
   }
 
   // extract data from req body
-  const { title, content, author, tags, isPublished } = req.body;
+  const { title, content, tags, isPublished=true } = req.body;
   if (!title || !content || !tags || !isPublished) {
     throw new ApiError(400, "All fields are required");
   }
@@ -61,7 +61,6 @@ export const createBlog = asyncHandler(async (req, res) => {
     author: writer.name,
     tags: tags,
     createdAt: new Date(),
-    likes: 0,
     isPublished: isPublished,
     photo: photo.url
   });

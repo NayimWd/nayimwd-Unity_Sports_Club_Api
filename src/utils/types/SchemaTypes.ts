@@ -237,7 +237,6 @@ export interface IBlog extends Document {
   author: Types.ObjectId;
   tags: "news" | "highlight" | "tournaments" | "awards";
   createdAt: Date;
-  likes?: number;
   isPublished: boolean;
   photo?: [string];
 }

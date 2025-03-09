@@ -67,5 +67,5 @@ export const updateBlog = asyncHandler(async (req, res) => {
   // return response
   res
     .status(200)
-    .json(new ApiResponse(200, updateBlog, "Blog updated successfully"));
+    .json(new ApiResponse(200, null, "Blog updated successfully"));
 });
