@@ -1,0 +1,5298 @@
+openapi: 3.0.0
+info:
+  title: Unity Sports Club API Documentation
+  description: >-
+    Welcome to the **Unity Sports Club API Documentation**. This API is designed
+    to power the Unity Sports Club management system, facilitating seamless
+    operations for tournaments, teams, players, venues, and match management.
+    The API is structured into multiple modules, each handling a specific aspect
+    of the club’s management system.
+
+
+    ---
+
+
+    ## **Overview**
+
+
+    The Unity Sports Club API provides endpoints for managing:
+
+
+    - **User Accounts** – Registration, authentication, and profile management.
+        
+    - **Profiles** – Creation and retrieval of player, umpire, and manager
+    profiles.
+        
+    - **Teams** – Team creation, management, and member assignments.
+        
+    - **Players** – Player details, availability, and team assignments.
+        
+    - **Venues** – Venue creation, updates, and details.
+        
+    - **Tournaments** – Tournament creation, updates, and status management.
+        
+    - **Registrations** – Application and approval process for tournaments.
+        
+    - **Schedules & Matches** – Creating fixtures, managing match details, and
+    tracking results.
+        
+    - **Innings & Results** – Managing match innings and storing final results.
+        
+    - **Point Table** – Tracking tournament standings.
+        
+    - **Blogs** – Managing and publishing news and updates.
+        
+
+    ---
+
+
+    ## **Authentication & Security**
+
+
+    - The API uses **JWT-based authentication** for secure access.
+        
+    - Certain actions are **role-restricted** (e.g., team management is limited
+    to managers, tournament control is restricted to admins).
+        
+    - All endpoints require authentication unless explicitly stated otherwise.
+        
+
+    ---
+
+
+    ## **Folder Structure**
+
+
+    The API is organized into the following modules:
+
+
+    1. **User Management**
+        
+        - Handles user registration, authentication, and account settings.
+            
+    2. **Profile Management**
+        
+        - Manages profiles for players, umpires, and managers.
+            
+    3. **Team Management**
+        
+        - Includes team creation, updates, assignments, and member management.
+            
+    4. **Player Management**
+        
+        - Retrieves player details, team affiliations, and status.
+            
+    5. **Venue Management**
+        
+        - Handles venue creation, updates, and details.
+            
+    6. **Tournament Management**
+        
+        - Manages tournament lifecycle from creation to completion.
+            
+    7. **Tournament Registration**
+        
+        - Handles team applications and approvals for tournaments.
+            
+    8. **Scheduling & Match Management**
+        
+        - Controls fixture creation, updates, and match proceedings.
+            
+    9. **Innings & Match Results**
+        
+        - Stores match innings, results, and performance statistics.
+            
+    10. **Point Table**
+        
+        - Displays team standings within a tournament.
+            
+    11. **Blog Management**
+        
+        - Allows admins to create and publish updates related to tournaments and club activities.
+            
+
+    ---
+
+
+    ## **General Conventions**
+
+
+    - **Base URL:** All endpoints are prefixed with `{{base_url}}`.
+        
+    - **Pagination:** Most list endpoints support `page` and `limit` query
+    parameters.
+        
+    - **Sorting & Filtering:** Some endpoints allow sorting via `sortBy` and
+    `sortOrder` query parameters.
+        
+    - **Date & Time**: For simplicity I have put Date in string format like
+    01-02-2025 and time 10am or 10pm.
+        
+    - **Timestamps:** Date/time fields follow the ISO 8601 format
+    (`YYYY-MM-DDTHH:MM:SSZ`).
+        
+
+    This documentation serves as the foundation for developers integrating with
+    the **Unity Sports Club API**. For specific module details, refer to the
+    respective documentation sections. 🚀
+  version: 1.0.0
+servers:
+  - url: http://{{base_url}}
+tags:
+  - name: User
+    description: >-
+      This section provides detailed documentation for all user-related API
+      endpoints. These endpoints facilitate user authentication, account
+      management, and security features.
+
+
+      ### Available Endpoints:
+
+
+      - **User Authentication**
+          
+          - Register a new user
+              
+          - Login
+              
+          - Logout
+              
+          - Refresh authentication token
+              
+      - **Account Management**
+          
+          - Update account details (including profile photo and role)
+              
+          - Change password
+              
+      - **Password Recovery**
+          
+          - Forgot password
+              
+          - Reset password
+              
+
+      Each endpoint includes request and response details, expected parameters,
+      and usage examples.
+  - name: Profile
+    description: >-
+      This section provides detailed documentation for all profile-related API
+      endpoints. These endpoints facilitate the creation and retrieval of user
+      profiles for different roles within the system.
+
+
+      ### Available Endpoints:
+
+
+      - **Profile Creation**
+          
+          - Create a profile for **Player**, **Umpire**, or **Manager**
+              
+      - **Profile Retrieval**
+          
+          - Get profile details for **Player**, **Umpire**, or **Manager**
+              
+          - Retrieve a profile by **User ID**
+              
+          - Retrieve all profiles by **Team ID**
+  - name: health check
+  - name: Team
+    description: >-
+      This folder contain all team relate routes.
+
+
+      This section provides detailed documentation for all team-related API
+      endpoints. These endpoints allow team management, including creation,
+      updates, and member assignments, with role-based access control.
+
+
+      ### Available Endpoints:
+
+
+      - **Team Management**
+          
+          - **Create a team** (`POST /team/create`) – _Restricted to Managers_
+              
+          - **Update team name** (`PUT /team/update_name/:teamId`) – _Restricted to Managers_
+              
+          - **Delete a team** (`DELETE /delete/:teamId`) – _Restricted to Managers_
+              
+          - **Update team logo** (`PUT /team/update_logo/:teamId`) – _Restricted to Managers_
+              
+      - **Team Retrieval**
+          
+          - **Get all teams** (`GET /team/all_teams`)
+              
+          - **Get my team** (`GET /team/my_team`) – _Restricted to Users_
+              
+          - **Get team details** (`GET /team/details/:teamId`)
+              
+          - **Get team members** (`GET /team/members/:teamId`)
+              
+      - **Team Member Management**
+          
+          - **Add players to team** (`POST /team/addPlayers/:teamId`) – _Restricted to Managers_
+              
+          - **Remove a player from the team** (`DELETE /team/removePlayer`) – _Restricted to Managers_
+              
+          - **Assign team captain** (`PUT /team/makeCaptain/:teamId`) – _Restricted to Managers_ _(User ID required in request body)_
+              
+
+      Each endpoint includes request and response details, expected parameters,
+      and usage examples.
+  - name: Players
+    description: >-
+      # Player API Documentation
+
+
+      This section provides detailed documentation for all player-related API
+      endpoints. These endpoints allow retrieving available players, player
+      details, and team member information.
+
+
+      ### Available Endpoints:
+
+
+      - **Player Availability & Listing**
+          
+          - **Get available players** (`GET /player/available_players?page={page}&limit={limit}&sortBy={field}&sortOrder={order}`)
+              
+              - Retrieves a paginated list of players who are **not yet part of any team**.
+                  
+              - Supports sorting by different fields (e.g., name).
+                  
+      - **Player Details**
+          
+          - **Get player details** (`GET /player/player_details/:playerId`)
+              
+              - Returns player information including:
+                  
+                  - Name & photo
+                      
+                  - Team summary (name, logo)
+                      
+                  - Profile details (role: bowler, batsman, or wicketkeeper-batsman, batting/bowling style, date of birth)
+                      
+                  - **IsCaptain** status (true/false)
+                      
+          - **Get player’s team details** (`GET /team/player_details/:playerId`)
+              
+              - Includes:
+                  
+                  - Player’s team details (name, logo)
+                      
+                  - Player's personal details (name, photo)
+                      
+                  - Profile information (role, batting/bowling style, date of birth)
+                      
+                  - **IsCaptain** status (true/false)
+                      
+      - **Team Members & Summary**
+          
+          - **Get team members** (`GET /team/members/:teamId`)
+              
+              - Returns:
+                  
+                  - Total members count (e.g., `14/15`)
+                      
+                  - Manager details (name, role, photo)
+                      
+                  - Player details (team, name, photo)
+                      
+
+      Each endpoint includes request and response details, expected parameters,
+      and usage examples.
+  - name: Venue
+    description: >-
+      This section provides detailed documentation for all venue-related API
+      endpoints. These endpoints enable venue management, including creation,
+      retrieval, updates, and deletion, with role-based access control.
+
+
+      ### Available Endpoints:
+
+
+      - **Venue Management** _(Restricted to Admins)_
+          
+          - **Create a venue** (`POST /venue/create`)
+              
+              - Admins can create a venue with:
+                  
+                  - Name
+                      
+                  - City
+                      
+                  - Location
+                      
+                  - Features (Indoor, Outdoor, Floodlight)
+                      
+                  - Photo
+                      
+          - **Update venue details** (`PUT /venue/update/:venueId`)
+              
+              - Admins can update venue information.
+                  
+          - **Delete a venue** (`DELETE /venue/delete/:venueId`)
+              
+              - Admins can delete a venue by providing the venue ID.
+                  
+      - **Venue Retrieval**
+          
+          - **Get all venues** (`GET /venue/`)
+              
+              - Returns a summary of all venues, including:
+                  
+                  - Total venue count
+                      
+                  - Name
+                      
+                  - City
+                      
+                  - Photo
+                      
+          - **Get venue details** (`GET /venue/details/:venueId`)
+              
+              - Returns full details of a specific venue, including:
+                  
+                  - Name
+                      
+                  - City
+                      
+                  - Location
+                      
+                  - Features (Indoor, Outdoor, Floodlight)
+                      
+
+      Each endpoint includes request and response details, expected parameters,
+      and usage examples.
+  - name: Tournament
+    description: >-
+      This section provides detailed documentation for all tournament-related
+      API endpoints. These endpoints facilitate tournament creation, management,
+      and result tracking, with admin-controlled access where required.
+
+
+      ### Available Endpoints:
+
+
+      - **Tournament Management** _(Restricted to Admins)_
+          
+          - **Create a tournament** (`POST /tournament/create`)
+              
+              - Admins can create a tournament with all necessary details.
+                  
+          - **Update tournament details** (`PUT /tournament/update_details/:tournamentId`)
+              
+              - Admins can modify tournament information as required.
+                  
+          - **Update tournament photo** (`PUT /tournament/update_photo/:tournamentId`)
+              
+              - Admins can update the tournament image.
+                  
+          - **Update tournament status** (`PUT /tournament/update_status/:tournamentId`)
+              
+              - Admins can change the tournament status:
+                  
+                  - `Upcoming`
+                      
+                  - `Ongoing`
+                      
+                  - `Completed`
+                      
+          - **Update tournament date** (`PUT /tournament/update_date/:tournamentId`)
+              
+              - Admins can adjust the tournament schedule.
+                  
+      - **Tournament Retrieval**
+          
+          - **Get all tournaments** (`GET /tournament/all`)
+              
+              - Returns a paginated list of tournaments, including:
+                  
+                  - Total tournament count
+                      
+                  - Summary of each tournament
+                      
+          - **Get tournaments by status** (`GET /tournament/status/:status`)
+              
+              - Retrieves tournaments filtered by status (`Upcoming`, `Ongoing`, `Completed`).
+                  
+          - **Get tournament details** (`GET /tournament/details/:tournamentId`)
+              
+              - Returns complete information about a specific tournament.
+                  
+      - **Tournament Results & Teams**
+          
+          - **Create tournament result** (`POST /tournament/create_result/:tournamentId`) _(Restricted to Admins)_
+              
+              - Admins can record the tournament result after the final match, including:
+                  
+                  - Man of the Tournament
+                      
+                  - Tournament summary
+                      
+          - **Get tournament results** (`GET /tournament/result/:tournamentId`)
+              
+              - Returns tournament results, including:
+                  
+                  - Champion team
+                      
+                  - Runner-up
+                      
+                  - Third-place team (if applicable)
+                      
+                  - Man of the Tournament
+                      
+                  - Tournament photo
+                      
+          - **Get tournament teams** (`GET /tournament/teams/:tournamentId`)
+              
+              - Retrieves all teams participating in the tournament.
+                  
+
+      Each endpoint includes request and response details, expected parameters,
+      and usage examples.
+  - name: Registration
+    description: >-
+      This section provides detailed documentation for all registration-related
+      API endpoints. These endpoints facilitate team applications for
+      tournaments, withdrawals, and administrative management of applications.
+
+
+      ### Available Endpoints:
+
+
+      - **Team Registration & Management** _(Restricted to Managers)_
+          
+          - **Register for a tournament** (`POST /registration/apply`)
+              
+              - A **manager** can apply for a tournament with their team.
+                  
+              - Requirements:
+                  
+                  - Minimum **14 players** in the team
+                      
+                  - **Seats must be available** in the tournament
+                      
+          - **Withdraw registration** (`DELETE /registration/withdraw/:tournamentId`)
+              
+              - A **manager** can withdraw their team's registration for a tournament.
+                  
+          - **Re-register for a tournament** (`POST /registration/reApply/:tournamentId`)
+              
+              - A **manager** can re-register if seats are available.
+                  
+      - **Application Management** _(Restricted to Admins)_
+          
+          - **Get all applications** (`GET /registration/get_all?status={status}`)
+              
+              - Retrieves all tournament applications filtered by status:
+                  
+                  - `Pending`
+                      
+                  - `Approved`
+                      
+                  - `Withdrawn`
+                      
+                  - `Rejected`
+                      
+          - **Get pending applications** (`GET /registration/pending`)
+              
+              - Returns all applications that are still pending approval.
+                  
+          - **Manage applications** (`PUT /registration/updaeStatus/:tournamentId`)
+              
+              - An **admin** can either:
+                  
+                  - **Approve** an application if seats are available
+                      
+                  - **Reject** an application
+                      
+
+      Each endpoint includes request and response details, expected parameters,
+      and usage examples.
+  - name: Schedule
+    description: >-
+      This section provides detailed documentation for all schedule-related API
+      endpoints. These endpoints facilitate the creation, management, and
+      retrieval of match schedules within a tournament.
+
+
+      ### Available Endpoints:
+
+
+      - **Schedule Management** _(Restricted to Admins & Staff)_
+          
+          - **Create a schedule** (`POST /schedule/create/:tournamentId`)
+              
+              - Admins or staff can create a schedule for a tournament.
+                  
+              - **First round**: Matches are automatically created along with the schedule.
+                  
+              - **Later rounds**: Matches must be created first, then linked to a schedule.
+                  
+          - **Update schedule details** (`PUT /schedule/update_details/:scheduleId`)
+              
+              - Admins can update schedule information.
+                  
+          - **Update schedule timing** (`PUT /schedule/update_timing/:scheduleId`)
+              
+              - Allows modification of the scheduled match timing.
+                  
+          - **Update teams for a schedule** (`PUT /schedule/update_teams/:scheduleId`)
+              
+              - **First round**: Requires reference to teams.
+                  
+              - **Later rounds**: Requires reference to a match.
+                  
+          - **Update schedule status** (`PUT /schedule/update_status/:scheduleId`)
+              
+              - Admins can update the schedule status to:
+                  
+                  - `Scheduled`
+                      
+                  - `Rescheduled`
+                      
+                  - `In-Progress`
+                      
+                  - `Cancelled`
+                      
+                  - `Completed`
+                      
+          - **Delete a schedule** (`DELETE /schedule/delete/:scheduleId`)
+              
+              - Admins can remove a schedule using its ID.
+                  
+      - **Schedule Retrieval**
+          
+          - **Get all schedules for a tournament** (`GET /schedule/all/:tournamentId`)
+              
+              - Retrieves all schedules associated with a specific tournament.
+  - name: Match
+    description: >-
+      This section provides detailed documentation for all match-related API
+      endpoints. These endpoints facilitate match creation, updates, squad
+      management, and retrieval of match details.
+
+
+      ### Available Endpoints:
+
+
+      - **Match Management** _(Restricted to Admins)_
+          
+          - **Create a match** (`POST /match/create/:tournamentId`)
+              
+              - Admins can create a match for a tournament.
+                  
+              - **First round**: Matches are created automatically when scheduling.
+                  
+              - **Later rounds**: Matches must be created first and linked to a schedule.
+                  
+          - **Update match umpires** (`PUT /match/update_umpires/:tournamentId/:matchId`)
+              
+              - Admins can assign umpires to a match.
+                  
+              - jsonCopyEdit{ "umpireIds": \[ "67bce80763cb90b4ec9b2f24", "6780331f7504d03df08953d5", "67b22b8bf1389f55f5f48e0e" \]}
+                  
+          - **Update match teams** (`PUT /match/update_teams/:tournamentId/:matchId`)
+              
+              - **First round**: Requires direct team reference.
+                  
+              - **Later rounds**: Requires reference to previous matches.
+                  
+              - Request Body:  
+                  
+                  - jsonCopyEdit{ "teamA": "teamId", "teamB": "teamId"}
+                      
+                  - jsonCopyEdit{ "previousMatches": { "matchA": "matchId", "matchB": "matchId" }}
+                      
+          - **Update match & schedule status** (`PUT /match/update_status/:tournamentId/:matchId`)
+              
+              - Admins can update the status of a match and schedule.
+                  
+              - Possible statuses:  
+                  
+                  - `Upcoming`
+                      
+                  - `Scheduled`
+                      
+                  - `Rescheduled`
+                      
+                  - `In-Progress`
+                      
+                  - `Completed`
+                      
+                  - `Cancelled`
+                      
+          - **Delete a match** (`DELETE /match/delete/:matchId`)
+              
+              - Admins can delete a match by its ID.
+                  
+      - **Squad Management** _(Restricted to Team Managers)_
+          
+          - **Create playing squad** (`POST /match/createSquad/:tournamentId/:matchId`)
+              
+              - Team managers can set their playing squad.
+                  
+              - Requirements:  
+                  
+                  - **Exactly 11 players**
+                      
+                  - Minimum **4 batsmen**, **1 wicketkeeper-batsman**, **1 all-rounder**, **3 bowlers**, **2 flexible**
+                      
+                  - A **captain** must be included
+                      
+              - jsonCopyEdit{ "teamId": "teamId", "players": \[ "playerId1", "playerId2", "playerId3", ... \]}
+                  
+          - **Get playing squad** (`GET /match/getSquad/:tournamentId/:matchId/:teamId`)
+              
+              - Retrieves squad details including team name, match number, tournament round, captain details, and player info.
+                  
+      - **Match Retrieval**
+          
+          - **Get all matches** (`GET /match/all/:tournamentId`)
+              
+              - Returns a summary of all matches, including:  
+                  
+                  - Match number
+                      
+                  - Teams (name & logo)
+                      
+                  - Match status
+                      
+                  - Match info (schedule or result)
+                      
+          - **Get match details** (`GET /match/details/:tournamentId/:matchId`)
+              
+              - Returns complete match details, including:  
+                  
+                  - Match number
+                      
+                  - Tournament details
+                      
+                  - Teams (name & logo)
+                      
+                  - Score
+                      
+                  - Match status
+                      
+                  - Umpire details
+                      
+                  - Venue information
+                      
+          - **Get teams of a match** (`GET /teamsOfMatch/:matchId`)
+              
+              - Returns both team names, logos, and match number.
+                  
+
+      ---
+
+
+      Each endpoint includes request and response details, expected parameters,
+      and usage examples.
+  - name: Innings
+    description: >-
+      This section provides detailed documentation for all innings-related API
+      endpoints. These endpoints facilitate the creation, updating, and
+      retrieval of innings information for matches within a tournament.
+
+
+      ### Available Endpoints:
+
+
+      - **Innings Management** _(Restricted to Admins)_
+          
+          - **Create an innings** (`POST /innings/create/:tournamentId/:matchId`)
+              
+              - Admins can create an innings for a match within a tournament.
+                  
+              - Required Parameters:  
+                  
+                  - `tournamentId` – The ID of the tournament.
+                      
+                  - `matchId` – The ID of the match.
+                      
+          - **Update an innings** (`PUT /innings/update/:tournamentId/:matchId/:inningsId`)
+              
+              - Admins can update innings details.
+                  
+              - Required Parameters:  
+                  
+                  - `tournamentId` – The ID of the tournament.
+                      
+                  - `matchId` – The ID of the match.
+                      
+                  - `inningsId` – The ID of the innings.
+                      
+      - **Innings Retrieval**
+          
+          - **Get all innings for a tournament** (`GET /innings/all/:tournamentId`)
+              
+              - Retrieves all innings records associated with a specific tournament.
+                  
+          - **Get innings details for a match** (`GET /innings/details/:matchId`)
+              
+              - Returns detailed innings data for a specific match.
+  - name: Match Result
+    description: >-
+      StartFragment
+
+
+      This section provides detailed documentation for all match result-related
+      API endpoints. These endpoints allow administrators to create and retrieve
+      match results.
+
+
+      ---
+
+
+      ## **Endpoints**
+
+
+      ### **1\. Create Match Result**
+
+
+      - **URL:** `POST /match/createResult/:tournamentId/:matchId`
+          
+      - **Description:**
+          
+          - Admins can create a match result for a specific match in a tournament.
+              
+      - **Parameters:**
+          
+          - `tournamentId` – The ID of the tournament.
+              
+          - `matchId` – The ID of the match.
+              
+
+      ---
+
+
+      ### **2\. Get Match Result**
+
+
+      - **URL:** `GET /match/matchResult/:matchId`
+          
+      - **Description:**
+          
+          - Retrieves the result of a specific match.
+              
+      - **Parameters:**
+          
+          - `matchId` – The ID of the match.
+  - name: Point Table
+    description: >-
+      This section provides details about the point table-related API endpoint,
+      which allows retrieving the point table for a specific tournament.
+
+
+      ---
+
+
+      ## **1\. Get Point Table**
+
+
+      - **URL:** `GET /pointTable/get/:tournamentId`
+          
+      - **Description:**
+          
+          - Retrieves the point table for a specific tournament, showing team rankings based on performance.
+              
+      - **Parameters:**
+          
+          - `tournamentId` – The ID of the tournament.
+  - name: Blogs
+    description: >-
+      This section details all the blog-related API endpoints. These endpoints
+      allow administrators to create, update, publish, and retrieve blog posts.
+
+
+      ---
+
+
+      ## **Endpoints**
+
+
+      ### **1\. Create Blog**
+
+
+      - **URL:** `POST /blog/create`
+          
+      - **Description:**
+          
+          - Allows an admin to create a new blog post.
+              
+
+      ---
+
+
+      ### **2\. Update Blog Details**
+
+
+      - **URL:** `PUT /blog/update/:blogId`
+          
+      - **Description:**
+          
+          - Allows an admin to update blog content.
+              
+      - **Parameters:**
+          
+          - `blogId` – The ID of the blog post.
+              
+
+      ---
+
+
+      ### **3\. Publish or Unpublish Blog**
+
+
+      - **URL:** `PATCH /blog/publishStatus/:blogId`
+          
+      - **Description:**
+          
+          - Allows an admin to change the publish status of a blog.
+              
+      - **Parameters:**
+          
+          - `blogId` – The ID of the blog post.
+              
+
+      ---
+
+
+      ### **4\. Update Blog Photo**
+
+
+      - **URL:** `PUT /blog/updatPhoto/:blogId`
+          
+      - **Description:**
+          
+          - Allows an admin to update the blog's photo.
+              
+      - **Parameters:**
+          
+          - `blogId` – The ID of the blog post.
+              
+
+      ---
+
+
+      ### **5\. Get All Blogs**
+
+
+      - **URL:** `GET /blog/getAll`
+          
+      - **Description:**
+          
+          - Retrieves a paginated list of all blogs, including summaries.
+              
+      - **Query Parameters (Optional):**
+          
+          - `page` – Page number (default: 1).
+              
+          - `limit` – Number of blogs per page (default: 10).
+              
+
+      ---
+
+
+      ### **6\. Get Blog Details**
+
+
+      - **URL:** `GET /blog/details/:blogId`
+          
+      - **Description:**
+          
+          - Retrieves full details of a specific blog post.
+              
+      - **Parameters:**
+          
+          - `blogId` – The ID of the blog post.
+paths:
+  /auth/register:
+    post:
+      tags:
+        - User
+      summary: Registration
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Mir Mahfuz
+                email:
+                  type: string
+                  example: u.mahfuz@gmail.com
+                phoneNumber:
+                  type: integer
+                  example: '01763201487'
+                password:
+                  type: integer
+                  example: '555555'
+                role:
+                  type: string
+                  example: umpire
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/login:
+    post:
+      tags:
+        - User
+      summary: Login
+      description: >-
+        ### Auth Login
+
+
+        This endpoint is used to authenticate a user and obtain access and
+        refresh tokens.
+
+
+        #### Request Body
+
+
+        - email (text, required): The email of the user.
+            
+        - password (text, required): The password of the user.
+            
+
+        #### Response
+
+
+        - statusCode (number): Indicates the status of the response.
+            
+        - data (object): Contains user information, access token, and refresh
+        token.
+            
+            - user (object): User details including id, name, email, phone number, role, photo, creation and update timestamps, and version.
+                
+            - accessToken (string): Token used for authentication.
+                
+            - refreshToken (string): Token used for refreshing the access token.
+                
+        - message (string): A message related to the response.
+            
+        - success (boolean): Indicates if the request was successful.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: naimh6931@gmail.com
+                password: '666666'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/logout:
+    post:
+      tags:
+        - User
+      summary: Logout
+      description: >-
+        The endpoint `{{base_url}}/auth/logout` is a POST request used to log
+        out the user. Upon successful execution, the response will have a status
+        code of 200 and a content type of `application/json`. The response body
+        will be a JSON object with the following schema:
+
+
+        ``` json
+
+        {
+          "type": "object",
+          "properties": {
+            "statusCode": {
+              "type": "integer"
+            },
+            "data": {
+              "type": "object"
+            },
+            "message": {
+              "type": "string"
+            },
+            "success": {
+              "type": "boolean"
+            }
+          }
+        }
+
+         ```
+
+        This JSON schema represents the structure of the response data returned
+        after a successful logout request.
+      requestBody:
+        content: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/refreshToken:
+    post:
+      tags:
+        - User
+      summary: Access Token refresh
+      description: >-
+        ### Refresh Token
+
+
+        This endpoint is used to refresh the access token by providing the
+        refresh token in the request body.
+
+
+        **Request Body**
+
+
+        - `refreshToken` (string, required): The refresh token used to obtain a
+        new access token.
+            
+
+        **Response**
+
+
+        - `statusCode` (number): The status code of the response.
+            
+        - `data` (object): An object containing the new access token and refresh
+        token.
+            
+            - `accessToken` (string): The new access token.
+                
+            - `refreshToken` (string): The new refresh token.
+                
+        - `message` (string): A message related to the response.
+            
+        - `success` (boolean): Indicates if the request was successful.
+      requestBody:
+        content: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/current_user:
+    get:
+      tags:
+        - User
+      summary: Get Current User
+      description: >-
+        This endpoint makes an HTTP GET request to retrieve the details of the
+        current authenticated user.
+
+
+        ### Request Body
+
+
+        This request does not require a request body.
+
+
+        ### Response
+
+
+        - `statusCode` (number): The status code of the response.
+            
+        - `data` (object): An object containing the details of the current user,
+        including their ID, name, email, phone number, role, photo, creation
+        date, and update date.
+            
+        - `message` (string): Any additional message related to the response.
+            
+        - `success` (boolean): Indicates whether the request was successful or
+        not.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/all_users:
+    get:
+      tags:
+        - User
+      summary: Get All User
+      description: >-
+        ### Get All Users by Role
+
+
+        This endpoint retrieves all users with a specific role.  
+
+        Role: admin, staff, manager, player, umpire
+
+
+        #### Request
+
+
+        - Method: GET
+            
+        - URL: `{{base_url}}/auth/all_users`
+            
+        - Query Parameters:
+            
+            - role (string, required): The role of the users to be retrieved. Example: umpire
+                
+
+        #### Response
+
+
+        - Status: 200 OK
+            
+        - Content-Type: application/json
+            
+        - { "statusCode": 0, "data": { "All_users": 0, "users": \[ { "_id": "",
+        "name": "", "email": "", "password": "", "phoneNumber": "", "role": "",
+        "photo": "", "createdAt": "", "updatedAt": "", "__v": 0 } \],
+        "pagination": { "totalUsers": 0, "currentPage": 0, "totalPages": 0 } },
+        "message": "", "success": true}
+      parameters:
+        - name: role
+          in: query
+          schema:
+            type: string
+          example: umpire
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/update_account:
+    patch:
+      tags:
+        - User
+      summary: Update Account Details
+      description: |-
+        ### Update Account Details
+
+        This endpoint allows the user to update their account details.
+
+        #### Request Body
+
+        - `name` (string): The updated name of the user.
+            
+        - `phoneNumber` (string): The updated phone number of the user.
+            
+        - `role` (string): The updated role of the user.
+            
+
+        #### Response
+
+        The response is a JSON object with the following schema:
+
+        ``` json
+        {
+            "type": "object",
+            "properties": {
+                "statusCode": {
+                    "type": "number"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "_id": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "email": {
+                            "type": "string"
+                        },
+                        "phoneNumber": {
+                            "type": "string"
+                        },
+                        "role": {
+                            "type": "string"
+                        },
+                        "photo": {
+                            "type": "string"
+                        },
+                        "createdAt": {
+                            "type": "string"
+                        },
+                        "updatedAt": {
+                            "type": "string"
+                        },
+                        "__v": {
+                            "type": "number"
+                        },
+                        "refreshToken": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        }
+
+         ```
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Zahid Islam
+                phoneNumber: '01756321598'
+                role: manager
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/photo:
+    patch:
+      tags:
+        - User
+      summary: Change Photo
+      description: |-
+        # Update User Photo
+
+        This endpoint allows the user to update their profile photo.
+
+        ## Request
+
+        ### Request Body
+
+        - `photo` (file): The user's new profile photo.
+            
+
+        ## Response
+
+        The response is in JSON format and follows the schema below:
+
+        ``` json
+        {
+          "type": "object",
+          "properties": {
+            "statusCode": {
+              "type": "integer"
+            },
+            "data": {
+              "type": "object"
+            },
+            "message": {
+              "type": "string"
+            },
+            "success": {
+              "type": "boolean"
+            }
+          }
+        }
+
+         ```
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/change_role/67358ab3c8a8d045092b3e33:
+    patch:
+      tags:
+        - User
+      summary: Change Role
+      description: |-
+        ### Change User Role
+
+        This endpoint is used to update the role of a specific user.
+
+        This Endpoint is for only admin
+
+        #### Request Body
+
+        - `role` (string, required): The new role to be assigned to the user.
+            
+
+        #### Response
+
+        The response will contain the updated user details with the new role.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                role: staff
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/change_password:
+    patch:
+      tags:
+        - User
+      summary: Change Password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                oldPassword: '555555'
+                newPassword: '666666'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/forgot_password:
+    post:
+      tags:
+        - User
+      summary: Forgot Password
+      description: >-
+        This endpoint allows the user to request a password reset by providing
+        their email. Upon successful execution, the response will be in JSON
+        format and will contain a status code, data object, message, and a
+        success indicator.
+
+
+        ### Request Body
+
+
+        - email (string, required): The email address for which the password
+        reset is requested.
+            
+
+        ### Response
+
+
+        The response will be in JSON format with the following properties:
+
+
+        - statusCode (number): The status code of the response.
+            
+        - data (object): An empty object indicating no additional data is
+        returned.
+            
+        - message (string): A message from the server, if any.
+            
+        - success (boolean): Indicates the success of the request.
+            
+
+        ### JSON Schema
+
+
+        ``` json
+
+        {
+          "type": "object",
+          "properties": {
+            "statusCode": {
+              "type": "number"
+            },
+            "data": {
+              "type": "object"
+            },
+            "message": {
+              "type": "string"
+            },
+            "success": {
+              "type": "boolean"
+            }
+          }
+        }
+
+         ```
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: hnaim6979@gmail.com
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/reset_password/9e084c99e5dccb7d04c9f71ccf012ccdb939b3dd631bdf3ff251ce3e17954fad:
+    post:
+      tags:
+        - User
+      summary: Reset Password
+      description: |-
+        ### Reset Password
+
+        This endpoint is used to reset the password for a user account.
+
+        #### Request Body
+
+        - `password` (string, required): The new password for the user account.
+            
+
+        Example:
+
+        ``` json
+        {
+            "password": "********"
+        }
+
+         ```
+
+        #### Response
+
+        - `statusCode` (number): The status code of the response.
+            
+        - `data` (object): Additional data related to the password reset.
+            
+        - `message` (string): A message related to the password reset.
+            
+        - `success` (boolean): Indicates if the password reset was successful.
+            
+
+        Example Response Body:
+
+        ``` json
+        {
+            "statusCode": 0,
+            "data": {},
+            "message": "",
+            "success": true
+        }
+
+         ```
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                password: ImAdmin01
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /profile/create_player_profile:
+    post:
+      tags:
+        - Profile
+      summary: create player profile
+      description: |-
+        ### Create Player Profile
+
+        This endpoint allows the creation of a new player profile.
+
+        #### Request Body
+
+        - `player_role`: (string) The role of the player.
+            
+        - `batingStyle`: (string) The batting style of the player.
+            
+        - `bowlingArm`: (string) The bowling arm of the player.
+            
+        - `bowlingStyle`: (string) The bowling style of the player.
+            
+        - `DateOfBirth`: (string) The date of birth of the player.
+            
+
+        #### Response
+
+        The response will contain the status of the profile creation request.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                player_role: wk-batsman
+                batingStyle: Right Hand
+                bowlingArm: right arm
+                bowlingStyle: spin
+                DateOfBirth: 05-08-1998
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /profile/get_player_profile:
+    get:
+      tags:
+        - Profile
+      summary: get player own profile
+      description: |-
+        ### Get Player Profile
+
+        This endpoint is used to retrieve the profile of a player.
+
+        **Request Body**  
+        This endpoint does not require a request body.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /profile/create_manager_profile:
+    post:
+      tags:
+        - Profile
+      summary: create manager profile
+      description: >-
+        ### Create Manager Profile
+
+
+        This endpoint is used to create a manager profile.
+
+
+        #### Request Body
+
+
+        - `teamId` (string) - The ID of the team for which the manager profile
+        is being created.
+            
+
+        Example:
+
+
+        ``` json
+
+        {
+            "teamId": "6750ce273ba80718e70d763d"
+        }
+
+         ```
+
+        #### Response
+
+
+        The response will contain the details of the newly created manager
+        profile.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                teamId: 6750ce273ba80718e70d763d
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /profile/get_manager_profile:
+    get:
+      tags:
+        - Profile
+      summary: get manager profile
+      description: |-
+        ### GET /profile/get_manager_profile
+
+        This endpoint is used to retrieve the manager's profile.
+
+        #### Request
+
+        This is a simple GET request that does not require a request body.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /profile/create_umpire_profile:
+    post:
+      tags:
+        - Profile
+      summary: create umpire profile
+      description: >-
+        ### Create Umpire Profile
+
+
+        This endpoint is used to create an umpire profile.
+
+
+        #### Request Body
+
+
+        - `experience` (integer, required): The experience level of the umpire.
+            
+
+        #### Response
+
+
+        The response for this request is a JSON object conforming to the
+        following schema:
+
+
+        ``` json
+
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "umpire_id": {
+              "type": "string"
+            }
+          }
+        }
+
+         ```
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                experience: '5'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /profile/get_umpire_profile:
+    get:
+      tags:
+        - Profile
+      summary: get umpire profile
+      description: >-
+        ### Get Umpire Profile
+
+
+        This endpoint is used to retrieve the profile information of an umpire.
+
+
+        **Request Body:**  
+
+        This request does not require a request body.
+
+
+        **Response:**
+
+
+        - `id` (string, required): The unique identifier of the umpire profile.
+            
+        - `name` (string, required): The name of the umpire.
+            
+        - `email` (string, required): The email address of the umpire.
+            
+        - `experience` (integer, required): The number of years of experience as
+        an umpire.
+            
+        - `certification` (string, required): The certification level of the
+        umpire.
+            
+        - `status` (string, required): The current status of the umpire profile.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /profile/get_team_profiles/67501b71596bcf5e8c7dedc5:
+    get:
+      tags:
+        - Profile
+      summary: get team profiles
+      description: >-
+        ### Get Team Profiles
+
+
+        This endpoint retrieves the profiles of a specific team identified by
+        the provided team ID.
+
+
+        #### Request
+
+
+        - Method: GET
+            
+        - URL: `{{base_url}}/profile/get_team_profiles/67501b71596bcf5e8c7dedc5`
+            
+
+        #### Response
+
+
+        The response will be in JSON format and follows the schema below:
+
+
+        ``` json
+
+        {
+            "statusCode": 0,
+            "data": {
+                "manager": {
+                    "_id": "string",
+                    "name": "string",
+                    "photo": "string"
+                },
+                "captain": {
+                    "_id": "string",
+                    "teamId": "string",
+                    "playerId": {
+                        "_id": "string",
+                        "name": "string",
+                        "photo": "string"
+                    },
+                    "isCaptain": true,
+                    "status": "string",
+                    "__v": 0
+                },
+                "players": [
+                    {
+                        "_id": "string",
+                        "userId": {
+                            "_id": "string",
+                            "name": "string",
+                            "photo": "string"
+                        },
+                        "player_role": "string",
+                        "batingStyle": "string",
+                        "bowlingArm": "string",
+                        "bowlingStyle": "string"
+                    }
+                ]
+            },
+            "message": "string",
+            "success": true
+        }
+
+         ```
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /profile/get_profile_details/678c05be533a7c761c4d37b8:
+    get:
+      tags:
+        - Profile
+      summary: Profile details
+      description: >-
+        ### Get Profile Details
+
+
+        This endpoint retrieves the profile details for a specific user.
+
+
+        #### Request
+
+
+        - Method: GET
+            
+        - URL:
+        `{{base_url}}/profile/get_profile_details/678c05be533a7c761c4d37b8`
+            
+
+        #### Response
+
+
+        The response will be a JSON object with the following schema:
+
+
+        ``` json
+
+        {
+            "type": "object",
+            "properties": {
+                "statusCode": {
+                    "type": "number"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "_id": {
+                            "type": "string"
+                        },
+                        "userId": {
+                            "type": "object",
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "photo": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "player_role": {
+                            "type": "string"
+                        },
+                        "batingStyle": {
+                            "type": "string"
+                        },
+                        "bowlingArm": {
+                            "type": "string"
+                        },
+                        "bowlingStyle": {
+                            "type": "string"
+                        },
+                        "DateOfBirth": {
+                            "type": "string"
+                        },
+                        "__v": {
+                            "type": "number"
+                        },
+                        "teamId": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        }
+
+         ```
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /health:
+    get:
+      tags:
+        - health check
+      summary: Health
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /team/create:
+    post:
+      tags:
+        - Team
+      summary: Create New Team
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                teamName:
+                  type: string
+                  example: Melbourn Stars
+                logo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /team/update_name/673efdd042b0bb323bd8bf49:
+    patch:
+      tags:
+        - Team
+      summary: Update Team Name
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                teamName: Test Team
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /team/all_teams:
+    get:
+      tags:
+        - Team
+      summary: Get All Teams
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /team/details/6750c7533ba80718e70d759a:
+    get:
+      tags:
+        - Team
+      summary: Team Details
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /team/addPlayers/6750ce273ba80718e70d763d:
+    post:
+      tags:
+        - Team
+      summary: Add Players
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                playerId: 678c28205d23f018d9bf31ef
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /team/members/67501b71596bcf5e8c7dedc5:
+    get:
+      tags:
+        - Players
+      summary: Team members
+      description: >-
+        ### GET /team/members/{id}
+
+
+        This endpoint retrieves the details of a specific team member.
+
+
+        #### Request
+
+
+        No request body is required for this endpoint.
+
+
+        - teamId (path parameter) - The unique identifier of the team .
+            
+
+        #### Response
+
+
+        The response will be a JSON object with the following schema:
+
+
+        ``` json
+
+        {
+            "success": boolean,
+            "data": {
+                "number": number,
+                "team": {
+                    "teamName": string,
+                    "teamLogo": string
+                },
+                "manager": {
+                    "_id": string,
+                    "name": string,
+                    "photo": string
+                },
+                "players": [
+                    {
+                        "_id": string,
+                        "teamId": string,
+                        "playerId": {
+                            "_id": string,
+                            "name": string,
+                            "role": string,
+                            "photo": string
+                        },
+                        "isCaptain": boolean,
+                        "status": string,
+                        "__v": number
+                    }
+                ]
+            },
+            "message": string
+        }
+
+         ```
+
+        The `success` field indicates if the request was successful. The `data`
+        field contains the details of the team member, including the team name,
+        manager details, and a list of players with their roles and status. The
+        `message` field may contain additional information or error messages.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /team/removePlayer:
+    post:
+      tags:
+        - Team
+      summary: Remove Player
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                teamId: 67501b71596bcf5e8c7dedc5
+                playerId: 6742fc7e340d029e3ca0dc94
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /team/delete/67802b3adb895d4b8c902654:
+    delete:
+      tags:
+        - Team
+      summary: delete team
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /team/makeCaptain/6750ce273ba80718e70d763d:
+    patch:
+      tags:
+        - Team
+      summary: Make Captain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                playerId: 678c28205d23f018d9bf3214
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /team/my_team:
+    get:
+      tags:
+        - Team
+      summary: Get my team (manager)
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /team/update_logo/6750ce273ba80718e70d763d:
+    patch:
+      tags:
+        - Team
+      summary: Update Logo
+      requestBody:
+        content: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /player/available_players:
+    get:
+      tags:
+        - Players
+      summary: Available Players
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '2'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          example: '15'
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+          example: name
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+          example: desc
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /player/player_details/6742fc7e340d029e3ca0dc94:
+    get:
+      tags:
+        - Players
+      summary: Available Player Details
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /team/player_details/6742fc7e340d029e3ca0dc78:
+    get:
+      tags:
+        - Players
+      summary: Player details
+      description: >-
+        ### Player Details
+
+
+        This endpoint retrieves the details of a specific player within a team
+        by playerId(from User Id).
+
+
+        #### Request
+
+
+        - Method: GET
+            
+        - URL: {{base_url}}/team/player_details/userId
+            
+
+        #### Response
+
+
+        - Status: 200
+            
+        - Content-Type: application/json
+            
+        - { "statusCode": 0, "data": { "player": { "_id": "", "teamId": { "_id":
+        "", "teamName": "", "teamLogo": "" }, "playerId": { "_id": "", "name":
+        "", "role": "", "photo": "" }, "isCaptain": true, "status": "", "__v": 0
+        }, "playerProfile": { "_id": "", "player_role": "", "batingStyle": "",
+        "bowlingArm": "", "bowlingStyle": "", "DateOfBirth": "" } }, "message":
+        "", "success": true}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /venue/create:
+    post:
+      tags:
+        - Venue
+      summary: create
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: random test
+                city:
+                  type: string
+                  example: 'test '
+                location:
+                  type: string
+                  example: test
+                features:
+                  type: string
+                  example: indoor
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /venue/all:
+    get:
+      tags:
+        - Venue
+      summary: get all venue
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /venue/details/67882f052b51f31477a89f19:
+    get:
+      tags:
+        - Venue
+      summary: venue details
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /venue/update/67882f052b51f31477a89f19:
+    patch:
+      tags:
+        - Venue
+      summary: update
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: update test name
+                city:
+                  type: string
+                  example: test city
+                location:
+                  type: string
+                  example: test location
+                features:
+                  type: string
+                  example: outdoor
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /venue/delete/6788482bde84096f7e389364:
+    delete:
+      tags:
+        - Venue
+      summary: delete
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournament/create:
+    post:
+      tags:
+        - Tournament
+      summary: Create Tournaments
+      description: >-
+        ### Create Tournament
+
+
+        This endpoint allows the user to create a new tournament.
+
+
+        #### Request Body
+
+
+        - tournamentName (text, required): The name of the tournament.
+            
+        - tournamentType (text, required): The type of the tournament.
+            
+        - description (text, required): A brief description of the tournament.
+            
+        - format (text, required): The format of the tournament.
+            
+        - ballType (text, required): The type of ball used in the tournament.
+            
+        - matchOver (text, required): The criteria for a match to be considered
+        over.
+            
+        - registrationDeadline (text, required): The deadline for registration.
+            
+        - startDate (text, required): The start date of the tournament.
+            
+        - endDate (text, required): The end date of the tournament.
+            
+        - status (text, required): The status of the tournament.
+            
+        - entryFee (text, required): The entry fee for the tournament.
+            
+        - champion (text, required): The winner of the tournament.
+            
+        - runnerUp (text, required): The runner-up of the tournament.
+            
+        - thirdPlace (text, required): The third-place holder of the tournament.
+            
+        - photo (file, required): The photo representing the tournament.
+            
+
+        #### Response
+
+
+        ``` json
+
+        {
+          "tournamentId": "string",
+          "message": "string"
+        }
+
+         ```
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                tournamentName:
+                  type: string
+                  example: Grassroots Cricket League (GCL)
+                tournamentType:
+                  type: string
+                  example: knockout
+                description:
+                  type: string
+                  example: >-
+
+                    Sure! Here's a description for the Grassroots Cricket League
+                    (GCL) that you can use for promotions or announcements:
+
+
+                    Grassroots Cricket League (GCL) is a dynamic and inclusive
+                    cricket tournament designed to celebrate local talent, build
+                    community spirit, and ignite a passion for the game. The GCL
+                    brings together players of all skill levels, from budding
+                    amateurs to seasoned enthusiasts, offering an exciting
+                    platform to showcase their abilities.
+
+
+                    Join us in building a legacy of cricketing excellence and
+                    fostering the spirit of the game in our community!
+                format:
+                  type: integer
+                  example: '8'
+                ballType:
+                  type: string
+                  example: tape tennis
+                matchOver:
+                  type: integer
+                  example: '15'
+                registrationDeadline:
+                  type: string
+                  example: 26-01-2025
+                startDate:
+                  type: string
+                  example: 01-02-2025
+                endDate:
+                  type: string
+                  example: 25-02-2025
+                status:
+                  type: string
+                  example: upcoming
+                entryFee:
+                  type: integer
+                  example: '10000'
+                champion:
+                  type: string
+                  example: BDT 45000 Taka
+                runnerUp:
+                  type: string
+                  example: BDT 25000 Taka
+                thirdPlace:
+                  type: string
+                  example: N/A
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournament/all:
+    get:
+      tags:
+        - Tournament
+      summary: Get All Tournaments
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournament/status:
+    get:
+      tags:
+        - Tournament
+      summary: Get By Status
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournament/details/6790207c69aa7be5f9cf52e3:
+    get:
+      tags:
+        - Tournament
+      summary: Details
+      description: >-
+        This endpoint retrieves details of a specific tournament by making an
+        HTTP GET request to
+        {{base_url}}/tournament/details/6790207c69aa7be5f9cf52e3.
+
+
+        ### Request
+
+
+        No request body is required for this endpoint.
+
+
+        ### Response
+
+
+        - `statusCode` (number): Indicates the status of the response.
+            
+        - `data` (object): Contains the tournament details and result
+        information.
+            
+            - `tournament` (object): Details of the tournament including name, type, format, dates, entry fee, status, etc.
+                
+            - `result` (object): Details of the tournament result including champion, runner-up, third place, man of the tournament, awards, etc.
+                
+                - `champion` (object): Details of the champion team including name and logo.
+                    
+                - `runnerUp` (object): Details of the runner-up team including name and logo.
+                    
+                - `thirdPlace` (object): Details of the third place team including name and logo.
+                    
+            - `message` (string): Any additional message related to the response.
+                
+            - `success` (boolean): Indicates if the request was successful.
+                
+
+        The response is in JSON format with a status code of 200 (OK).
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournament/update_details/6790207c69aa7be5f9cf52e3:
+    patch:
+      tags:
+        - Tournament
+      summary: Update details
+      description: >-
+        ### Update Tournament Details
+
+
+        This endpoint allows the user to update the details of a specific
+        tournament.
+
+
+        #### Request Body
+
+
+        - **tournamentName** (string): The name of the tournament.
+            
+        - **tournamentType** (string): The type of the tournament.
+            
+        - **description** (string): A brief description of the tournament.
+            
+        - **format** (string): The format of the tournament.
+            
+        - **ballType** (string): The type of ball used in the matches.
+            
+        - **matchOver** (string): The duration of each match in overs.
+            
+        - **registrationDeadline** (string): The deadline for tournament
+        registration.
+            
+        - **status** (string): The status of the tournament.
+            
+        - **entryFee** (number): The fee for entering the tournament.
+            
+        - **champion** (string): The prize for the tournament champion.
+            
+        - **runnerUp** (string): The prize for the tournament runner-up.
+            
+        - **thirdPlace** (string): The prize for the third-place team.
+            
+
+        #### Response (JSON Schema)
+
+
+        ``` json
+
+        {
+          "type": "object",
+          "properties": {
+            "success": {
+              "type": "boolean"
+            },
+            "message": {
+              "type": "string"
+            }
+          }
+        }
+
+         ```
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                tournamentName: Grassroots Cricket League (GCL)
+                tournamentType: knockout
+                description: ' Grassroots Cricket League (GCL) is a dynamic and inclusive cricket tournament designed to celebrate local talent, build community spirit, and ignite a passion for the game. The GCL brings together players of all skill levels, from budding amateurs to seasoned enthusiasts, offering an exciting platform to showcase their abilities. /n Join us in building a legacy of cricketing excellence and fostering the spirit of the game in our community!'
+                format: '8'
+                ballType: tape tennis
+                matchOver: '15'
+                registrationDeadline: 27-01-2025
+                status: upcoming
+                entryFee: 12000
+                champion: BDT 50000 Taka
+                runnerUp: BDT 28000 Taka
+                thirdPlace: N/A
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournament/update_photo/6790207c69aa7be5f9cf52e3:
+    patch:
+      tags:
+        - Tournament
+      summary: update photo
+      description: >-
+        ### Update Tournament Photo
+
+
+        This endpoint allows the user to update the photo for a specific
+        tournament.
+
+
+        #### Request
+
+
+        The request should be made using an HTTP PATCH method to the following
+        endpoint:
+        `{{base_url}}/tournament/update_photo/6790207c69aa7be5f9cf52e3`
+
+
+        The request body should be of type form-data and include the following
+        parameter:
+
+
+        - `photo` (file): The new photo to be uploaded for the tournament.
+            
+
+        #### Response
+
+
+        The response will be a JSON object following the schema below:
+
+
+        ``` json
+
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            }
+          }
+        }
+
+         ```
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournament/update_status/6790207c69aa7be5f9cf52e3:
+    patch:
+      tags:
+        - Tournament
+      summary: update status
+      description: >-
+        This endpoint allows the client to update the status of a specific
+        tournament by sending an HTTP PATCH request to the designated URL. The
+        request should include a JSON payload in the raw request body, with the
+        "status" field specifying the new status of the tournament.
+
+
+        ### Request Body
+
+
+        - `status` (string, required): The updated status of the tournament.
+            
+
+        ### Response
+
+
+        The response will include the updated details of the tournament,
+        reflecting the changes made by the PATCH request.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                status: ongoing
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournament/teams/6790207c69aa7be5f9cf52e3:
+    get:
+      tags:
+        - Tournament
+      summary: Get tournament teams
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournament/update_date/6790207c69aa7be5f9cf52e3:
+    patch:
+      tags:
+        - Tournament
+      summary: Update Date
+      description: >-
+        This endpoint allows the client to update the dates for a specific
+        tournament using an HTTP PATCH request. The request should be sent to
+        {{base_url}}/tournament/update_date/6790207c69aa7be5f9cf52e3.
+
+
+        ### Request Body
+
+
+        The request body should be in raw format and include the following
+        parameters:
+
+
+        - `registrationDeadline`: The new registration deadline for the
+        tournament.
+            
+        - `startDate`: The new start date for the tournament.
+            
+        - `endDate`: The new end date for the tournament.
+            
+
+        ### Response Body
+
+
+        The response to this request will include the updated details of the
+        tournament, confirming the changes made by the client.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                registrationDeadline: 02-03-2025
+                startDate: 05-03-2025
+                endDate: 08-03-2025
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournament/create_result/6790207c69aa7be5f9cf52e3:
+    post:
+      tags:
+        - Tournament
+      summary: Create Tournament Result
+      description: >-
+        ### Create Tournament Result
+
+
+        This endpoint allows the user to create a result for a specific
+        tournament.
+
+
+        #### Request Body
+
+
+        - `manOfTheTournament` (string): The ID of the player awarded as the Man
+        of the Tournament.
+            
+        - `awardFor` (string): The reason for the award.
+            
+
+        #### Response
+
+
+        The response will be a JSON object with the following schema:
+
+
+        ``` json
+
+        {
+          "statusCode": number,
+          "data": [
+            {
+              "tournamentId": string,
+              "result": {
+                "champion": string,
+                "runnerUp": string,
+                "thirdPlace": string
+              },
+              "manOfTheTournament": string,
+              "awardFor": string,
+              "photo": string,
+              "_id": string,
+              "createdAt": string,
+              "updatedAt": string,
+              "__v": number
+            }
+          ],
+          "message": string,
+          "success": boolean
+        }
+
+         ```
+
+        - `statusCode` (number): The status code of the response.
+            
+        - `data` (array): An array containing the tournament result data.
+            
+            - `tournamentId` (string): The ID of the tournament.
+                
+            - `result` (object): Object containing the details of the result.
+                
+                - `champion` (string): The champion of the tournament.
+                    
+                - `runnerUp` (string): The runner-up of the tournament.
+                    
+                - `thirdPlace` (string): The third-place team/player of the tournament.
+                    
+            - `manOfTheTournament` (string): The ID of the player awarded as the Man of the Tournament.
+                
+            - `awardFor` (string): The reason for the award.
+                
+            - `photo` (string): The photo of the tournament result.
+                
+            - `_id` (string): The ID of the result.
+                
+            - `createdAt` (string): The timestamp of creation.
+                
+            - `updatedAt` (string): The timestamp of the last update.
+                
+            - `__v` (number): Version key.
+                
+        - `message` (string): Additional message from the server.
+            
+        - `success` (boolean): Indicates if the request was successful.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                manOfTheTournament: 6742fc7e340d029e3ca0dc89
+                awardFor: Best Player of the tournament
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournament/results/6790207c69aa7be5f9cf52e3:
+    get:
+      tags:
+        - Tournament
+      summary: Get Tournament Result
+      description: >-
+        The endpoint retrieves the results of a specific tournament identified
+        by the provided ID.
+
+
+        The response schema for the request is as follows:
+
+
+        ``` json
+
+        {
+            "type": "object",
+            "properties": {
+                "statusCode": {
+                    "type": "number"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "_id": {
+                            "type": "string"
+                        },
+                        "tournamentId": {
+                            "type": "string"
+                        },
+                        "result": {
+                            "type": "object",
+                            "properties": {
+                                "champion": {
+                                    "type": "object",
+                                    "properties": {
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "teamName": {
+                                            "type": "string"
+                                        },
+                                        "teamLogo": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "runnerUp": {
+                                    "type": "object",
+                                    "properties": {
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "teamName": {
+                                            "type": "string"
+                                        },
+                                        "teamLogo": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "thirdPlace": {
+                                    "type": "object",
+                                    "properties": {
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "teamName": {
+                                            "type": "string"
+                                        },
+                                        "teamLogo": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "manOfTheTournament": {
+                            "type": "object",
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "photo": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "awardFor": {
+                            "type": "string"
+                        },
+                        "photo": {
+                            "type": ["string", "null"]
+                        },
+                        "createdAt": {
+                            "type": "string"
+                        },
+                        "updatedAt": {
+                            "type": "string"
+                        },
+                        "__v": {
+                            "type": "number"
+                        }
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        }
+
+         ```
+
+        This endpoint retrieves the results of a specific tournament by
+        providing the tournament ID in the request URL.
+
+
+        #### Request
+
+
+        - Method: GET
+            
+        - URL: {{base_url}}/tournament/results/6790207c69aa7be5f9cf52e3
+            
+
+        #### Response
+
+
+        - Status: 200
+            
+        - Content-Type: application/json
+            
+        - { "statusCode": 0, "data": { "_id": "", "tournamentId": "", "result":
+        { "champion": { "_id": "", "teamName": "", "teamLogo": "" }, "runnerUp":
+        { "_id": "", "teamName": "", "teamLogo": "" }, "thirdPlace": { "_id":
+        "", "teamName": "", "teamLogo": "" } }, "manOfTheTournament": { "_id":
+        "", "name": "", "photo": "" }, "awardFor": "", "photo": null,
+        "createdAt": "", "updatedAt": "", "__v": 0 }, "message": "", "success":
+        true}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournamentRegister/apply/6790207c69aa7be5f9cf52e3:
+    post:
+      tags:
+        - Registration
+      summary: register
+      description: >-
+        ### Tournament Registration Application
+
+
+        This endpoint allows users to apply for a tournament registration by
+        submitting their team ID.
+
+
+        #### Request Body
+
+
+        - `teamId`: (string) The ID of the team applying for the tournament
+        registration.
+            
+
+        #### Response
+
+
+        The response will include the status of the application submission.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                teamId: 6750ccd33ba80718e70d7617
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournamentRegister/update_status/6790207c69aa7be5f9cf52e3:
+    patch:
+      tags:
+        - Registration
+      summary: Manage application
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                teamId: 6750ccd33ba80718e70d7617
+                status: rejected
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournamentRegister/withdraw/6790207c69aa7be5f9cf52e3:
+    patch:
+      tags:
+        - Registration
+      summary: withdraw registration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                teamId: 67501b71596bcf5e8c7dedc5
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournamentRegister/get_all/6790207c69aa7be5f9cf52e3:
+    get:
+      tags:
+        - Registration
+      summary: Get Applications
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournamentRegister/reApply/6790207c69aa7be5f9cf52e3:
+    patch:
+      tags:
+        - Registration
+      summary: Re-Registration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                teamId: 67501b71596bcf5e8c7dedc5
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /tournamentRegister/pending/6790207c69aa7be5f9cf52e3:
+    get:
+      tags:
+        - Registration
+      summary: Pending Application
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /schedule/create/6790207c69aa7be5f9cf52e3:
+    post:
+      tags:
+        - Schedule
+      summary: create schedule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                matchId: 67c95406d33b24dca4badb2d
+                venueId: 67882f052b51f31477a89f19
+                round: Final
+                previousMatches:
+                  matchA: 67c95384d33b24dca4badafe
+                  matchB: 67c953c8d33b24dca4badb09
+                matchNumber: 7
+                matchDate: 07-03-2025
+                matchTime: 4pm
+                endTime: 5pm
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /schedule/all/6790207c69aa7be5f9cf52e3:
+    get:
+      tags:
+        - Schedule
+      summary: get schedule
+      description: |-
+        ### GET /schedule/all/{tournamentId}
+
+        This endpoint retrieves all schedules for a specific Tournament by ID.
+
+        #### Request
+
+        No request body parameters are required for this endpoint.
+
+        - `id` (path parameter) - The ID of the Tournament.
+            
+
+        #### Response
+
+        The response will be a JSON object with the following schema:
+
+        ``` json
+        {
+          "type": "object",
+          "properties": {
+            "statusCode": {
+              "type": "number"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "total": {
+                  "type": "number"
+                },
+                "schedules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string"
+                      },
+                      "tournamentId": {
+                        "type": "string"
+                      },
+                      "matchId": {
+                        "type": "string"
+                      },
+                      "venueId": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "matchNumber": {
+                        "type": "number"
+                      },
+                      "round": {
+                        "type": "string"
+                      },
+                      "teams": {
+                        "type": "object",
+                        "properties": {
+                          "teamA": {
+                            "type": "object",
+                            "properties": {
+                              "_id": {
+                                "type": "string"
+                              },
+                              "teamName": {
+                                "type": "string"
+                              },
+                              "teamLogo": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "teamB": {
+                            "type": "object",
+                            "properties": {
+                              "_id": {
+                                "type": "string"
+                              },
+                              "teamName": {
+                                "type": "string"
+                              },
+                              "teamLogo": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "previousMatches": {
+                        "type": "object",
+                        "properties": {
+                          "matchA": {
+                            "type": ["string", "null"]
+                          },
+                          "matchB": {
+                            "type": ["string", "null"]
+                          }
+                        }
+                      },
+                      "matchDate": {
+                        "type": "string"
+                      },
+                      "matchTime": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "__v": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "success": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+
+         ```
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /schedule/update_details/67a3bfc2a9fae80c660ea4b6:
+    patch:
+      tags:
+        - Schedule
+      summary: Update Details
+      description: >-
+        This endpoint is used to update the details of a specific schedule
+        identified by the provided ID. The HTTP PATCH request is sent to the
+        specified URL with the request body containing the new venue ID and
+        round information in JSON format.
+
+
+        ### Request
+
+
+        - Method: PATCH
+            
+        - Endpoint:
+        {{base_url}}/schedule/update_details/67a3bfc2a9fae80c660ea4b6
+            
+        - { "newVenueId": "6788401f3a7d964f62a2439b", "newRound": "round 1"}
+            
+
+        ### Response
+
+
+        The response for this request will be a JSON object conforming to the
+        following schema:
+
+
+        ``` json
+
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            }
+          }
+        }
+
+         ```
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                newVenueId: 6788401f3a7d964f62a2439b
+                newRound: round 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /schedule/delete/67c94c31d33b24dca4bada40:
+    delete:
+      tags:
+        - Schedule
+      summary: delete schedule
+      description: >-
+        ### Delete Schedule
+
+
+        This endpoint is used to delete a specific schedule.
+
+
+        #### Request
+
+
+        - Method: DELETE
+            
+        - URL: `{{base_url}}/schedule/delete/67c94c31d33b24dca4bada40`
+            
+
+        #### Response
+
+
+        The response for this request will be a JSON schema describing the
+        structure of the response body.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /schedule/update_timing/67c94c31d33b24dca4bada40:
+    patch:
+      tags:
+        - Schedule
+      summary: Update Timing
+      description: >-
+        ### Update Schedule Timing
+
+
+        This endpoint allows the user to update the timing for a specific
+        schedule.
+
+
+        #### Request
+
+
+        - Method: PATCH
+            
+        - URL: `{{base_url}}/schedule/update_timing/67c94c31d33b24dca4bada40`
+            
+        - Headers:
+            
+            - Content-Type: application/json
+                
+        - Body:
+            
+            - newMatchDate (string): The new date for the match.
+                
+            - newMatchTime (string): The new start time for the match.
+                
+            - newEndTime (string): The new end time for the match.
+                
+
+        #### Response
+
+
+        The response for this request is a JSON object with the following
+        schema:
+
+
+        ``` json
+
+        {
+          "status": "string",
+          "message": "string"
+        }
+
+         ```
+
+        - status (string): The status of the response.
+            
+        - message (string): A message indicating the result of the update
+        operation.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                newMatchDate: 06-03-2025
+                newMatchTime: 2pm
+                newEndTime: 3pm
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /schedule/update_status/67b22f27b8a4093d1cfbd81f:
+    patch:
+      tags:
+        - Schedule
+      summary: Update Status
+      description: >-
+        ### Update Schedule Status
+
+
+        This endpoint is used to update the status of a specific schedule.
+
+
+        #### Request
+
+
+        - Method: PATCH
+            
+        - URL: `{{base_url}}/schedule/update_status/67b22f27b8a4093d1cfbd81f`
+            
+        - Headers:
+            
+            - Content-Type: application/json
+                
+        - { "status": "rescheduled"}
+            
+
+        #### Response
+
+
+        The response for this request is a JSON object with the following
+        schema:
+
+
+        - `{   "id": "string",   "status": "string",   "timestamp": "string"  
+        }`
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                status: rescheduled
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /schedule/change_teams/67bcfc580f4824287063ba3d:
+    patch:
+      tags:
+        - Schedule
+      summary: Change Team
+      description: >-
+        The `PATCH` request is used to update the teams for a specific match in
+        the schedule. The request should be sent to
+        `{{base_url}}/schedule/change_teams/67bcfc580f4824287063ba3d`.
+
+
+        ### Request Body
+
+
+        For first Round:  
+
+
+        - `newTeamA` (text, required): The new team A for the match.
+            
+        - `newTeamB` (text, required): The new team B for the match.
+            
+        - `newMatchId` (text, not required): null
+            
+
+        For later round(after 1st round)
+
+
+        - `newTeamA` (text, not required): null
+            
+        - `newTeamB` (text, required): null
+            
+        - `newMatchId` (text, required): The ID of the match for which the teams
+        are being updated.
+            
+
+        ### Response
+
+
+        The response will contain the updated information for the match,
+        including the new teams and the match ID.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                newTeamA: null
+                newTeamB: null
+                newMatchId: 67bcf6c96f4318b431d8b30d
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /match/create/6790207c69aa7be5f9cf52e3:
+    post:
+      tags:
+        - Match
+      summary: Create Match
+      description: >-
+        ### Create Match(update coming soon)
+
+
+        This endpoint allows the user to create a new match with the specified
+        match number and previous match references, along with the assigned
+        umpires.
+
+
+        #### Request Body
+
+
+        for 1st round
+
+
+        match will authometically create while creating schedule, later it
+        required some update. example: umpire
+
+
+        for later round
+
+
+        - `matchNumber` (integer) - The number of the match.
+            
+        - `previousMatches` (object) - An object containing references to the
+        previous matches (matchA and matchB).
+            
+            - `matchA` (string) - Reference to the first previous match.
+                
+            - `matchB` (string) - Reference to the second previous match.
+                
+        - `umpire1` (string) - Reference to the first umpire.
+            
+        - `umpire2` (string) - Reference to the second umpire.
+            
+        - `umpire3` (string) - Reference to the third umpire.
+            
+
+        #### Response
+
+
+        The response will contain the details of the newly created match,
+        including the match number, previous match references, and the assigned
+        umpires.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                matchNumber: 7
+                previousMatches:
+                  matchA: 67c95384d33b24dca4badafe
+                  matchB: 67c953c8d33b24dca4badb09
+                umpire1: 67bce7b463cb90b4ec9b2f21
+                umpire2: 67bce80763cb90b4ec9b2f24
+                umpire3: 67bce77c63cb90b4ec9b2f1e
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /match/all/6790207c69aa7be5f9cf52e3:
+    get:
+      tags:
+        - Match
+      summary: Get All Match
+      description: >-
+        ### GET /match/all/{tournamentId}
+
+
+        This endpoint retrieves all matches for a specific tournament match
+        based on the provided Tournament ID.
+
+
+        #### Request
+
+
+        No request body is required for this endpoint.
+
+
+        - Path Parameters
+            
+            - `id` (string, required): The ID of the tournament for which matches are to be retrieved.
+                
+
+        #### Response
+
+
+        The response will be a JSON object with the following schema:
+
+
+        ``` json
+
+        {
+            "type": "object",
+            "properties": {
+                "statusCode": {
+                    "type": "number"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "total": {
+                            "type": "number"
+                        },
+                        "match": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "_id": {
+                                        "type": "string"
+                                    },
+                                    "tournamentId": {
+                                        "type": "string"
+                                    },
+                                    "matchNumber": {
+                                        "type": "number"
+                                    },
+                                    "teamA": {
+                                        "type": "object",
+                                        "properties": {
+                                            "_id": {
+                                                "type": "string"
+                                            },
+                                            "teamName": {
+                                                "type": "string"
+                                            },
+                                            "teamLogo": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "teamB": {
+                                        "type": "object",
+                                        "properties": {
+                                            "_id": {
+                                                "type": "string"
+                                            },
+                                            "teamName": {
+                                                "type": "string"
+                                            },
+                                            "teamLogo": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "previousMatches": {
+                                        "type": "object",
+                                        "properties": {
+                                            "matchA": {
+                                                "type": ["object", "null"]
+                                            },
+                                            "matchB": {
+                                                "type": ["object", "null"]
+                                            }
+                                        }
+                                    },
+                                    "status": {
+                                        "type": "string"
+                                    },
+                                    "umpires": {
+                                        "type": "object",
+                                        "properties": {
+                                            "firstUmpire": {
+                                                "type": "string"
+                                            },
+                                            "secondUmpire": {
+                                                "type": "string"
+                                            },
+                                            "thirdUmpire": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "createdAt": {
+                                        "type": "string"
+                                    },
+                                    "updatedAt": {
+                                        "type": "string"
+                                    },
+                                    "__v": {
+                                        "type": "number"
+                                    },
+                                    "matchSummary": {
+                            "teamA_stats": "WR Rapids 166-8",
+                            "teamB_stats": "Sydney Thunder 155-6",
+                            "margin": "11 runs and 2 wickets",
+                            "manOftheMatch": {
+                                "_id": "6742fc7e340d029e3ca0dc78",
+                                "name": "Mostakim Ahmed",
+                                "photo": "http://res.cloudinary.com/dorclmouy/image/upload/v1732180957/bchnjlv9xvo83a480k4h.jpg"
+                            }
+                        }
+        }}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        }
+
+         ```
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /match/details/6790207c69aa7be5f9cf52e3/67c95406d33b24dca4badb2d:
+    get:
+      tags:
+        - Match
+      summary: Match Details
+      description: >-
+        ### GET /match/details/{tournamentId}/{matchId}
+
+
+        This endpoint retrieves details of a specific match identified by the
+        tournamentId and matchId.
+
+
+        #### Request
+
+
+        No request body is required for this endpoint.
+
+
+        - `tournamentId` (path parameter) : The unique identifier of the
+        tournament to which the match belongs.
+            
+        - `matchId` (path parameter) : The unique identifier of the match.
+            
+
+        #### Response
+
+
+        The response will be a JSON object with the following properties:
+
+
+        - `statusCode` : A code indicating the status of the response.
+            
+        - `data` : An object containing detailed information about the match and
+        its related data.
+            
+            - `match` : Details of the match including match number, teams, previous matches, umpires, etc.
+                
+            - `matchInfo` : Information about the venue, match date, time, and status.
+                
+            - `MatchResult` : The result of the match, if available.
+                
+        - `message` : A message related to the response, if any.
+            
+        - `success` : A boolean indicating the success status of the response.
+            
+
+        The properties within the `match` and `matchInfo` objects will contain
+        further nested properties with specific details about the match and its
+        related information.
+
+
+        ``` json
+
+        {
+            "statusCode": 200,
+            "data": {
+                "match": {
+                    "_id": "67c95406d33b24dca4badb2d",
+                    "tournamentId": {
+                        "_id": "6790207c69aa7be5f9cf52e3",
+                        "tournamentName": "Grassroots Cricket League (GCL)",
+                        "format": 8,
+                        "startDate": "05-03-2025",
+                        "endDate": "08-03-2025"
+                    },
+                    "matchNumber": 7,
+                    "teamA": {
+                        "_id": "67501b71596bcf5e8c7dedc5",
+                        "teamName": "WR Rapids",
+                        "teamLogo": "http://res.cloudinary.com/dorclmouy/image/upload/v1733303152/prkd3lqvemn4ldpmvybv.jpg"
+                    },
+                    "teamB": {
+                        "_id": "6750c9a03ba80718e70d75cc",
+                        "teamName": "Sydney Thunder",
+                        "teamLogo": "http://res.cloudinary.com/dorclmouy/image/upload/v1733347742/khikd3pzvllqc4gjtqmp.jpg"
+                    },
+                    "previousMatches": {
+                        "matchA": "67c95384d33b24dca4badafe",
+                        "matchB": "67c953c8d33b24dca4badb09"
+                    },
+                    "status": "completed",
+                    "umpires": {
+                        "firstUmpire": {
+                            "_id": "67bce7b463cb90b4ec9b2f21",
+                            "name": "Fahim Foysal"
+                        },
+                        "secondUmpire": {
+                            "_id": "67bce80763cb90b4ec9b2f24",
+                            "name": "Mir Mahfuz"
+                        },
+                        "thirdUmpire": {
+                            "_id": "67bce77c63cb90b4ec9b2f1e",
+                            "name": "Robiul Islam"
+                        }
+                    },
+                    "createdAt": "2025-03-06T07:51:34.375Z",
+                    "updatedAt": "2025-03-08T07:38:19.867Z",
+                    "__v": 0
+                },
+                "matchInfo": {
+                    "_id": "67c9d5ed44ac63650b02e5f8",
+                    "venueId": {
+                        "_id": "67882f052b51f31477a89f19",
+                        "location": "Melbourne street, VIC, 2413"
+                    },
+                    "matchNumber": 7,
+                    "round": "Final",
+                    "matchDate": "07-03-2025",
+                    "matchTime": "4pm",
+                    "status": "completed",
+                    "createdAt": "2025-03-06T17:05:49.763Z",
+                    "updatedAt": "2025-03-08T07:38:19.867Z",
+                    "__v": 0
+                },
+                "MatchResult": {
+                    "teamA_stats": "WR Rapids 166-8",
+                    "teamB_stats": "Sydney Thunder 155-6",
+                    "margin": "11 runs and 2 wickets",
+                    "manOftheMatch": {
+                        "_id": "6742fc7e340d029e3ca0dc78",
+                        "name": "Mostakim Ahmed"
+                    }
+                }
+            },
+            "message": "Match details fetched successfully",
+            "success": true
+        }
+
+         ```
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /match/delete/67bcf7be6f4318b431d8b321:
+    delete:
+      tags:
+        - Match
+      summary: Delete Match
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /match/update_status/6790207c69aa7be5f9cf52e3/67bce8ae63cb90b4ec9b2f32:
+    patch:
+      tags:
+        - Match
+      summary: Update Match and schedule status
+      description: >-
+        ### Update Match Status
+
+
+        This endpoint is used to update the status of a match. (with tournament
+        Id and match Id)
+
+
+        #### Request
+
+
+        - Method: PATCH
+            
+        - URL:
+        `{{base_url}}/match/update_status/6790207c69aa7be5f9cf52e3/67bce8ae63cb90b4ec9b2f32`
+            
+        - { "newStatus": "cancelled"}
+            
+
+        #### Response
+
+
+        The response will be a JSON object conforming to the following schema:
+
+
+        ``` json
+
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            }
+          }
+        }
+
+         ```
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                newStatus: cancelled
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /match/update_teams/6790207c69aa7be5f9cf52e3/67bce8ae63cb90b4ec9b2f32:
+    patch:
+      tags:
+        - Match
+      summary: Update Team
+      description: "This endpoint allows you to update the teams for a specific match using a PATCH request. The request should include the match ID in the URL path, along with the updated team information in the request body. Upon successful update, the response will include the updated match details.\n\n### Request Body\n\nfor 1st round it required ref of  \nteamA and teamB  \n`{\_ \_ \"teamA\": \"teamId\",\_ \_ \"teamB\": \"teamId\"}`  \n  \n  \nfor later round it required  \npreviousMatches: {\n\nmatchA: \"matchId\",\n\nmatchB: \"matchId\",\n\n}\n\n### Response\n\nThe response will include the updated details of the match, including the match ID, home team details, and away team details."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                teamA: teamId
+                teamB: teamId
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /match/update_umpires/6790207c69aa7be5f9cf52e3/67c951d3d33b24dca4bada8f:
+    patch:
+      tags:
+        - Match
+      summary: Update Umpire
+      description: >-
+        ### Update Umpires for Match
+
+
+        This endpoint allows updating the umpires for a specific match.
+
+
+        #### Request Body
+
+
+        fir 1st round
+
+
+        - `umpireIds` (array of strings) - The IDs of the umpires to be assigned
+        to the match.
+            
+
+        #### Response
+
+
+        The response for this request will be a JSON object conforming to the
+        following schema:
+
+
+        ``` json
+
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "matchId": {
+                  "type": "string"
+                },
+                "umpireIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+
+         ```
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                umpireIds:
+                  - 67bce80763cb90b4ec9b2f24
+                  - 6780331f7504d03df08953d5
+                  - 67b22b8bf1389f55f5f48e0e
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /match/createSquad/6790207c69aa7be5f9cf52e3/67c94f9fd33b24dca4bada64:
+    post:
+      tags:
+        - Match
+      summary: Create Playing 11 squad
+      description: >-
+        This endpoint allows you to create a squad for a specific match. The
+        HTTP POST request should be made to
+        {{base_url}}/match/createSquad/6790207c69aa7be5f9cf52e3/67c94f9fd33b24dca4bada64.
+
+
+        ### Request Body
+
+
+        - `teamId` (string): The ID of the team for which the squad is being
+        created.
+            
+        - `players` (array of strings): An array of player IDs who are part of
+        the squad.
+            
+
+        ### Response
+
+
+        The response will contain the status of the squad creation request.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                teamId: 67501b71596bcf5e8c7dedc5
+                players:
+                  - 6742fc7e340d029e3ca0dc94
+                  - 6742fc7e340d029e3ca0dc79
+                  - 6742fc7e340d029e3ca0dc82
+                  - 6742fc7e340d029e3ca0dc97
+                  - 6742fc7e340d029e3ca0dc62
+                  - 6742fc7e340d029e3ca0dc7a
+                  - 6742fc7e340d029e3ca0dc78
+                  - 6742fc7e340d029e3ca0dc89
+                  - 6742fc7e340d029e3ca0dc93
+                  - 6742fc7e340d029e3ca0dc8b
+                  - 6742fc7e340d029e3ca0dc7f
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /match/teamsOfMatch/67c95406d33b24dca4badb2d:
+    get:
+      tags:
+        - Match
+      summary: Teams Of Match
+      description: >-
+        ### GET /match/teamsOfMatch/{matchId}
+
+
+        This endpoint retrieves the details of the teams participating in a
+        specific match.
+
+
+        #### Request
+
+
+        No request body parameters are required. The `matchId` path parameter
+        should be provided in the URL.
+
+
+        #### Response
+
+
+        The response will be a JSON object with the following schema:
+
+
+        ``` json
+
+        {
+          "type": "object",
+          "properties": {
+            "statusCode": {
+              "type": "number"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string"
+                },
+                "matchNumber": {
+                  "type": "number"
+                },
+                "teamA": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "teamName": {
+                      "type": "string"
+                    },
+                    "teamLogo": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "teamB": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "teamName": {
+                      "type": "string"
+                    },
+                    "teamLogo": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "message": {
+              "type": "string"
+            },
+            "success": {
+              "type": "boolean"
+            }
+          }
+        }
+
+         ```
+
+        The response will have a status code of 200 and a content type of
+        `application/json`.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /match/getSquad/6790207c69aa7be5f9cf52e3/67bce8ae63cb90b4ec9b2f32/6750c81e3ba80718e70d75a8:
+    get:
+      tags:
+        - Match
+      summary: Get Playing Squad
+      description: >-
+        This endpoint makes an HTTP GET request to retrieve the squad details
+        for a specific match. The request should include the match ID,
+        tournament ID, and team ID in the URL.
+
+
+        ### Request
+
+
+        - Method: GET
+            
+        - URL:
+        {{base_url}}/match/getSquad/6790207c69aa7be5f9cf52e3/67bce8ae63cb90b4ec9b2f32/6750c81e3ba80718e70d75a8
+            
+
+        ### Response
+
+
+        - Status: 200
+            
+        - Content-Type: application/json
+            
+        - { "statusCode": 0, "data": { "_id": null, "tournamentId": "",
+        "matchId": "", "teamId": "", "captain": null, "players": \[ { "_id": "",
+        "name": "", "photo": "", "player_role": "" } \], "isSquadFinalized":
+        true }, "message": "", "success": true}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /innings/create/6790207c69aa7be5f9cf52e3/67c95406d33b24dca4badb2d:
+    post:
+      tags:
+        - Innings
+      summary: Create Innings
+      description: >-
+        ### Create Innings
+
+
+        This endpoint allows you to create a new innings for a specific match.
+
+
+        **URL:**
+        `http://localhost:8000/api/v1/innings/create/tournamentId/matchId`
+
+
+        #### Request Body
+
+
+        - teamId (string): The ID of the team playing the innings.
+            
+        - inningsNumber (number): The innings number.
+            
+        - over (number): The current over of the innings.
+            
+        - runs (number): Total runs scored in the innings.
+            
+        - wicket (number): Total wickets fallen in the innings.
+            
+        - extras (object): Object containing details of extra runs scored,
+        including wide, no balls, and byes.
+            
+
+        Example:
+
+
+        ``` json
+
+        {
+          "teamId": "6750c9a03ba80718e70d75cc",
+          "inningsNumber": 2,
+          "over": 15,
+          "runs": 121,
+          "wicket": 6,
+          "extras": {
+            "wide": 15,
+            "noBalls": 6,
+            "byes": 13
+          }
+        }
+
+         ```
+
+        #### Response
+
+
+        - statusCode (number): The status code of the response.
+            
+        - data (object): Object containing details of the created innings,
+        including tournamentId, teamId, matchId, inningsNumber, wicket, runs,
+        overs, extras, totalRuns, _id, createdAt, updatedAt, and __v.
+            
+        - message (string): A message related to the response.
+            
+        - success (boolean): Indicates if the request was successful.
+            
+
+        Example:
+
+
+        ``` json
+
+        {
+          "statusCode": 0,
+          "data": {
+            "tournamentId": "",
+            "teamId": "",
+            "matchId": "",
+            "inningsNumber": 0,
+            "wicket": 0,
+            "runs": 0,
+            "overs": 0,
+            "extras": {
+              "wide": 0,
+              "noBalls": 0,
+              "byes": 0,
+              "totalExtras": 0
+            },
+            "totalRuns": 0,
+            "_id": "",
+            "createdAt": "",
+            "updatedAt": "",
+            "__v": 0
+          },
+          "message": "",
+          "success": true
+        }
+
+         ```
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                teamId: 6750c9a03ba80718e70d75cc
+                inningsNumber: 2
+                over: 15
+                runs: 121
+                wicket: 6
+                extras:
+                  wide: 15
+                  noBalls: 6
+                  byes: 13
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /innings/details/67c95406d33b24dca4badb2d:
+    get:
+      tags:
+        - Innings
+      summary: Match Innings
+      description: "The endpoint retrieves the details of innings for a specific match identified by the provided match ID.\n\nIf Innings do not exists, both innings will be null\n\n`{`\_ \_\n\n`\"statusCode\": 200,`\n\n\_ \_ `\"data\":`\n\n`{`\_ \_ \_\n\n\_ `\"innings1\": null,`\_\n\n\_ \_ \_ `\"innings2\": null`\_\n\n\_ `},`\_\n\n\_ `\"message\": \"Match Innings fetched successfully\",\_ \_ \"success\": true`\n\n`}`  \n  \n\nThe response of the request is a JSON object with the following schema:\n\n``` json\n{\n    \"type\": \"object\",\n    \"properties\": {\n        \"statusCode\": {\n            \"type\": \"number\"\n        },\n        \"data\": {\n            \"type\": \"object\",\n            \"properties\": {\n                \"innings1\": {\n                    \"type\": \"object\",\n                    \"properties\": {\n                        \"extras\": {\n                            \"type\": \"object\",\n                            \"properties\": {\n                                \"wide\": {\n                                    \"type\": \"number\"\n                                },\n                                \"noBalls\": {\n                                    \"type\": \"number\"\n                                },\n                                \"byes\": {\n                                    \"type\": \"number\"\n                                },\n                                \"totalExtras\": {\n                                    \"type\": \"number\"\n                                }\n                            }\n                        },\n                        \"_id\": {\n                            \"type\": \"string\"\n                        },\n                        \"tournamentId\": {\n                            \"type\": \"string\"\n                        },\n                        \"teamId\": {\n                            \"type\": \"object\",\n                            \"properties\": {\n                                \"_id\": {\n                                    \"type\": \"string\"\n                                },\n                                \"teamName\": {\n                                    \"type\": \"string\"\n                                },\n                                \"teamLogo\": {\n                                    \"type\": \"string\"\n                                }\n                            }\n                        },\n                        \"matchId\": {\n                            \"type\": \"string\"\n                        },\n                        \"inningsNumber\": {\n                            \"type\": \"number\"\n                        },\n                        \"wicket\": {\n                            \"type\": \"number\"\n                        },\n                        \"runs\": {\n                            \"type\": \"number\"\n                        },\n                        \"overs\": {\n                            \"type\": \"number\"\n                        },\n                        \"totalRuns\": {\n                            \"type\": \"number\"\n                        },\n                        \"createdAt\": {\n                            \"type\": \"string\"\n                        },\n                        \"updatedAt\": {\n                            \"type\": \"string\"\n                        },\n                        \"__v\": {\n                            \"type\": \"number\"\n                        }\n                    }\n                },\n                \"innings2\": {\n                    \"type\": \"object\",\n                    \"properties\": {\n                        \"extras\": {\n                            \"type\": \"object\",\n                            \"properties\": {\n                                \"wide\": {\n                                    \"type\": \"number\"\n                                },\n                                \"noBalls\": {\n                                    \"type\": \"number\"\n                                },\n                                \"byes\": {\n                                    \"type\": \"number\"\n                                },\n                                \"totalExtras\": {\n                                    \"type\": \"number\"\n                                }\n                            }\n                        },\n                        \"_id\": {\n                            \"type\": \"string\"\n                        },\n                        \"tournamentId\": {\n                            \"type\": \"string\"\n                        },\n                        \"teamId\": {\n                            \"type\": \"object\",\n                            \"properties\": {\n                                \"_id\": {\n                                    \"type\": \"string\"\n                                },\n                                \"teamName\": {\n                                    \"type\": \"string\"\n                                },\n                                \"teamLogo\": {\n                                    \"type\": \"string\"\n                                }\n                            }\n                        },\n                        \"matchId\": {\n                            \"type\": \"string\"\n                        },\n                        \"inningsNumber\": {\n                            \"type\": \"number\"\n                        },\n                        \"wicket\": {\n                            \"type\": \"number\"\n                        },\n                        \"runs\": {\n                            \"type\": \"number\"\n                        },\n                        \"overs\": {\n                            \"type\": \"number\"\n                        },\n                        \"totalRuns\": {\n                            \"type\": \"number\"\n                        },\n                        \"createdAt\": {\n                            \"type\": \"string\"\n                        },\n                        \"updatedAt\": {\n                            \"type\": \"string\"\n                        },\n                        \"__v\": {\n                            \"type\": \"number\"\n                        }\n                    }\n                },\n                \"message\": {\n                    \"type\": \"string\"\n                },\n                \"success\": {\n                    \"type\": \"boolean\"\n                }\n            }\n        }\n    }\n}\n\n ```"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /innings/all/6790207c69aa7be5f9cf52e3:
+    get:
+      tags:
+        - Innings
+      summary: Get Tournament Innings
+      description: >-
+        ### GET /innings/all/{id}
+
+
+        This endpoint retrieves all innings for a specific match identified by
+        the provided ID.
+
+
+        #### Request
+
+
+        No request body is required for this request.
+
+
+        - Path parameters
+            
+            - `id` (string, required): The ID of the match for which innings are to be retrieved.
+                
+
+        #### Response
+
+
+        The response will be a JSON object with the following schema:
+
+
+        ``` json
+
+        {
+            "type": "object",
+            "properties": {
+                "statusCode": {
+                    "type": "number"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "total": {
+                            "type": "number"
+                        },
+                        "tournamentInnings": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "_id": {
+                                        "type": "string"
+                                    },
+                                    "tournamentId": {
+                                        "type": "string"
+                                    },
+                                    "teamId": {
+                                        "type": "object",
+                                        "properties": {
+                                            "_id": {
+                                                "type": "string"
+                                            },
+                                            "teamName": {
+                                                "type": "string"
+                                            },
+                                            "teamLogo": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "inningsNumber": {
+                                        "type": "number"
+                                    },
+                                    "wicket": {
+                                        "type": "number"
+                                    },
+                                    "totalRuns": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        }
+
+         ```
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /innings/update/6790207c69aa7be5f9cf52e3/67c94fe1d33b24dca4bada70/67cb18448c13aec407039ac3:
+    patch:
+      tags:
+        - Innings
+      summary: update Innings
+      description: >-
+        ### Update Innings Details
+
+
+        This endpoint is used to update the details of a specific innings.
+
+
+        #### Request
+
+
+        - Method: PATCH
+            
+        - URL:
+        `{{base_url}}/innings/update/6790207c69aa7be5f9cf52e3/67c94fe1d33b24dca4bada70/67cb18448c13aec407039ac3`
+            
+        - { "teamId": "6750c81e3ba80718e70d75a8", "inningsNumber": 1, "over":
+        15, "runs": 106, "wicket": 7, "extras": { "wide": 10, "noBalls": 6,
+        "byes": 11 }}
+            
+
+        #### Response
+
+
+        The response for this request will be a JSON schema representing the
+        updated innings details. Specific details of the JSON schema will depend
+        on the actual response from the server.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                teamId: 6750c81e3ba80718e70d75a8
+                inningsNumber: 1
+                over: 15
+                runs: 106
+                wicket: 7
+                extras:
+                  wide: 10
+                  noBalls: 6
+                  byes: 11
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /match/createResult/6790207c69aa7be5f9cf52e3/67c95406d33b24dca4badb2d:
+    post:
+      tags:
+        - Match Result
+      summary: Create Result
+      description: >-
+        ### Create Match Result
+
+
+        This endpoint allows the user to create a match result by providing the
+        details of the man of the match and match report.
+
+
+        **URL:**
+        http://localhost:8000/api/v1/match/createResult/tournamentId/matchId  
+
+
+        #### Request Body
+
+
+        - `manOfTheMatch` (string): The ID of the player who is awarded as the
+        man of the match.
+            
+        - `matchReport` (string): A detailed report of the match.
+            
+
+        #### Response
+
+
+        Upon successful creation, the endpoint returns a status code of 201 and
+        a JSON response with the following fields:
+
+
+        - `statusCode` (number): Indicates the status of the operation.
+            
+        - `data` (object): Contains the details of the created match result,
+        including tournament ID, match ID, winner, defeated, margin, method, man
+        of the match, match report, photo, ID, creation and update timestamps,
+        and version.
+            
+        - `message` (string): An optional message from the server.
+            
+        - `success` (boolean): Indicates the success status of the operation.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                manOfTheMatch: 6742fc7e340d029e3ca0dc78
+                matchReport: Sydney Thunder won the toss and opt to ball first
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /match/matchResult/67c95406d33b24dca4badb2d:
+    get:
+      tags:
+        - Match Result
+      summary: Match Result
+      description: >-
+        This API endpoint makes an HTTP GET request to obtain the match result
+        using the matchId. The request URL is obtained by appending the matchId
+        to the base URL. Upon successful execution, the response returns a
+        status code of 200 and the match result in JSON format, including
+        details such as the winner, defeated team, margin, man of the match,
+        innings details, schedule, message, and success status.
+
+
+        This endpoint retrieves the match result for a specific match identified
+        by the ID in the URL.
+
+
+        URL: `http://localhost:8000/api/v1/match/matchResult/matchId`
+
+
+        #### Request Body
+
+
+        This is a GET request and does not require a request body.
+
+
+        #### Response Body
+
+
+        - `statusCode` (number): The status code of the response.
+            
+        - `data` (object): The main data object containing the match result.
+            
+            - `result` (object): Details of the match result including winner, defeated team, margin, method, man of the match, match report, and other metadata.
+                
+            - `innings1` (object): Details of the first innings including extras, runs, wickets, and other metadata.
+                
+            - `innings2` (object): Details of the second innings including extras, runs, wickets, and other metadata.
+                
+            - `schedule` (object): Details of the match schedule including teams, previous matches, venue, match date, time, and status.
+                
+        - `message` (string): A message related to the response.
+            
+        - `success` (boolean): Indicates the success status of the response.
+            
+
+        #### Example
+
+
+        ``` json
+
+        {
+            "statusCode": 0,
+            "data": {
+                "result": {
+                    "_id": "",
+                    "tournamentId": "",
+                    "matchId": "",
+                    "winner": {
+                        "_id": "",
+                        "teamName": "",
+                        "teamLogo": ""
+                    },
+                    "defeated": {
+                        "_id": "",
+                        "teamName": "",
+                        "teamLogo": ""
+                    },
+                    "margin": "",
+                    "method": "",
+                    "manOfTheMatch": {
+                        "_id": "",
+                        "name": "",
+                        "photo": ""
+                    },
+                    "matchReport": "",
+                    "photo": null,
+                    "createdAt": "",
+                    "updatedAt": "",
+                    "__v": 0
+                },
+                "innings1": {
+                    "extras": {
+                        "wide": 0,
+                        "noBalls": 0,
+                        "byes": 0,
+                        "totalExtras": 0
+                    },
+                    "_id": "",
+                    "tournamentId": "",
+                    "teamId": "",
+                    "matchId": "",
+                    "inningsNumber": 0,
+                    "wicket": 0,
+                    "runs": 0,
+                    "overs": 0,
+                    "totalRuns": 0,
+                    "createdAt": "",
+                    "updatedAt": "",
+                    "__v": 0
+                },
+                "innings2": {
+                    "extras": {
+                        "wide": 0,
+                        "noBalls": 0,
+                        "byes": 0,
+                        "totalExtras": 0
+                    },
+                    "_id": "",
+                    "tournamentId": "",
+                    "teamId": "",
+                    "matchId": "",
+                    "inningsNumber": 0,
+                    "wicket": 0,
+                    "runs": 0,
+                    "overs": 0,
+                    "totalRuns": 0,
+                    "createdAt": "",
+                    "updatedAt": "",
+                    "__v": 0
+                },
+                "schedule": {
+                    "teams": {
+                        "teamA": "",
+                        "teamB": ""
+                    },
+                    "previousMatches": {
+                        "matchA": null,
+                        "matchB": null
+                    },
+                    "_id": "",
+                    "tournamentId": "",
+                    "matchId": "",
+                    "venueId": "",
+                    "matchNumber": 0,
+                    "round": "",
+                    "matchDate": "",
+                    "matchTime": "",
+                    "status": "",
+                    "createdAt": "",
+                    "updatedAt": "",
+                    "__v": 0
+                }
+            },
+            "message": "",
+            "success": true
+        }
+
+         ```
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /pointTable/get/6790207c69aa7be5f9cf52e3:
+    get:
+      tags:
+        - Point Table
+      summary: Get Point Table of a Tournament
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /blog/create:
+    post:
+      tags:
+        - Blogs
+      summary: Create Blog
+      description: >-
+        ### Create Blog Post
+
+
+        This endpoint allows the user to create a new blog post.
+
+
+        #### Request Body
+
+
+        - title (text)
+            
+        - content (text)
+            
+        - tags (text)
+            
+        - photo (file)
+            
+
+        #### Response
+
+
+        ``` json
+
+        {
+            "type": "object",
+            "properties": {
+                "statusCode": {
+                    "type": "number"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                        "content": {
+                            "type": "string"
+                        },
+                        "author": {
+                            "type": "string"
+                        },
+                        "tags": {
+                            "type": "string"
+                        },
+                        "isPublished": {
+                            "type": "boolean"
+                        },
+                        "photo": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "_id": {
+                            "type": "string"
+                        },
+                        "createdAt": {
+                            "type": "string"
+                        },
+                        "updatedAt": {
+                            "type": "string"
+                        },
+                        "__v": {
+                            "type": "number"
+                        },
+                        "DD/MM/YYYY": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        }
+
+         ```
+
+        This endpoint allows you to create a new blog post.
+
+
+        #### Request Body Parameters
+
+
+        - `title` (text): The title of the blog post.
+            
+        - `content` (text): The content of the blog post.
+            
+        - `tags` (text): Tags associated with the blog post.
+            
+        - `photo` (file): An optional photo to be included with the blog post.
+            
+
+        #### Response
+
+
+        - Status: 201
+            
+        - Content-Type: application/json
+            
+        - `statusCode` (number): Indicates the status of the response.
+            
+        - `data` (object): Contains the details of the created blog post,
+        including title, content, author, tags, publication status, photo, ID,
+        creation and update timestamps, and version.
+            
+        - `message` (string): Additional information or error message, if any.
+            
+        - `success` (boolean): Indicates the success status of the request.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: >-
+                    Grassroots Cricket League (GCL) 2025 Final: WR Rapids
+                    Crowned Champions!
+                content:
+                  type: string
+                  example: >-
+                    The Grassroots Cricket League (GCL) 2025 came to a thrilling
+                    conclusion as WR Rapids and Sydney Thunder battled it out in
+                    the grand finale at Melbourne Street, VIC, on March 7, 2025,
+                    at 4 PM. The final match was a spectacle of skill,
+                    determination, and high-intensity cricket, giving fans an
+                    unforgettable experience.
+
+
+                    Match Recap
+
+
+                    Batting first, WR Rapids set a competitive target of 166/8.
+                    In response, Sydney Thunder put up a strong fight but fell
+                    just short, finishing at 155/6, handing WR Rapids an 11-run
+                    victory and the coveted GCL 2025 championship title.
+
+
+                    Key Performers
+
+
+                    Man of the Match: Mostakim Ahmed delivered a match-winning
+                    performance, playing a crucial role in WR Rapids’ triumph.
+
+
+                    Top Scorers: WR Rapids’ batsmen stood firm against Sydney
+                    Thunder’s bowling attack, ensuring a defendable total.
+
+
+                    Bowling Excellence: The Rapids’ bowlers held their nerve
+                    under pressure, sealing a historic win for their team.
+
+
+                    Umpiring Panel
+
+
+                    The grand final was officiated by Fahim Foysal (First
+                    Umpire), Mir Mahfuz (Second Umpire), and Robiul Islam (Third
+                    Umpire), ensuring a competitive and fair contest.
+
+
+                    GCL 2025 Champions: WR Rapids
+
+
+                    With this victory, WR Rapids have etched their name in GCL
+                    history, showcasing exceptional cricket throughout the
+                    tournament. Their resilience and teamwork made them
+                    deserving champions of GCL 2025.
+
+
+                    Looking Ahead
+
+
+                    The Grassroots Cricket League continues to be a platform for
+                    emerging talents and exhilarating cricket. With GCL 2025
+                    coming to an epic close, the anticipation for the next
+                    edition has already begun!
+                tags:
+                  type: string
+                  example: tournaments
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /blog/publishStatus/67cdf60b6ba78475f4b039be:
+    patch:
+      tags:
+        - Blogs
+      summary: Update Publish status
+      description: >-
+        ### Update Blog Publish Status
+
+
+        This endpoint is used to update the publish status of a specific blog.
+
+
+        #### Request
+
+
+        - Method: PATCH
+            
+        - URL: `{{base_url}}/blog/publishStatus/67cdf60b6ba78475f4b039be`
+            
+        - { "isPublished": false}
+            
+
+        #### Response
+
+
+        The response is in the form of a JSON schema:
+
+
+        ``` json
+
+        {
+          "type": "object",
+          "properties": {
+            "statusCode": {
+              "type": "number"
+            },
+            "data": {
+              "type": "boolean"
+            },
+            "message": {
+              "type": "string"
+            },
+            "success": {
+              "type": "boolean"
+            }
+          }
+        }
+
+         ```
+
+        ### Request Body
+
+
+        - isPublished (boolean): Indicates whether the blog should be published
+        or not.
+            
+
+        #### Example
+
+
+        ``` json
+
+        {
+            "isPublished": false
+        }
+
+         ```
+
+        ### Response
+
+
+        Upon a successful execution of the request, the API will return a JSON
+        response with the following fields:
+
+
+        - statusCode: A numeric code indicating the status of the operation.
+            
+        - data: A boolean value representing the updated publish status.
+            
+        - message: A message related to the operation, if any.
+            
+        - success: A boolean value indicating the success of the operation.
+            
+
+        #### Example
+
+
+        ``` json
+
+        {
+            "statusCode": 0,
+            "data": true,
+            "message": "",
+            "success": true
+        }
+
+         ```
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                isPublished: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /blog/update/67cdf60b6ba78475f4b039be:
+    patch:
+      tags:
+        - Blogs
+      summary: update details
+      description: >-
+        This endpoint allows you to update a specific blog by sending an HTTP
+        PATCH request to {{base_url}}/blog/update/67cdf60b6ba78475f4b039be. The
+        request should include a raw request body with the updated "title" and
+        "tags" for the blog.
+
+
+        ### Request Body
+
+
+        - title (string): The updated title of the blog.
+            
+        - tags (string): The updated tags for the blog.
+            
+
+        ### Response
+
+
+        Upon a successful update, the endpoint returns a status code of 200 and
+        a JSON response with the following structure:
+
+
+        ``` json
+
+        {
+            "statusCode": 0,
+            "data": {
+                "_id": "",
+                "title": "",
+                "content": "",
+                "author": "",
+                "tags": "",
+                "isPublished": true,
+                "photo": [""],
+                "createdAt": "",
+                "updatedAt": "",
+                "__v": 0,
+                "DD/MM/YYYY": "",
+                "id": ""
+            },
+            "message": "",
+            "success": true
+        }
+
+         ```
+
+        The "data" object in the response contains the updated blog details,
+        while the "success" field indicates the success of the operation.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                title: >-
+                  Grassroots Cricket League (GCL) - The Ultimate Knockout
+                  Battle 
+
+                   Cricket enthusiasts, get ready for an electrifying tournament! The Grassroots Cricket League (GCL) has concluded, leaving behind a trail of thrilling moments, fierce competition, and unforgettable cricketing action.
+                content: >-
+                  About GCL /n/n The Grassroots Cricket League (GCL) is a
+                  dynamic and inclusive cricket tournament designed to provide
+                  aspiring cricketers with a platform to showcase their talent.
+                  Played in a knockout format, the competition was intense from
+                  the very first match. The tournament featured 7 teams, all
+                  vying for glory, with 8 available slots for participants. 
+
+                   Tournament Format 
+
+                    Tournament Type: Knockout 
+
+                    Total Teams: 7 
+
+                    Match Overs: 15 per innings 
+
+                   Ball Type: Tape Tennis 
+
+                   Entry Fee: BDT 12,000 per team 
+
+                   Venue: Grassroots Cricket Ground 
+
+                   Registration Deadline: March 2, 2025 
+
+                   Tournament Duration: March 5 - March 8, 2025 
+
+                   Prize Pool 
+
+                   The competition was not just about pride but also big rewards. The champions of GCL took home a grand prize of BDT 50,000, while the runner-up bagged BDT 28,000. 
+
+                   Champion Prize: BDT 50,000 
+
+                   Runner-up Prize: BDT 28,000 
+
+                   Third 
+
+                   A Tournament to Remember 
+
+                   The GCL witnessed intense battles, incredible performances, and spectacular cricketing skills. The tape tennis format added an extra layer of excitement, ensuring every match was unpredictable and full of action. The knockout format meant there was no second chance, making every game a do-or-die encounter. 
+
+                   The tournament wrapped up successfully, with a deserving team lifting the trophy and making history in the Grassroots Cricket League. GCL has truly set the bar high for competitive cricket tournaments and promises to return even bigger and better next year! 
+
+                   Stay tuned for more cricketing action and updates from GCL!
+                tags: tournaments
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /blog/getAll:
+    get:
+      tags:
+        - Blogs
+      summary: Get Blogs
+      description: >-
+        # Get All Blogs
+
+
+        This endpoint makes an HTTP GET request to retrieve all the blogs.
+
+
+        ### Request Body
+
+
+        This request does not require a request body.
+
+
+        ### Response Body
+
+
+        - `statusCode` (number): The status code of the response.
+            
+        - `data` (object): An object containing the list of blogs and pagination
+        details.
+            
+            - `blogs` (array): An array of blog objects, each containing the blog's ID, title, content, author, tags, publication status, photo, creation date, update date, and version.
+                
+            - `pagination` (object): An object containing pagination details such as total number of blogs, total pages, current page, and page size.
+                
+        - `message` (string): A message related to the response.
+            
+        - `success` (boolean): Indicates if the request was successful.
+            
+
+        ### Example
+
+
+        ``` json
+
+        {
+            "statusCode": 0,
+            "data": {
+                "blogs": [
+                    {
+                        "_id": "",
+                        "title": "",
+                        "content": "",
+                        "author": "",
+                        "tags": "",
+                        "isPublished": true,
+                        "photo": [""],
+                        "createdAt": "",
+                        "updatedAt": "",
+                        "__v": 0
+                    }
+                ],
+                "pagination": {
+                    "totalBlogs": 0,
+                    "totalPages": 0,
+                    "currentPage": 0,
+                    "pageSize": 0
+                }
+            },
+            "message": "",
+            "success": true
+        }
+
+         ```
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /blog/updatPhoto/67cdf60b6ba78475f4b039be:
+    patch:
+      tags:
+        - Blogs
+      summary: update photo
+      description: >-
+        ### Update Blog Photo
+
+
+        This endpoint allows the user to update the photo for a specific blog by
+        making an HTTP PATCH request.
+
+
+        #### Request
+
+
+        The request should be made to
+        `{{base_url}}/blog/updatPhoto/67cdf60b6ba78475f4b039be` with a form-data
+        request body type. The request body should include a parameter `photo`
+        of type file, which represents the updated photo for the blog.
+
+
+        #### Response
+
+
+        Upon a successful request, the server will respond with a status code of
+        200 and a JSON object in the following format:
+
+
+        ``` json
+
+        {
+            "statusCode": 0,
+            "data": [""],
+            "message": "",
+            "success": true
+        }
+
+         ```
+
+        The response can be interpreted as a JSON schema with the `statusCode`
+        indicating the status of the operation, `data` containing the updated
+        information, `message` providing additional details, and `success`
+        indicating the success status of the operation.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /blog/details/67cdf60b6ba78475f4b039be:
+    get:
+      tags:
+        - Blogs
+      summary: Blog details
+      description: |-
+        ### GET /blog/details/{id}
+
+        This endpoint retrieves details of a specific blog by its ID.
+
+        #### Request
+
+        No request body is required for this endpoint.
+
+        - `id` (path parameter) - The unique identifier of the blog to retrieve.
+            
+
+        #### Response
+
+        The response will be a JSON object with the following schema:
+
+        ``` json
+        {
+          "statusCode": number,
+          "data": {
+            "_id": string,
+            "title": string,
+            "content": string,
+            "author": string,
+            "tags": array of strings,
+            "isPublished": boolean,
+            "photo": array of strings,
+            "createdAt": string,
+            "updatedAt": string,
+            "__v": number
+          },
+          "message": string,
+          "success": boolean
+        }
+
+         ```
+
+        - `statusCode` (number) - The status code of the response.
+            
+        - `data` (object) - The details of the blog.
+            
+            - `_id` (string) - The unique identifier of the blog.
+                
+            - `title` (string) - The title of the blog.
+                
+            - `content` (string) - The content of the blog.
+                
+            - `author` (string) - The author of the blog.
+                
+            - `tags` (array of strings) - The tags associated with the blog.
+                
+            - `isPublished` (boolean) - Indicates if the blog is published.
+                
+            - `photo` (array of strings) - URLs of photos associated with the blog.
+                
+            - `createdAt` (string) - The date and time when the blog was created.
+                
+            - `updatedAt` (string) - The date and time when the blog was last updated.
+                
+            - `__v` (number) - The version of the blog.
+                
+        - `message` (string) - A message related to the response.
+            
+        - `success` (boolean) - Indicates if the request was successful.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}

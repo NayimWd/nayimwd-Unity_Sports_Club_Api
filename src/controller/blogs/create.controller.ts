@@ -42,17 +42,13 @@ export const createBlog = asyncHandler(async (req, res) => {
   }
 
    // get photo from request file
-    const photoLocalPath = req.file?.path;
-  
-    if (!photoLocalPath) {
-      throw new ApiError(400, "Photo is required");
-    }
-  
-    // upload photo to cloudinary
-    const photo = await uploadOnCloudinary(photoLocalPath);
-    if (!photo) {
-      throw new ApiError(400, "Upload photo failed");
-    }
+   let photoUrl = null;
+   if (req.file?.path) {
+     const photoUploadPromise = uploadOnCloudinary(req.file.path);
+     const [photo] = await Promise.all([photoUploadPromise]); // Run parallelly
+     if (!photo) throw new ApiError(400, "Upload photo failed");
+     photoUrl = photo.url;
+   }
 
   // create blog
   const blog = await Blog.create({
@@ -62,7 +58,7 @@ export const createBlog = asyncHandler(async (req, res) => {
     tags: tags,
     createdAt: new Date(),
     isPublished: isPublished,
-    photo: photo.url
+    photo: photoUrl,
   });
 
   if (!blog) {
