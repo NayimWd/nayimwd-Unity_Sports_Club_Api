@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import connectDB from "./db";
-import { app } from "./app/app";
+import app from "./app/app";
 // const dotenv = require('dotenv')
 
 dotenv.config()
