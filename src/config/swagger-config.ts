@@ -7,7 +7,7 @@ import { Express } from "express";
 
 
 // Load Swagger file
-const swaggerDocument = YAML.load(path.join(__dirname, "../doc/swagger-doc.yaml.yaml"));
+const swaggerDocument = YAML.load(path.join(__dirname, "../doc/swagger-doc.yaml"));
 
 
 const setupSwagger = (app: Express) => {
