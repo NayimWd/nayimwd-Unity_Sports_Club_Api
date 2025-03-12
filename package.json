@@ -6,7 +6,7 @@
     "build": "tsc",
     "start": "NODE_OPTIONS='--max-old-space-size=512' node ./dist/index.js",
     "dev": "nodemon",
-    "prestart": "npm run build"
+    "prestart": "npm prune --production && npm run build"
   },
   "keywords": [],
   "author": "Nayim Hasan",
