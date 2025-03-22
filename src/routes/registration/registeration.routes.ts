@@ -3,6 +3,7 @@ import { veryfyJWT } from "../../middleware/auth.middleware";
 import {
   applyForTournament,
   getTournamentApplication,
+  myApplication,
   reApplyForTournament,
   updateStatus,
   withdrawApplication,
@@ -18,6 +19,7 @@ type Registration = {
   reApply: "/reApply/:tournamentId";
   get_all: "/get_all/:tournamentId";
   pending: "/pending/:tournamentId";
+  myApplication: "/application/:tournamentId";
 }
 
 const registrationRoutes: Registration = {
@@ -26,7 +28,8 @@ const registrationRoutes: Registration = {
   withdraw: "/withdraw/:tournamentId",
   reApply: "/reApply/:tournamentId",
   get_all: "/get_all/:tournamentId",
-  pending: "/pending/:tournamentId"
+  pending: "/pending/:tournamentId",
+  myApplication: "/application/:tournamentId"
 };
 
 // routes
@@ -44,6 +47,8 @@ router
   .get(veryfyJWT, getTournamentApplication);
 // get pending registration
 router.route(registrationRoutes.pending).get(veryfyJWT, getPendingRegistration);
+// get my application 
+router.route(registrationRoutes.myApplication).get(veryfyJWT, myApplication);
 
 
 export default router;

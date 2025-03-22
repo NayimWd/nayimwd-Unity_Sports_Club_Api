@@ -4,13 +4,13 @@ A web application for managing local cricket tournaments and matches, built for
 
  # [Unity Sports Club]()
 
- - [Live LInk]()
+ - [Live LInk](https://nayimwd-unitysportsclubapi-production.up.railway.app/api/v1)
 
  - [Repository Link](https://github.com/your-username/cricket-club-management)
 
  - [Model link](https://app.eraser.io/workspace/mmVyA4wj6gLlSyfu72of?origin=share) 
 
- - [Doc Link](http://localhost:5000/api-docs)
+ - [Doc Link](https://nayimwd-unitysportsclubapi-production.up.railway.app/api-docs/)
 
 
  This app simplifies tournament organization, team
@@ -113,7 +113,7 @@ related details.
 
 API Documentation To view the API documentation, start the server and access:
 
-- [Doc Link](http://localhost:5000/api-docs)
+- [Doc Link](https://nayimwd-unitysportsclubapi-production.up.railway.app/api-docs/)
 
 This documentation includes detailed descriptions of each endpoint, request
 parameters, and response examples.
