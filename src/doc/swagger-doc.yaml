@@ -3061,6 +3061,16 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /tournamentRegister/application/details/67c7ffd9ea8c7f8200f23996:
+    get:
+      tags:
+        - Registration
+      summary: Get My application
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
   /schedule/create/6790207c69aa7be5f9cf52e3:
     post:
       tags:

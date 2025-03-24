@@ -4,6 +4,7 @@ import { updateStatus } from "./updateStatus.controller";
 import { withdrawApplication } from "./withdrawApplication.controller";
 import { reApplyForTournament } from "./reApplyForTournament.controller";
 import { myApplication } from "./myApplication.controller";
+import { applicationDetails } from "./applicationDetails";
 
 export {
     applyForTournament,
@@ -11,5 +12,6 @@ export {
     updateStatus,
     withdrawApplication,
     reApplyForTournament,
-    myApplication
+    myApplication,
+    applicationDetails
 }

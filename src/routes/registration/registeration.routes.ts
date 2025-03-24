@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { veryfyJWT } from "../../middleware/auth.middleware";
 import {
+  applicationDetails,
   applyForTournament,
   getTournamentApplication,
   myApplication,
@@ -20,6 +21,7 @@ type Registration = {
   get_all: "/get_all/:tournamentId";
   pending: "/pending/:tournamentId";
   myApplication: "/application/:tournamentId";
+  details: "/application/details/:applicationId"
 }
 
 const registrationRoutes: Registration = {
@@ -29,7 +31,8 @@ const registrationRoutes: Registration = {
   reApply: "/reApply/:tournamentId",
   get_all: "/get_all/:tournamentId",
   pending: "/pending/:tournamentId",
-  myApplication: "/application/:tournamentId"
+  myApplication: "/application/:tournamentId",
+  details: "/application/details/:applicationId"
 };
 
 // routes
@@ -49,6 +52,7 @@ router
 router.route(registrationRoutes.pending).get(veryfyJWT, getPendingRegistration);
 // get my application 
 router.route(registrationRoutes.myApplication).get(veryfyJWT, myApplication);
+router.route(registrationRoutes.details).get(veryfyJWT, applicationDetails)
 
 
 export default router;
