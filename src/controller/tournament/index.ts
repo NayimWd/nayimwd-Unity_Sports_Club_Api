@@ -3,6 +3,7 @@ import {
   getAllTournaments,
   getTournamentsByStatus,
   getTournamentById,
+  getLatestTournament
 } from "./get.controller";
 import { updateTournamentDetails } from "./updateDetails.controller";
 import { updateDate } from "./updatedate.controller";
@@ -21,5 +22,6 @@ export {
   updateTournamentPhoto,
   updateTournamentStatus,
   getTeamsOfTournament,
-  createTournamentResult
+  createTournamentResult,
+  getLatestTournament
 };

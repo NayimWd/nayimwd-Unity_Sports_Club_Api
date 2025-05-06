@@ -2402,6 +2402,17 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /tournament/latest:
+    get:
+      tags:
+        - Tournament
+      summary: Get Latest Tournament
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+            desctiption: - The endpoint makes an HTTP GET request to retrieve the latest tournament information from the specified URL. The response returned has a status code of 200 and a content type of application/json. Below is the JSON schema for the response.
   /tournament/status:
     get:
       tags:

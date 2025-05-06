@@ -94,3 +94,24 @@ export const getTournamentById = asyncHandler(async (req, res) => {
     )
 
 });
+
+// get latest tournament
+export const getLatestTournament = asyncHandler(async(req, res)=>{
+  const latestTounament = await Tournament.findOne().sort({createdAt: -1})
+  .select("_id tournamentName")
+  .lean();
+
+  if(!latestTounament){
+    throw new ApiError(404, "Tournament not found")
+  };
+
+  // return response 
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      latestTounament,
+      "Latest tournament found successfully"
+    )
+  )
+
+})

@@ -11,7 +11,8 @@ import {
   updateTournamentStatus,
   getTeamsOfTournament,
   updateDate,
-  createTournamentResult
+  createTournamentResult,
+  getLatestTournament
 } from "../../controller/tournament";
 import { getTournamentResult } from "../../controller/tournament/getTournamentResult.controller";
 
@@ -22,6 +23,7 @@ type Tournament = {
   create: "/create";
   get_all: "/all";
   get_by_status: "/status";
+  latest: "/latest";
   details: "/details/:tournamentId";
   update_details: "/update_details/:tournamentId";
   update_date: "/update_date/:tournamentId";
@@ -36,6 +38,7 @@ type Tournament = {
 const tournament: Tournament = {
   create: "/create",
   get_all: "/all",
+  latest: "/latest",
   get_by_status: "/status",
   details: "/details/:tournamentId",
   update_date: "/update_date/:tournamentId",
@@ -53,6 +56,8 @@ router
   .post(veryfyJWT, upload.single("photo"), createTournament);
 // get all tournaments
 router.route(tournament.get_all).get(getAllTournaments);
+// get latest tournament
+router.route(tournament.latest).get(getLatestTournament)
 // get tournament by status
 router.route(tournament.get_by_status).get(getTournamentsByStatus);
 // get tournament by id
