@@ -20,7 +20,7 @@ const appMiddleware = [
     express.urlencoded({extended: true, limit: "160kb"}),
     cookieParser(),
     cors({
-        origin: process.env.CORS_ORIGIN,
+        origin: process.env.CORS_ORIGIN?.split(","),
         credentials: true
     }),
     helmet(),
