@@ -12,6 +12,8 @@ const limiter = rateLimit({
     legacyHeaders: false,
   });
 
+  const allowedOrigins = process.env.CORS_ORIGIN?.split(",");
+
 const appMiddleware = [
     express.json({
         limit: "160kb",
@@ -20,7 +22,14 @@ const appMiddleware = [
     express.urlencoded({extended: true, limit: "160kb"}),
     cookieParser(),
     cors({
-        origin: process.env.CORS_ORIGIN?.split(","),
+        origin: function (origin, callback) {
+            if (!origin) return callback(null, true);
+            if (allowedOrigins?.includes(origin)) {
+              return callback(null, true);
+            } else {
+              return callback(new Error("Not allowed by CORS"));
+            }
+          },
         credentials: true
     }),
     helmet(),
