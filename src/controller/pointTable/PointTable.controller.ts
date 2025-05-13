@@ -16,7 +16,7 @@ export const getPointTable = asyncHandler(async (req, res) => {
 
   // check if tournament exists
   const tournament =
-    await Tournament.findById(tournamentId).select("tournamentName");
+    await Tournament.findById(tournamentId).select("tournamentName photo");
   if (!tournament) {
     throw new ApiError(404, "Tournament not found");
   }
@@ -51,8 +51,8 @@ export const getPointTable = asyncHandler(async (req, res) => {
   }
 
   // fetch point table
-  const pointTable = await await PointTable.find(query)
-    .populate({ path: "teamId", select: "teamName logo" }) // Populate team details
+  const pointTable = await PointTable.find(query)
+    .populate({ path: "teamId", select: "teamName teamLogo" }) // Populate team details
     .select("-__v -updatedAt") // Exclude unnecessary fields
     .sort(sortOptions)
     .lean();
