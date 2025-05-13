@@ -66,7 +66,7 @@ export const getPointTable = asyncHandler(async (req, res) => {
     new ApiResponse(
       200,
       {
-        tournament: tournament.tournamentName,
+        tournament: tournament,
         pointTable,
       },
       "Point table fetched successfully"
