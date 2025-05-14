@@ -34,7 +34,7 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
       .sort(sortOption)
       .skip(skip)
       .limit(pageSize)
-      .select("title tags author createdAt") // Only fetch required fields
+      .select("title tags author createdAt photo") // Only fetch required fields
       .lean(), // Optimized read performance
 
     Blog.countDocuments(filter), // Total count for pagination
