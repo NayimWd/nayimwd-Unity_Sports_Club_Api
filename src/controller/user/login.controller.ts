@@ -65,6 +65,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   const options = {
     httpOnly: true,
     secure: true,
+    maxAge: 24 * 60 * 60 * 1000,
   };
 
   return res
