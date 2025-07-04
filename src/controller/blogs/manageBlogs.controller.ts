@@ -11,7 +11,7 @@ export const manageBlogs = asyncHandler(async(req, res)=> {
   }
 
     // Extract query parameters
-  let { page, limit, search, sort, tags } = req.query;
+  let { page, limit, search, sort, tags, isPublished } = req.query;
 
   // Default values
   const pageNumber = Math.max(parseInt(page as string) || 1, 1);
@@ -29,6 +29,11 @@ export const manageBlogs = asyncHandler(async(req, res)=> {
     filter.tags = tags; // Exact match
   }
 
+   // Optional isPublished filter
+  if (isPublished === "true") filter.isPublished = true;
+  if (isPublished === "false") filter.isPublished = false;
+
+
   // Sorting logic
   let sortOption: any = { createdAt: -1 }; // Default: latest first
   if (sort === "oldest") sortOption = { createdAt: 1 };
@@ -39,7 +44,7 @@ export const manageBlogs = asyncHandler(async(req, res)=> {
       .sort(sortOption)
       .skip(skip)
       .limit(pageSize)
-      .select("title tags author createdAt photo, isPublished") // Only fetch required fields
+      .select("title tags author createdAt photo isPublished") // Only fetch required fields
       .lean(), // Optimized read performance
 
     Blog.countDocuments(filter), // Total count for pagination
