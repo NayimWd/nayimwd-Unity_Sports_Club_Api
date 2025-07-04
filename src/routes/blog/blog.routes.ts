@@ -7,9 +7,9 @@ import {
   updateBlogPhoto,
   blogPublish,
   getAllBlogs,
-  
+  manageBlogs,
+  blogDetails,
 } from "../../controller/blogs";
-import { blogDetails } from "../../controller/blogs/getBlogs.controller";
 
 const router = Router();
 
@@ -20,6 +20,7 @@ type Blog = {
   updatePhoto: "/updatPhoto/:blogId";
   publishStatus: "/publishStatus/:blogId";
   getAll: "/getAll";
+  manage: "/manage";
   details: "/details/:blogId";
 };
 
@@ -30,6 +31,7 @@ const blog: Blog = {
   updatePhoto: "/updatPhoto/:blogId",
   publishStatus: "/publishStatus/:blogId",
   getAll: "/getAll",
+  manage: "/manage",
   details: "/details/:blogId",
 };
 
@@ -45,6 +47,8 @@ router
 router.route(blog.publishStatus).patch(veryfyJWT, blogPublish);
 // get all blogs
 router.route(blog.getAll).get(getAllBlogs);
+// manage blogs
+router.route(blog.manage).get(veryfyJWT, manageBlogs);
 // get blog details
 router.route(blog.details).get(blogDetails);
 
