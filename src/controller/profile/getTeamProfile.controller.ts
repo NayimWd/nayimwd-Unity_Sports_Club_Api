@@ -39,10 +39,6 @@ export const getTeamProfiles = asyncHandler(async (req, res) => {
       select: "name photo"
     }).lean();
 
-  
-  if (!playersProfiles) {
-    throw new ApiError(404, "Players profiles not found");
-  }
 
   // fetch team captain 
   const captain = await TeamPlayer.findOne({ teamId, isCaptain: true})
@@ -54,9 +50,9 @@ export const getTeamProfiles = asyncHandler(async (req, res) => {
 
   // prepare response
   const response = {
-    manager: team.managerId,
-    captain: captain,
-    players: playersProfiles.map((player) => player),
+    manager: team.managerId || null,
+    captain: captain || null,
+    players: playersProfiles.map((player) => player) || null,
   };
 
   // return response

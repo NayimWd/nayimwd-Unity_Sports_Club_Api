@@ -34,8 +34,17 @@ export const getMatchInnings = asyncHandler(async (req, res) => {
     }),
   ]);
 
-  if (!innings1 && innings2) {
-    throw new ApiError(404, "Innings not created yet");
+  // If both innings are missing
+  if (!innings1 && !innings2) {
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { innings1: null, innings2: null },
+          "Innings data not yet created"
+        )
+      );
   }
 
   // return response
@@ -73,10 +82,6 @@ export const getTournamentInnings = asyncHandler(async (req, res) => {
       model: "Team",
       select: "teamName teamLogo",
     });
-
-  if (!tournamentInnings) {
-    throw new ApiError(400, "fetch tournament Innings failed");
-  }
 
   const total = await Innings.countDocuments();
 

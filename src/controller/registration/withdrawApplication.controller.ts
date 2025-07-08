@@ -41,8 +41,17 @@ export const withdrawApplication = asyncHandler(async (req, res) => {
     tournamentId,
     teamId,
   });
+
   if (!existingRegistration) {
-    throw new ApiError(400, "This team not registered for the tournament");
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          null,
+          "This Team is not regestered in this tournament"
+        )
+      );
   }
 
   // withdraw registration
@@ -62,8 +71,8 @@ export const withdrawApplication = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Registration withdrawn failed");
   }
 
- // Decrease seat count if the previous status was approved
- if (previousStatus === "approved") {
+  // Decrease seat count if the previous status was approved
+  if (previousStatus === "approved") {
     if (tournament.teamCount > 0) {
       tournament.teamCount -= 1;
       await tournament.save();
@@ -75,5 +84,7 @@ export const withdrawApplication = asyncHandler(async (req, res) => {
   // return response
   return res
     .status(200)
-    .json(new ApiResponse(200, withdraw.status, "Application withdrawn successfull"));
+    .json(
+      new ApiResponse(200, withdraw.status, "Application withdrawn successfull")
+    );
 });

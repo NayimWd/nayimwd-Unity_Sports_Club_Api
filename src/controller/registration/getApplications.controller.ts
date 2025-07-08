@@ -15,30 +15,28 @@ export const getTournamentApplication = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Tournament ID is required");
   }
 
-   // Get status filter (optional)
-   const {status} = req.query;
- 
-   // Build query dynamically
+  // Get status filter (optional)
+  const { status } = req.query;
+
+  // Build query dynamically
   const query: any = { tournamentId };
   if (status) {
     query.status = status; // Only add status filter if provided
   }
 
-
   // find registration
-  const registration = await Registration.find(query).select("status").populate({
-    path: "managerId",
-    select: "name"
-  })
-  .populate({
-    path: "teamId",
-    select: "teamName"
-  })
-  .lean();
+  const registration = await Registration.find(query)
+    .select("status")
+    .populate({
+      path: "managerId",
+      select: "name",
+    })
+    .populate({
+      path: "teamId",
+      select: "teamName",
+    })
+    .lean();
 
-  if (!registration) {
-    throw new ApiError(404, "No registration found for this tournament");
-  }
   // total registration
   const total = registration.length;
 
@@ -54,8 +52,7 @@ export const getTournamentApplication = asyncHandler(async (req, res) => {
   );
 });
 
-
-export const getPendingRegistration = asyncHandler(async(req, res)=>{
+export const getPendingRegistration = asyncHandler(async (req, res) => {
   // auth check
   const author = (req as any).user;
   if (!["admin", "staff"].includes(author.role)) {
@@ -68,19 +65,21 @@ export const getPendingRegistration = asyncHandler(async(req, res)=>{
   }
 
   // find registration
-  const registration = await Registration.find({  tournamentId, status: "pending" }).select("status").populate({
-    path: "managerId",
-    select: "name"
+  const registration = await Registration.find({
+    tournamentId,
+    status: "pending",
   })
-  .populate({
-    path: "teamId",
-    select: "teamName"
-  })
-  .lean();
+    .select("status")
+    .populate({
+      path: "managerId",
+      select: "name",
+    })
+    .populate({
+      path: "teamId",
+      select: "teamName",
+    })
+    .lean();
 
-  if (!registration) {
-    throw new ApiError(404, "No registration found for this tournament");
-  }
   // total registration
   const total = registration.length;
 
@@ -94,4 +93,4 @@ export const getPendingRegistration = asyncHandler(async(req, res)=>{
       "Registration fetched successfully"
     )
   );
-})
+});

@@ -12,11 +12,7 @@ export const getMyteam = asyncHandler(async (req, res) => {
 
   const team = await Team.findOne({ managerId: userId });
 
-  if (!team) {
-    throw new ApiError(404, "You do not have any team yet!");
-  }
-
   return res
     .status(200)
-    .json(new ApiResponse(200, team, "Team fetched successfully"));
+    .json(new ApiResponse(200, team,  team ? "Team fetched successfully" : "Team Not Found"));
 });

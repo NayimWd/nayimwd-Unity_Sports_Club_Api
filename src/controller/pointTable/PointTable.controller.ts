@@ -15,8 +15,9 @@ export const getPointTable = asyncHandler(async (req, res) => {
   const { search, sortBy, order, minWins, minPoints, maxLosses } = req.query;
 
   // check if tournament exists
-  const tournament =
-    await Tournament.findById(tournamentId).select("tournamentName photo");
+  const tournament = await Tournament.findById(tournamentId).select(
+    "tournamentName photo"
+  );
   if (!tournament) {
     throw new ApiError(404, "Tournament not found");
   }
@@ -57,10 +58,6 @@ export const getPointTable = asyncHandler(async (req, res) => {
     .sort(sortOptions)
     .lean();
 
-  if (!pointTable) {
-    throw new ApiError(404, "Point table not found");
-  }
-
   // return response
   res.status(200).json(
     new ApiResponse(
@@ -69,7 +66,9 @@ export const getPointTable = asyncHandler(async (req, res) => {
         tournament: tournament,
         pointTable,
       },
-      "Point table fetched successfully"
+      pointTable.length > 0
+        ? "Point table fetched successfully"
+        : "No point table data found"
     )
   );
 });

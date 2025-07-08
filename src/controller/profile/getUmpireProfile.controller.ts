@@ -14,12 +14,12 @@ export const getUmpireProfile = asyncHandler(async (req, res) => {
     select: "name photo",
   });
 
-  if (!profile) {
-    throw new ApiError(404, "Umpire profile not found");
-  }
-
   // return response
   return res
     .status(200)
-    .json(new ApiResponse(200, profile, "Umpire profile found successfully"));
+    .json(new ApiResponse(
+      200,
+      profile || null,
+      profile ? "Umpire profile found successfully" : "Umpire Profile not found"
+    ));
 });

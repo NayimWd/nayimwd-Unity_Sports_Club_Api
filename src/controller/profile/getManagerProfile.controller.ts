@@ -17,17 +17,12 @@ export const getManagerProfile = asyncHandler(async(req, res)=>{
         select: "name photo"
     });
 
-    // validate
-    if(!profile){
-        throw new ApiError(404, "Manager Profile does not found")
-    };
-
     // return response
     return res.status(200).json(
         new ApiResponse(
             200,
-            profile,
-            "Manager Profile found successfully"
+      profile || null, 
+      profile ? "Manager profile fetched successfully" : "Manager profile not found"
         )
     )
 })

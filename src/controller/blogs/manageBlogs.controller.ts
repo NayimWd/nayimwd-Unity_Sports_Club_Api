@@ -22,8 +22,8 @@ export const manageBlogs = asyncHandler(async(req, res)=> {
 
   // Use full-text search
   if (search) {
-    filter.$text = { $search: search };
-  }
+  filter.title = { $regex: search, $options: "i" };
+}
 
   if (tags) {
     filter.tags = tags; // Exact match
@@ -50,9 +50,6 @@ export const manageBlogs = asyncHandler(async(req, res)=> {
     Blog.countDocuments(filter), // Total count for pagination
   ]);
 
-  if (!blogs.length) {
-    throw new ApiError(404, "No blogs found");
-  }
 
   // Return response
   res.status(200).json(

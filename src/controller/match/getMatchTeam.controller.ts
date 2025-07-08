@@ -26,9 +26,6 @@ export const getMatchTeams = asyncHandler(async (req, res) => {
       model: "Team",
       select: "teamName teamLogo",
     });
-  if (!match) {
-    throw new ApiError(404, "Match do not found");
-  }
 
   // reteurn response
   return res

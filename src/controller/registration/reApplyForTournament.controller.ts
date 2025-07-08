@@ -41,8 +41,10 @@ export const reApplyForTournament = asyncHandler(async (req, res) => {
     tournamentId,
     teamId,
   });
+  
   if (!existingRegistration) {
-    throw new ApiError(400, "This team not registered for the tournament");
+    return res.status(200)
+           .json(new ApiResponse(200, null, "This Team is not regestered in this tournament"))
   }
 
   if (existingRegistration.status !== "withdrawn") {

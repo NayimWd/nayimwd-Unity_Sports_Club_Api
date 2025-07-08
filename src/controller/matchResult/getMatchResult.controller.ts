@@ -35,9 +35,12 @@ export const getMatchResult = asyncHandler(async(req, res)=>{
         path: "manOfTheMatch",
         select: "name photo"
     })
-    if(!matchResult){
-        throw new ApiError(404, "Match result not found");
-    };
+    
+    if (!matchResult) {
+  return res.status(200).json(
+    new ApiResponse(200, { message: "Match result not recorded yet", result: null }, "No match result")
+  );
+}
 
      // fetch schedule 
     const schedule = await Schedule.findOne({matchId});

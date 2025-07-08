@@ -14,12 +14,12 @@ export const getPlayerProfile = asyncHandler(async (req, res) => {
     select: "name photo",
   });
 
-  if (!profile) {
-    throw new ApiError(404, "Player profile not found");
-  }
-
   // return response
   return res
     .status(200)
-    .json(new ApiResponse(200, profile, "Player profile fetched successfully"));
+    .json(new ApiResponse(
+      200, 
+      profile || null,
+      profile ? "Player profile fetched successfully" : "Player Profile not found"
+    ));
 });

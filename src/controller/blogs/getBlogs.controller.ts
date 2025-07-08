@@ -16,9 +16,9 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
   const filter: any = { isPublished: true };
 
   // Use full-text search
-  if (search) {
-    filter.$text = { $search: search };
-  }
+   if (search) {
+  filter.title = { $regex: search, $options: "i" };
+}
 
   if (tags) {
     filter.tags = tags; // Exact match

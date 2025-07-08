@@ -31,9 +31,6 @@ const teams = await Registration.find({tournamentId, status: "approved"})
         select: "teamName teamLogo"
     })
 
-if(!teams){
-    throw new ApiError(400, "No teams found of this tournament")
-};
 
 // return response 
 return res.status(200).json(
@@ -41,9 +38,9 @@ new ApiResponse(
     200,
     { 
         total: teams.length,
-        teams
+        teams: teams || null
     },
-    "Tournament team found successfully"
+    teams ? "Tournament team found successfully" : "No Team Exists in this Tournament"
 )
 )
 
