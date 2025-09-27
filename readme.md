@@ -1,87 +1,95 @@
-# Cricket Club Management System
+# 🏏 Cricket Club Management System  
 
-A web application for managing local cricket tournaments and matches, built for
+A modern web application to **organize and manage local cricket tournaments, matches, and teams**, built for **[Unity Sports Club]()**.  
 
- # [Unity Sports Club]()
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)  
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)  
+![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)  
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)  
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)  
 
- - [Live LInk](https://nayimwd-unitysportsclubapi-production.up.railway.app/api/v1)
+🔗 **Live API** → [Railway Deployment](https://nayimwd-unitysportsclubapi-production.up.railway.app/api/v1)  
+🔗 **Repository** → [GitHub](https://github.com/your-username/cricket-club-management)  
+🔗 **Data Model** → [Eraser Diagram](https://app.eraser.io/workspace/mmVyA4wj6gLlSyfu72of?origin=share)  
+🔗 **API Docs** → [Swagger UI](https://nayimwd-unitysportsclubapi-production.up.railway.app/api-docs/)  
 
- - [Repository Link](https://github.com/your-username/cricket-club-management)
+---
 
- - [Model link](https://app.eraser.io/workspace/mmVyA4wj6gLlSyfu72of?origin=share) 
+## 📖 Table of Contents  
+- [Overview](#-overview)  
+- [Features](#-features)  
+- [Tech Stack](#-tech-stack)  
+- [Installation](#-installation)  
+- [Usage](#-usage)  
+- [Database Schema](#-database-schema)  
+- [Project Structure](#-project-structure)  
+- [License](#-license)  
+- [Contact](#-contact)  
 
- - [Doc Link](https://nayimwd-unitysportsclubapi-production.up.railway.app/api-docs/)
+---
+
+## 📌 Overview  
+
+The **Cricket Club Management System** is designed for **clubs, managers, and tournament organizers** to streamline:  
+- 🏆 Tournament creation (knockout & friendly matches)  
+- 👥 Team and player registration  
+- 📅 Match scheduling with venue conflict detection  
+- 📊 Score tracking and point tables  
+- 🎖️ Awards & achievements tracking  
+
+This provides a **single platform** for admins, managers, players, and umpires to collaborate effectively.  
+
+---
+
+## ✨ Features  
+
+### 🏟️ Tournament Management  
+- Create knockout tournaments or friendly series  
+- Define schedules (dates, times, venues)  
+- Automatic conflict checks for venue availability  
+
+### 👥 Team & Player Management  
+- Register teams with a manager & up to 18 players  
+- Approve/reject team applications  
+- Player profiles (basic stats, awards, participation)  
+
+### 📅 Match Scheduling & Tracking  
+- Flexible match scheduling with umpire allocations  
+- Track live, upcoming, and past matches  
+- Basic scorecards & results  
+
+### 🎖️ Awards  
+- Track awards like *“Man of the Match”* & *“Man of the Tournament”*  
+
+---
+
+## 🛠️ Tech Stack  
+
+**Frontend**: React.js (planned with Next.js, Zustand, RTK Query)  
+
+**Backend**:  
+- Node.js + Express.js  
+- TypeScript  
+
+**Database**:  
+- MongoDB (Mongoose ORM)  
+
+**Other Integrations**:  
+- Cloudinary → Image storage  
+- Stripe → Tournament entry fees  
+- Swagger → API documentation  
+
+---
+
+## ⚙️ Installation  
+
+### 1️⃣ Clone the Repository  
+```bash
+git clone https://github.com/your-username/cricket-club-management.git
+cd cricket-club-management
 
 
- This app simplifies tournament organization, team
-registrations, match scheduling, and score tracking.
-
-## Table of Contents
-
- - Project Overview 
-
- - Features 
-
- - Tech Stack 
- 
- - Installation 
-
- - Usage API Documentation
- 
- - Database Schema 
-  
-  - Project Overview
-
-The Cricket Club Management System provides an all-in-one solution for cricket
-club organizers and managers to streamline tournament creation, team
-registration, match scheduling, and score tracking. The application supports
-knockout tournaments and 1-on-1 friendly matches, offering a simple yet robust
-interface for administrators, team managers, players, and umpires.
-
-## Features
-
-- Tournament Management Create knockout tournaments or 1-on-1 match series.
-Schedule matches with predefined dates, times, and venues. Automatic conflict
-checking for venue bookings.
-
-- Team and Player Management Team registration with a designated manager and a
-roster of up to 18 players. Each team application is tracked and reviewed for
-tournament inclusion. Player profiles with statistics (runs, wickets, awards,
-etc.).
-
-- Match Scheduling and Tracking Flexible match scheduling with team assignments
-and umpire allocations. Score tracking for matches, including team scores,
-player stats, and results. Basic scorecards for upcoming, live, and past
-matches.
-
-- Awards and Achievements Track individual awards like “Man of the Match” and “Man of the Tournament.” 
-
-## Tech Stack
-
-- Frontend: React.js [live link]()
-
- ### Backend: 
-
- - Node.js
-
-- Express.js 
-
-- TypeScript 
- 
-### Database:
-- MongoDB
-with Mongoose ORM Payment 
-
-### Gateway: 
-- Stripe (for tournament entry fees) 
-
-### Image
-- Storage: Cloudinary 
-
-### Installation Clone the Repository
-
-git clone https://github.com/your-username/cricket-club-management.git cd
-cricket-club-management Install Dependencies
+Install Dependencies
 
 For backend, 
 
@@ -97,7 +105,7 @@ PORT=5000 JWT_SECRET=your_jwt_secret STRIPE_SECRET_KEY=your_stripe_secret_key
 ### Run the Application 
 
 npm run dev
-
+```
 ### Usage Admin Panel:
 
 - Create tournaments, manage teams and player registrations.
@@ -152,9 +160,47 @@ License This project is licensed under the MIT License.
 
 Thank you for checking out this project! If you have any questions or feedback, feel free to open an issue or contact me. 
 
+## 📂 Project Structure
+The following is the core structure of the project.  
+
+Each folder is organized by responsibility to keep the codebase modular, scalable, and easy to maintain. 
+
+```bash
+├── .gitignore
+├── .prettierrc              # Prettier config
+├── nodemon.json             # Dev server config
+├── package.json
+├── public/                  # Static assets
+├── readme.md
+├── src/
+│   ├── app/                 # App initialization & middleware
+│   ├── config/              # DB, Swagger, Env config
+│   ├── constants.ts         # Global constants
+│   ├── controllers/         # Business logic
+│   │   ├── blogs/
+│   │   ├── matches/
+│   │   ├── players/
+│   │   ├── pointTable/
+│   │   ├── profiles/
+│   │   ├── registration/
+│   │   ├── schedule/
+│   │   ├── teams/
+│   │   ├── tournaments/
+│   │   ├── users/
+│   │   └── venues/
+│   ├── db/                  # MongoDB connection
+│   ├── docs/                # Swagger API docs
+│   ├── middleware/          # Auth, validation, multer, etc.
+│   ├── models/              # Mongoose schemas
+│   ├── routes/              # Express routers
+│   └── utils/               # Helpers (types, formatters, etc.)
+├── tsconfig.json
+└── tsconfig.build.json
+```
+
 ### Email
  **nayim.wd@gmail.com**
  ##
-### Linkedin
 
+### Linkedin
 **[Linkedin](https://www.linkedin.com/in/nayim-hasan/)**

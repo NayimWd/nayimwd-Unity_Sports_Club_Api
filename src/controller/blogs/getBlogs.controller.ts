@@ -40,10 +40,6 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
     Blog.countDocuments(filter), // Total count for pagination
   ]);
 
-  if (!blogs.length) {
-    throw new ApiError(404, "No blogs found");
-  }
-
   // Return response
   res.status(200).json(
     new ApiResponse(
