@@ -24,17 +24,25 @@ export const updateAccount = asyncHandler(async (req, res) => {
 
   // Prevent request with the same data
   if (
-    (name && user.name === name) &&
-    (phoneNumber && user.phoneNumber === phoneNumber) &&
-    (role && user.role === role)
+    name &&
+    user.name === name &&
+    phoneNumber &&
+    user.phoneNumber === phoneNumber &&
+    role &&
+    user.role === role
   ) {
     throw new ApiError(400, "Data already exists");
   }
 
   // Build update object dynamically
-  const updateFields: Partial<{ name: string; phoneNumber: string; role: string }> = {};
+  const updateFields: Partial<{
+    name: string;
+    phoneNumber: string;
+    role: string;
+  }> = {};
   if (name && user.name !== name) updateFields.name = name;
-  if (phoneNumber && user.phoneNumber !== phoneNumber) updateFields.phoneNumber = phoneNumber;
+  if (phoneNumber && user.phoneNumber !== phoneNumber)
+    updateFields.phoneNumber = phoneNumber;
   if (role && user.role !== role) updateFields.role = role;
 
   // Find and update user
@@ -48,11 +56,9 @@ export const updateAccount = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User not found");
   }
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      updatedUser,
-      "Account details updated successfully"
-    )
-  );
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedUser, "Account details updated successfully")
+    );
 });

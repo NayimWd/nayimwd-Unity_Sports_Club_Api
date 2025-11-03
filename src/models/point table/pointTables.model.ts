@@ -30,25 +30,25 @@ const pointTableSchema: Schema<IPoint> = new Schema({
     type: Number,
     required: true,
     min: [0, "Wins can not be negative."],
-    default: 0
+    default: 0,
   },
   losses: {
     type: Number,
     required: true,
     min: [0, "Losses can not be negative."],
-    default: 0
+    default: 0,
   },
   ties: {
     type: Number,
     required: true,
     min: [0, "Ties can not be negative."],
-    default: 0
+    default: 0,
   },
   points: {
     type: Number,
     required: true,
     min: [0, "Points can not be negative."],
-    default: 0
+    default: 0,
   },
 });
 

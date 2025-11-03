@@ -36,12 +36,18 @@ export const changeTeams = asyncHandler(async (req, res) => {
 
   //  Prevent changes if the match is in progress or completed
   if (["in-progress", "completed"].includes(match.status)) {
-    throw new ApiError(400, "Cannot change teams for a match that is live or completed.");
+    throw new ApiError(
+      400,
+      "Cannot change teams for a match that is live or completed."
+    );
   }
 
   // Ensure at least one new team or a new match reference is provided
   if (!newTeamA && !newTeamB && !newMatchId) {
-    throw new ApiError(400, "Provide at least one team or a new match reference to update.");
+    throw new ApiError(
+      400,
+      "Provide at least one team or a new match reference to update."
+    );
   }
 
   // Store existing teams for reference
@@ -74,7 +80,10 @@ export const changeTeams = asyncHandler(async (req, res) => {
   });
 
   if (conflictingMatch) {
-    throw new ApiError(400, "One or both new teams are already scheduled on this date.");
+    throw new ApiError(
+      400,
+      "One or both new teams are already scheduled on this date."
+    );
   }
 
   // If a new match reference is provided, validate it
@@ -91,7 +100,10 @@ export const changeTeams = asyncHandler(async (req, res) => {
     });
 
     if (existingMatchSchedule) {
-      throw new ApiError(400, "The new match is already assigned to another schedule.");
+      throw new ApiError(
+        400,
+        "The new match is already assigned to another schedule."
+      );
     }
 
     schedule.matchId = newMatchId;
@@ -102,11 +114,15 @@ export const changeTeams = asyncHandler(async (req, res) => {
   schedule.teams.teamB = updatedTeamB;
   await schedule.save();
 
-  // update Match Schema 
+  // update Match Schema
   match.teamA = updatedTeamA;
   match.teamB = updatedTeamB;
   await match.save();
 
   // Return response
-  res.status(200).json(new ApiResponse(200, schedule, "Schedule and Match updated successfully."));
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, schedule, "Schedule and Match updated successfully.")
+    );
 });

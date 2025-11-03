@@ -3,7 +3,14 @@ import { IBlog } from "../../utils/types/SchemaTypes";
 
 const blogSchema: Schema<IBlog> = new Schema(
   {
-    title: { type: String, required: true, trim: true, min: 10, max: 500, index: true },
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+      min: 10,
+      max: 500,
+      index: true,
+    },
     content: { type: String, required: true },
     author: String,
     tags: {

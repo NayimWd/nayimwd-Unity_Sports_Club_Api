@@ -8,9 +8,8 @@ import {
   getPlayerProfile,
   getUmpireProfile,
   getTeamProfiles,
-  getProfileDetails
+  getProfileDetails,
 } from "../../controller/profile";
-
 
 const router = Router();
 
@@ -25,7 +24,7 @@ type Profile = {
   get_umpire_profile: "/get_umpire_profile";
   get_team_profiles: "/get_team_profiles/:teamId";
   get_profile_details: "/get_profile_details/:id";
-}
+};
 
 const profileRoutes: Profile = {
   create_player_profile: "/create_player_profile",

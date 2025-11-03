@@ -21,7 +21,7 @@ const inningsSchema: Schema<IInningType> = new Schema(
     inningsNumber: {
       type: Number,
       enum: [1, 2],
-      default: 1
+      default: 1,
     },
     wicket: {
       type: Number,
@@ -33,9 +33,9 @@ const inningsSchema: Schema<IInningType> = new Schema(
     },
     overs: {
       type: Number,
-      required: true
+      required: true,
     },
-    extras: { 
+    extras: {
       wide: {
         type: Number,
         required: true,
@@ -50,12 +50,12 @@ const inningsSchema: Schema<IInningType> = new Schema(
       },
       totalExtras: {
         type: Number,
-        require: true
-      }
+        require: true,
+      },
     },
     totalRuns: {
-      type: Number
-    }
+      type: Number,
+    },
   },
   { timestamps: true }
 );

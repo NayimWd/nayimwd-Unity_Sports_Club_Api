@@ -17,7 +17,6 @@ export const getAllTeams = asyncHandler(async (req, res) => {
     .select("_id teamName teamLogo playerCount")
     .lean();
 
-
   // total count of team for pagination
   const totalTeams = await Team.countDocuments();
 
@@ -38,8 +37,7 @@ export const getAllTeams = asyncHandler(async (req, res) => {
 export const getTeamDetails = asyncHandler(async (req, res) => {
   const { teamId } = req.params;
 
-  const team = await Team.findById(teamId)
-  .populate("managerId", "name email")
+  const team = await Team.findById(teamId).populate("managerId", "name email");
 
   if (!team) {
     throw new ApiError(404, "No Team found under this id");
@@ -50,30 +48,20 @@ export const getTeamDetails = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, team, "Team found successfully"));
 });
 
-
-export const getMyteam = asyncHandler(async(req, res)=>{
+export const getMyteam = asyncHandler(async (req, res) => {
   // get manager id
   const userId = (req as any).user._id;
-  if(!userId){
-    throw new ApiError(400, "Invalid token, user not found")
+  if (!userId) {
+    throw new ApiError(400, "Invalid token, user not found");
   }
-  
-  const team = await Team.findOne({managerId: userId});
 
-  if(!team){
-    throw new ApiError(404, "You do not have any team yet!")
-  };
+  const team = await Team.findOne({ managerId: userId });
+
+  if (!team) {
+    throw new ApiError(404, "You do not have any team yet!");
+  }
 
   return res
-          .status(200)
-          .json(
-            new ApiResponse(
-              200,
-              team,
-              "Team fetched successfully"
-            )
-          )
-
-})
-
-
+    .status(200)
+    .json(new ApiResponse(200, team, "Team fetched successfully"));
+});

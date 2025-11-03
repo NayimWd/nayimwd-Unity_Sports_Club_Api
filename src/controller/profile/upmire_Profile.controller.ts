@@ -23,7 +23,7 @@ export const createUmpireProfile = asyncHandler(async (req, res) => {
   // get data from req body
   const { experience } = req.body;
   // validate
-  if(!experience){
+  if (!experience) {
     throw new ApiError(400, "Experience field is missing");
   }
   // create profile

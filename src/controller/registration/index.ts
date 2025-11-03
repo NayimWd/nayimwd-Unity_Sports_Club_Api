@@ -7,11 +7,11 @@ import { myApplication } from "./myApplication.controller";
 import { applicationDetails } from "./applicationDetails";
 
 export {
-    applyForTournament,
-    getTournamentApplication,
-    updateStatus,
-    withdrawApplication,
-    reApplyForTournament,
-    myApplication,
-    applicationDetails
-}
+  applyForTournament,
+  getTournamentApplication,
+  updateStatus,
+  withdrawApplication,
+  reApplyForTournament,
+  myApplication,
+  applicationDetails,
+};

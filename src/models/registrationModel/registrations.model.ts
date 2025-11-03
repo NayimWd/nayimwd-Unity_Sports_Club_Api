@@ -8,7 +8,8 @@ const registrationSchema: Schema<IRegistration> = new Schema(
       ref: "Tournament",
       required: true,
     },
-    teamId: { // Corrected typo from `teamtId`
+    teamId: {
+      // Corrected typo from `teamtId`
       type: mongoose.Schema.Types.ObjectId,
       ref: "Team",
       required: true,
@@ -24,7 +25,7 @@ const registrationSchema: Schema<IRegistration> = new Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "approved", "rejected", "withdrawn"], 
+      enum: ["pending", "approved", "rejected", "withdrawn"],
       default: "pending",
     },
   },

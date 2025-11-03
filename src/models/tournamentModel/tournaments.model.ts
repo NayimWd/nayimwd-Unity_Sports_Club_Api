@@ -79,17 +79,17 @@ const tournamentSchema: Schema<ITournament> = new Schema(
       required: [true, "Entry Fee is required"],
       min: [0, "Entry fee cannot be negative"],
     },
-      champion: {
-        type: String,
-        required: [true, "Champion prize is required"],
-      },
-      runnerUp: {
-        type: String,
-        required: [true, "RunnerUp prize is required"],
-      },
-      thirdPlace: {
-        type: String,
-      },
+    champion: {
+      type: String,
+      required: [true, "Champion prize is required"],
+    },
+    runnerUp: {
+      type: String,
+      required: [true, "RunnerUp prize is required"],
+    },
+    thirdPlace: {
+      type: String,
+    },
     photo: {
       type: String,
     },

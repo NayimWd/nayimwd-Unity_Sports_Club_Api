@@ -29,7 +29,7 @@ export const createTournament = asyncHandler(async (req, res) => {
     registrationDeadline,
     startDate,
     endDate,
-    status="upcoming",
+    status = "upcoming",
     entryFee,
     champion,
     runnerUp,

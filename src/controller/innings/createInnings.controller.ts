@@ -18,8 +18,7 @@ export const createInnings = asyncHandler(async (req, res) => {
 
   // extract data from req params and body
   const { tournamentId, matchId } = req.params;
-  const {  teamId, inningsNumber, wicket, runs, over, extras } =
-    req.body;
+  const { teamId, inningsNumber, wicket, runs, over, extras } = req.body;
 
   // validate data
   if (
@@ -65,8 +64,8 @@ export const createInnings = asyncHandler(async (req, res) => {
     );
   }
 
-   // Ensure team is not repeated for the second innings
-   if (inningsNumber === 2) {
+  // Ensure team is not repeated for the second innings
+  if (inningsNumber === 2) {
     const firstInnings = await Innings.findOne({ matchId, inningsNumber: 1 });
     if (firstInnings && firstInnings.teamId.toString() === teamId) {
       throw new ApiError(
@@ -121,33 +120,32 @@ export const createInnings = asyncHandler(async (req, res) => {
     totalRuns: totalRuns,
   });
 
-
   if (!newInnings) {
     throw new ApiError(500, "Failed to create innings.");
   }
 
-  // update schedule and match status 
-  if(newInnings || inningsNumber === 1){
-   await Promise.all([
-        Match.findByIdAndUpdate(
-          matchId,
-          {
-            status: "in-progress"
-          },
-          {
-            new: true
-          }
-        ),
-        Schedule.findOneAndUpdate(
-         { matchId},
-          {
-            status: "in-progress"
-          },
-          {
-            new: true
-          }
-        )
-    ])
+  // update schedule and match status
+  if (newInnings || inningsNumber === 1) {
+    await Promise.all([
+      Match.findByIdAndUpdate(
+        matchId,
+        {
+          status: "in-progress",
+        },
+        {
+          new: true,
+        }
+      ),
+      Schedule.findOneAndUpdate(
+        { matchId },
+        {
+          status: "in-progress",
+        },
+        {
+          new: true,
+        }
+      ),
+    ]);
   }
 
   // return response

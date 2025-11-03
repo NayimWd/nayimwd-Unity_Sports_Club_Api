@@ -45,7 +45,6 @@ export const venueDetails = asyncHandler(async (req, res) => {
     "-__v -createdAt -updatedAt"
   );
 
-
   // send response
   res
     .status(200)

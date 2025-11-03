@@ -1,3 +1,4 @@
+import { TeamPlayer } from "../../models/teamModel/teamPlayer.model";
 import { Team } from "../../models/teamModel/teams.model";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
@@ -12,15 +13,26 @@ export const deleteTeam = asyncHandler(async (req, res) => {
 
   // get team id from query parameter
   const { teamId } = req.query;
-  if(!teamId){
+  if (!teamId) {
     throw new ApiError(400, "Team ID Required");
   }
 
+  // if team member added manager can not delete team
+  const playerCount = await TeamPlayer.find({ teamId });
+
+  if (playerCount.length > 0) {
+    throw new ApiError(401, "Team Member exist in the team");
+  }
+
   // find team by team id
-  const deleteTeam = await Team.findOneAndDelete({ _id: teamId, managerId: userId });
-  if(!deleteTeam){
-    throw new ApiError(404, "Team do not exist")
-  };
+  const deleteTeam = await Team.findOneAndDelete({
+    _id: teamId,
+    managerId: userId,
+  });
+
+  if (!deleteTeam) {
+    throw new ApiError(404, "Team do not exist");
+  }
 
   return res
     .status(200)

@@ -3,7 +3,7 @@ import { Schedule } from "../../models/sceduleModel/schedules.model";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
- 
+
 export const getSchedules = asyncHandler(async (req, res) => {
   // Get tournament ID and optional team ID from the request params
   const { tournamentId } = req.params;

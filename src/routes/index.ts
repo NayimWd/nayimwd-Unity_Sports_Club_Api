@@ -7,9 +7,9 @@ import venueRoutes from "./venue/venue.routes";
 import tournamentRoutes from "./tournament/tournament.routes";
 import RegistrationRoutes from "./registration/registeration.routes";
 import scheduleRoutes from "./schedule/schedule.routes";
-import matchRoutes from "./match/match.routes"
+import matchRoutes from "./match/match.routes";
 import iningsRoutes from "./innings/innings.routes";
-import pointTableRoutes from "./pointTable/pointTable.routes"
+import pointTableRoutes from "./pointTable/pointTable.routes";
 import blogRoutes from "./blog/blog.routes";
 
 const router = Router();
@@ -29,7 +29,7 @@ type RoutePath = {
   innings: "/api/v1/innings";
   pointTable: "/api/v1/pointTable";
   blog: "/api/v1/blog";
-}
+};
 
 // creating routes for semi root routes path
 const route_path: RoutePath = {
@@ -74,9 +74,9 @@ router.use(route_path.schedule, scheduleRoutes);
 // ---------- match routes ----------------
 router.use(route_path.match, matchRoutes);
 // ---------- Innings routes ----------------
-router.use(route_path.innings, iningsRoutes)
+router.use(route_path.innings, iningsRoutes);
 // ---------- Point Table routes ----------------
-router.use(route_path.pointTable, pointTableRoutes)
+router.use(route_path.pointTable, pointTableRoutes);
 // ---------- Blog routes ----------------
 router.use(route_path.blog, blogRoutes);
 

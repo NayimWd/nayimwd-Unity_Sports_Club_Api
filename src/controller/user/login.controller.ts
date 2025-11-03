@@ -30,12 +30,11 @@ export const generateAccessAndRefreshToken = async (userId: string) => {
 export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   // get login credintials
   const { email, password } = req.body;
- 
+
   // validate credintials
   if (!email || !password) {
     throw new ApiError(400, "Email and password is required");
   }
-
 
   // find user by email
   const existingUser = await User.findOne({ email });

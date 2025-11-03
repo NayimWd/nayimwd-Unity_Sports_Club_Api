@@ -14,8 +14,8 @@ const umpireProfileSchema: Schema<IUmpireProfile> = new Schema({
   },
   photo: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-  }
+    ref: "User",
+  },
 });
 
 export const UmpireProfile = mongoose.model<IUmpireProfile>(

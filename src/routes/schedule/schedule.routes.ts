@@ -1,30 +1,37 @@
 import { Router } from "express";
 import { veryfyJWT } from "../../middleware/auth.middleware";
-import { createSchedule, getSchedules, updateDetails, updateStatus, changeTeams, reSchedule, deleteSchedule } from "../../controller/schedule";
-
+import {
+  createSchedule,
+  getSchedules,
+  updateDetails,
+  updateStatus,
+  changeTeams,
+  reSchedule,
+  deleteSchedule,
+} from "../../controller/schedule";
 
 const router = Router();
 
-// route types 
+// route types
 type Schedule = {
-    create: "/create/:tournamentId",
-    update_details: "/update_details/:scheduleId",
-    update_timing: "/update_timing/:scheduleId",
-    update_status: "/update_status/:scheduleId",
-    change_teams: "/change_teams/:scheduleId",
-    all: "/all/:tournamentId",
-    delete: "/delete/:scheduleId"
-}
+  create: "/create/:tournamentId";
+  update_details: "/update_details/:scheduleId";
+  update_timing: "/update_timing/:scheduleId";
+  update_status: "/update_status/:scheduleId";
+  change_teams: "/change_teams/:scheduleId";
+  all: "/all/:tournamentId";
+  delete: "/delete/:scheduleId";
+};
 
 // endpoints
 const ScheduleRoutes: Schedule = {
-    create: "/create/:tournamentId",
-    update_details: "/update_details/:scheduleId",
-    update_timing: "/update_timing/:scheduleId",
-    update_status: "/update_status/:scheduleId",
-    change_teams: "/change_teams/:scheduleId",
-    all: "/all/:tournamentId",
-    delete: "/delete/:scheduleId"
+  create: "/create/:tournamentId",
+  update_details: "/update_details/:scheduleId",
+  update_timing: "/update_timing/:scheduleId",
+  update_status: "/update_status/:scheduleId",
+  change_teams: "/change_teams/:scheduleId",
+  all: "/all/:tournamentId",
+  delete: "/delete/:scheduleId",
 };
 
 // create schedule
@@ -41,6 +48,5 @@ router.route(ScheduleRoutes.update_status).patch(veryfyJWT, updateStatus);
 router.route(ScheduleRoutes.change_teams).patch(veryfyJWT, changeTeams);
 // delete schedule
 router.route(ScheduleRoutes.delete).delete(veryfyJWT, deleteSchedule);
-
 
 export default router;

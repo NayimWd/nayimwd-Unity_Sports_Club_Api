@@ -1,7 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { IMatchResult } from "../../utils/types/SchemaTypes";
 
-
 const matchResultSchema: Schema<IMatchResult> = new Schema(
   {
     tournamentId: {
@@ -47,8 +46,6 @@ const matchResultSchema: Schema<IMatchResult> = new Schema(
     timestamps: true,
   }
 );
-
-
 
 export const MatchResult = mongoose.model<IMatchResult>(
   "MatchResult",

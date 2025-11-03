@@ -2,7 +2,7 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";
 
-dotenv.config()
+dotenv.config();
 
 // configure cloudinary
 cloudinary.config({
@@ -10,7 +10,6 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
 
 //  upload function
 const uploadOnCloudinary = async (localFilePath: any) => {
@@ -25,11 +24,10 @@ const uploadOnCloudinary = async (localFilePath: any) => {
       ],
     });
 
-      // Remove the local file after successful upload
-      if (fs.existsSync(localFilePath)) {
-        fs.unlinkSync(localFilePath);
-       
-      }
+    // Remove the local file after successful upload
+    if (fs.existsSync(localFilePath)) {
+      fs.unlinkSync(localFilePath);
+    }
 
     return response;
   } catch (error) {

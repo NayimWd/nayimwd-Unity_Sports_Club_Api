@@ -10,7 +10,7 @@ export const applicationDetails = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Unauthorized request");
   }
   // get rournament ID
-  const {  applicationId } = req.params;
+  const { applicationId } = req.params;
 
   if (!applicationId) {
     throw new ApiError(400, "Application Id is required");

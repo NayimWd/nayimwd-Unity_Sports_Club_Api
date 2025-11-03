@@ -18,7 +18,10 @@ export const reSchedule = asyncHandler(async (req, res) => {
 
   // Validate inputs
   if (!scheduleId || !newMatchDate || !newMatchTime || !newEndTime) {
-    throw new ApiError(400, "Please provide schedule ID, new match date, new match time, and new end time.");
+    throw new ApiError(
+      400,
+      "Please provide schedule ID, new match date, new match time, and new end time."
+    );
   }
 
   // Find the schedule
@@ -35,7 +38,10 @@ export const reSchedule = asyncHandler(async (req, res) => {
 
   //  Prevent rescheduling if the match is already in progress or completed
   if (["live", "completed"].includes(match.status)) {
-    throw new ApiError(400, "Cannot reschedule a match that is live or completed.");
+    throw new ApiError(
+      400,
+      "Cannot reschedule a match that is live or completed."
+    );
   }
 
   // Check for venue conflicts
@@ -50,7 +56,10 @@ export const reSchedule = asyncHandler(async (req, res) => {
   });
 
   if (conflictingBooking) {
-    throw new ApiError(400, "Venue is already booked for the given date and time.");
+    throw new ApiError(
+      400,
+      "Venue is already booked for the given date and time."
+    );
   }
 
   // Check if another match is already scheduled at this time in this venue
@@ -62,7 +71,10 @@ export const reSchedule = asyncHandler(async (req, res) => {
   });
 
   if (existingSchedule) {
-    throw new ApiError(400, "Another match is already scheduled at this venue at the same time.");
+    throw new ApiError(
+      400,
+      "Another match is already scheduled at this venue at the same time."
+    );
   }
 
   // Check if teams are already scheduled for another match on this date
@@ -78,7 +90,10 @@ export const reSchedule = asyncHandler(async (req, res) => {
   });
 
   if (existingTeamSchedule) {
-    throw new ApiError(400, "One or both teams are already scheduled for another match on this date.");
+    throw new ApiError(
+      400,
+      "One or both teams are already scheduled for another match on this date."
+    );
   }
 
   //  Cancel old venue booking
@@ -108,5 +123,7 @@ export const reSchedule = asyncHandler(async (req, res) => {
   await match.save();
 
   // Return response
-  res.status(200).json(new ApiResponse(200, schedule, "Match rescheduled successfully"));
+  res
+    .status(200)
+    .json(new ApiResponse(200, schedule, "Match rescheduled successfully"));
 });

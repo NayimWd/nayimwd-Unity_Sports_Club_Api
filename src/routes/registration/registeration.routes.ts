@@ -21,8 +21,8 @@ type Registration = {
   get_all: "/get_all/:tournamentId";
   pending: "/pending/:tournamentId";
   myApplication: "/application/:tournamentId";
-  details: "/application/details/:applicationId"
-}
+  details: "/application/details/:applicationId";
+};
 
 const registrationRoutes: Registration = {
   apply: "/apply/:tournamentId",
@@ -32,7 +32,7 @@ const registrationRoutes: Registration = {
   get_all: "/get_all/:tournamentId",
   pending: "/pending/:tournamentId",
   myApplication: "/application/:tournamentId",
-  details: "/application/details/:applicationId"
+  details: "/application/details/:applicationId",
 };
 
 // routes
@@ -50,9 +50,8 @@ router
   .get(veryfyJWT, getTournamentApplication);
 // get pending registration
 router.route(registrationRoutes.pending).get(veryfyJWT, getPendingRegistration);
-// get my application 
+// get my application
 router.route(registrationRoutes.myApplication).get(veryfyJWT, myApplication);
-router.route(registrationRoutes.details).get(veryfyJWT, applicationDetails)
-
+router.route(registrationRoutes.details).get(veryfyJWT, applicationDetails);
 
 export default router;

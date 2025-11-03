@@ -9,12 +9,16 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
       required: true,
       index: true,
     },
-    matchId: { type: mongoose.Schema.Types.ObjectId, ref: "Match", required: true },
+    matchId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Match",
+      required: true,
+    },
     venueId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Venue",
       required: function () {
-        return this.round.toLowerCase().includes("round"); 
+        return this.round.toLowerCase().includes("round");
       },
     },
     matchNumber: {
@@ -64,7 +68,13 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
     },
     status: {
       type: String,
-      enum: ["scheduled", "rescheduled", "in-progress", "cancelled", "completed"],
+      enum: [
+        "scheduled",
+        "rescheduled",
+        "in-progress",
+        "cancelled",
+        "completed",
+      ],
       default: "scheduled",
     },
   },
@@ -75,8 +85,15 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
 
 // Ensure either (teamA & teamB) or (previousMatches.matchA & matchB) is present
 scheduleSchema.pre("validate", function (next) {
-  if ((!this.teams.teamA || !this.teams.teamB) && (!this.previousMatches.matchA || !this.previousMatches.matchB)) {
-    next(new Error("Either teams (teamA, teamB) or previousMatches (matchA, matchB) must be provided."));
+  if (
+    (!this.teams.teamA || !this.teams.teamB) &&
+    (!this.previousMatches.matchA || !this.previousMatches.matchB)
+  ) {
+    next(
+      new Error(
+        "Either teams (teamA, teamB) or previousMatches (matchA, matchB) must be provided."
+      )
+    );
   } else {
     next();
   }

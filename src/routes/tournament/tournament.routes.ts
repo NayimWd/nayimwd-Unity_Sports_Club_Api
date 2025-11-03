@@ -12,7 +12,7 @@ import {
   getTeamsOfTournament,
   updateDate,
   createTournamentResult,
-  getLatestTournament
+  getLatestTournament,
 } from "../../controller/tournament";
 import { getTournamentResult } from "../../controller/tournament/getTournamentResult.controller";
 
@@ -32,7 +32,7 @@ type Tournament = {
   getTeams: "/teams/:tournamentId";
   createResult: "/create_result/:tournamentId";
   getResults: "/results/:tournamentId";
-}
+};
 
 // routes
 const tournament: Tournament = {
@@ -47,7 +47,7 @@ const tournament: Tournament = {
   update_status: "/update_status/:tournamentId",
   getTeams: "/teams/:tournamentId",
   createResult: "/create_result/:tournamentId",
-  getResults: "/results/:tournamentId"
+  getResults: "/results/:tournamentId",
 };
 
 // create tournament
@@ -57,13 +57,15 @@ router
 // get all tournaments
 router.route(tournament.get_all).get(getAllTournaments);
 // get latest tournament
-router.route(tournament.latest).get(getLatestTournament)
+router.route(tournament.latest).get(getLatestTournament);
 // get tournament by status
 router.route(tournament.get_by_status).get(getTournamentsByStatus);
 // get tournament by id
 router.route(tournament.details).get(getTournamentById);
 // update tournament details
-router.route(tournament.update_details).patch(veryfyJWT, updateTournamentDetails);
+router
+  .route(tournament.update_details)
+  .patch(veryfyJWT, updateTournamentDetails);
 // update date
 router.route(tournament.update_date).patch(veryfyJWT, updateDate);
 // update photo
@@ -77,5 +79,5 @@ router.route(tournament.getTeams).get(getTeamsOfTournament);
 // create tournament result
 router.route(tournament.createResult).post(veryfyJWT, createTournamentResult);
 // get tournament results
-router.route(tournament.getResults).get(getTournamentResult)
+router.route(tournament.getResults).get(getTournamentResult);
 export default router;

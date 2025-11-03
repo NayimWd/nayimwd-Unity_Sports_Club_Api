@@ -66,7 +66,7 @@ export const getAllUsers = asyncHandler(async (req, res) => {
   const totalUsers = await User.countDocuments(matchQuery);
 
   // execute aggregation
-  const allUsers = await User.aggregate(pipeline)
+  const allUsers = await User.aggregate(pipeline);
   return res.status(200).json(
     new ApiResponse(
       200,

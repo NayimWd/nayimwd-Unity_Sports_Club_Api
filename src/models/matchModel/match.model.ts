@@ -22,21 +22,48 @@ const matchSchema: Schema<IMatch> = new Schema(
     teamB: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Team",
-      default: null, 
+      default: null,
     },
     previousMatches: {
-      matchA: { type: mongoose.Schema.Types.ObjectId, ref: "Match", default: null },
-      matchB: { type: mongoose.Schema.Types.ObjectId, ref: "Match", default: null },
+      matchA: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Match",
+        default: null,
+      },
+      matchB: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Match",
+        default: null,
+      },
     },
     status: {
       type: String,
-      enum: ["upcoming", "scheduled", "rescheduled", "in-progress", "completed", "cancelled"],
+      enum: [
+        "upcoming",
+        "scheduled",
+        "rescheduled",
+        "in-progress",
+        "completed",
+        "cancelled",
+      ],
       default: "upcoming",
     },
     umpires: {
-      firstUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
-      secondUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
-      thirdUmpire: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+      firstUmpire: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null,
+      },
+      secondUmpire: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null,
+      },
+      thirdUmpire: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null,
+      },
     },
   },
   {
@@ -52,7 +79,9 @@ matchSchema.pre("validate", function (next) {
   if (!this.teamA && !this.teamB) {
     if (!this.previousMatches?.matchA || !this.previousMatches?.matchB) {
       return next(
-        new Error("Either (teamA & teamB) or previousMatches (matchA & matchB) must be provided.")
+        new Error(
+          "Either (teamA & teamB) or previousMatches (matchA & matchB) must be provided."
+        )
       );
     }
   }

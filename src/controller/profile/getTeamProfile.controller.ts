@@ -23,8 +23,8 @@ export const getTeamProfiles = asyncHandler(async (req, res) => {
 
   // Fetch team with manager's basic details
   const team = await Team.findById(teamId)
-  .populate("managerId", "name photo")
-  .lean();
+    .populate("managerId", "name photo")
+    .lean();
 
   if (!team) {
     throw new ApiError(404, "Team not found");
@@ -35,18 +35,19 @@ export const getTeamProfiles = asyncHandler(async (req, res) => {
     .select("userId, player_role batingStyle bowlingArm bowlingStyle")
     .populate({
       path: "userId",
-      model: "User", 
-      select: "name photo"
-    }).lean();
+      model: "User",
+      select: "name photo",
+    })
+    .lean();
 
-
-  // fetch team captain 
-  const captain = await TeamPlayer.findOne({ teamId, isCaptain: true})
-  .populate({
-    path: "playerId",
-    model: "User", 
-    select: "name photo playerId"
-  }).lean();
+  // fetch team captain
+  const captain = await TeamPlayer.findOne({ teamId, isCaptain: true })
+    .populate({
+      path: "playerId",
+      model: "User",
+      select: "name photo playerId",
+    })
+    .lean();
 
   // prepare response
   const response = {

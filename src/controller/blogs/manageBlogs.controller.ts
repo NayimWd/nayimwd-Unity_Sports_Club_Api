@@ -10,7 +10,7 @@ export const manageBlogs = asyncHandler(async(req, res)=> {
     throw new ApiError(403, "You are not authorized to manage blogs")
   }
 
-    // Extract query parameters
+    // extract query parameters
   let { page, limit, search, sort, tags, isPublished } = req.query;
 
   // Default values
@@ -20,34 +20,34 @@ export const manageBlogs = asyncHandler(async(req, res)=> {
 
   const filter: any = {};
 
-  // Use full-text search
+  // use full-text search
   if (search) {
   filter.title = { $regex: search, $options: "i" };
 }
 
   if (tags) {
-    filter.tags = tags; // Exact match
+    filter.tags = tags; // exact match
   }
 
-   // Optional isPublished filter
+   // optional isPublished filter
   if (isPublished === "true") filter.isPublished = true;
   if (isPublished === "false") filter.isPublished = false;
 
 
   // Sorting logic
-  let sortOption: any = { createdAt: -1 }; // Default: latest first
+  let sortOption: any = { createdAt: -1 }; // default: latest first
   if (sort === "oldest") sortOption = { createdAt: 1 };
 
-  // Fetch blogs & total count in a single query using aggregation
+  // fetch blogs & total count in a single query using aggregation
   const [blogs, totalBlogs] = await Promise.all([
     Blog.find(filter)
       .sort(sortOption)
       .skip(skip)
       .limit(pageSize)
-      .select("title tags author createdAt photo isPublished") // Only fetch required fields
-      .lean(), // Optimized read performance
+      .select("title tags author createdAt photo isPublished") // fetch required fields
+      .lean(), 
 
-    Blog.countDocuments(filter), // Total count for pagination
+    Blog.countDocuments(filter), // total count for pagination
   ]);
 
 

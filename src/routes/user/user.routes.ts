@@ -31,7 +31,7 @@ type UserRoutes = {
   change_password: "/change_password";
   forgot_password: "/forgot_password";
   reset_password: "/reset_password/:token";
-}
+};
 
 const user_routes: UserRoutes = {
   register: "/register",

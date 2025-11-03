@@ -70,8 +70,8 @@ export const getAllMatch = asyncHandler(async (req, res) => {
 
       // Fetch match result
       const matchResult = await MatchResult.findOne({ matchId: match._id })
-      .populate("manOfTheMatch", "name photo")
-      .lean();
+        .populate("manOfTheMatch", "name photo")
+        .lean();
 
       // Prepare match summary
       let matchSummary;
@@ -106,7 +106,7 @@ export const getAllMatch = asyncHandler(async (req, res) => {
       200,
       {
         total: matches.length,
-        match: enrichedMatches
+        match: enrichedMatches,
       },
       "Matches fetched successfully"
     )

@@ -7,11 +7,11 @@ import { getSchedules } from "./getSchedule.controller";
 import { deleteSchedule } from "./delete.controller";
 
 export {
-    createSchedule,
-    updateStatus,
-    reSchedule,
-    changeTeams,
-    getSchedules,
-    updateDetails,
-    deleteSchedule
-}
+  createSchedule,
+  updateStatus,
+  reSchedule,
+  changeTeams,
+  getSchedules,
+  updateDetails,
+  deleteSchedule,
+};

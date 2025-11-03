@@ -9,7 +9,7 @@ const playerProfileSchema: Schema<IPlayerProfile> = new Schema({
   },
   teamId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Team"
+    ref: "Team",
   },
   player_role: {
     type: String,

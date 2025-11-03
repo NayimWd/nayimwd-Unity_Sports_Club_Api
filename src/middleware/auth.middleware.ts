@@ -69,4 +69,3 @@ export const isManager = asyncHandler(async (req, res, next) => {
   }
   next();
 });
-

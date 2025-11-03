@@ -20,7 +20,6 @@ export const registerUser = asyncHandler(
       throw new ApiError(400, "All fields are required for Sign Up");
     }
 
-
     // controll user to select role player or umpire
     if (role === "admin" || role === "staff") {
       throw new ApiError(
@@ -65,9 +64,9 @@ export const registerUser = asyncHandler(
       throw new ApiError(500, "Sign up failed");
     }
 
-    // remove photo from local 
-    if(photoLocalPath && existsSync(photoLocalPath)){
-      unlinkSync(photoLocalPath)
+    // remove photo from local
+    if (photoLocalPath && existsSync(photoLocalPath)) {
+      unlinkSync(photoLocalPath);
     }
 
     return res

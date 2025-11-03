@@ -5,34 +5,41 @@ import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
 
 export const updateTeamAndMatch = asyncHandler(async (req, res) => {
-    // authenticate and authorize user
-    const author = (req as any).user;
+  // authenticate and authorize user
+  const author = (req as any).user;
 
-    if(!author || !["admin", "staff"].includes(author.role())) {
-        throw new ApiError(403, "You are not authorized to update match status");
-    }
+  if (!author || !["admin", "staff"].includes(author.role())) {
+    throw new ApiError(403, "You are not authorized to update match status");
+  }
 
-    // get Match Id and data
-    const {matchId} = req.params;
-    const {teamA: newTeamA, teamB: newTeamB, previousMatches: newPreviousMatches} = req.body;
+  // get Match Id and data
+  const { matchId } = req.params;
+  const {
+    teamA: newTeamA,
+    teamB: newTeamB,
+    previousMatches: newPreviousMatches,
+  } = req.body;
 
-    // validate data
-    if(!matchId){
-        throw new ApiError(400, "Match Id is required");
-    }
+  // validate data
+  if (!matchId) {
+    throw new ApiError(400, "Match Id is required");
+  }
 
-    // find Match 
-    const match = await Match.findById(matchId);
-    if(!match){
-        throw new ApiError(404, "Match not found");
-    }
+  // find Match
+  const match = await Match.findById(matchId);
+  if (!match) {
+    throw new ApiError(404, "Match not found");
+  }
 
-    // check match status 
-    if(["completed", "in-progress", "cancelled"].includes(match.status)){
-        throw new ApiError(400, `Match cannot be updated as it is already ${match.status}`);
-    };
+  // check match status
+  if (["completed", "in-progress", "cancelled"].includes(match.status)) {
+    throw new ApiError(
+      400,
+      `Match cannot be updated as it is already ${match.status}`
+    );
+  }
 
-      // Find Associated Schedule
+  // Find Associated Schedule
   const schedule = await Schedule.findOne({ matchId });
   if (!schedule) {
     throw new ApiError(
@@ -64,10 +71,16 @@ export const updateTeamAndMatch = asyncHandler(async (req, res) => {
   }
 
   // Check If New Previous Matches Are Already Scheduled
-  if (newPreviousMatches && newPreviousMatches.matchA && newPreviousMatches.matchB) {
+  if (
+    newPreviousMatches &&
+    newPreviousMatches.matchA &&
+    newPreviousMatches.matchB
+  ) {
     const prevMatchConflict = await Promise.all([
       Schedule.findOne({
-        matchId: { $in: [newPreviousMatches.matchA, newPreviousMatches.matchB] },
+        matchId: {
+          $in: [newPreviousMatches.matchA, newPreviousMatches.matchB],
+        },
         matchDate: { $lt: schedule.matchDate },
       }),
       Match.findOne({
@@ -107,6 +120,7 @@ export const updateTeamAndMatch = asyncHandler(async (req, res) => {
 
   res
     .status(200)
-    .json(new ApiResponse(200, null, "Match and schedule updated successfully"));   
-
+    .json(
+      new ApiResponse(200, null, "Match and schedule updated successfully")
+    );
 });

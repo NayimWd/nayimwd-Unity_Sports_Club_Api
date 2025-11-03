@@ -17,9 +17,13 @@ export const getPlayerProfile = asyncHandler(async (req, res) => {
   // return response
   return res
     .status(200)
-    .json(new ApiResponse(
-      200, 
-      profile || null,
-      profile ? "Player profile fetched successfully" : "Player Profile not found"
-    ));
+    .json(
+      new ApiResponse(
+        200,
+        profile || null,
+        profile
+          ? "Player profile fetched successfully"
+          : "Player Profile not found"
+      )
+    );
 });

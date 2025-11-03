@@ -1,5 +1,3 @@
 import { getPointTable } from "./PointTable.controller";
 
-export {
-    getPointTable
-}
+export { getPointTable };

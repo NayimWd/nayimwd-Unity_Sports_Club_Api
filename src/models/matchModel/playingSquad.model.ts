@@ -24,7 +24,7 @@ const PlayingSquadSchema = new Schema<IPlayingSquad>(
       type: Schema.Types.ObjectId,
       ref: "TeamPlayer",
       required: true,
-    }
+    },
   },
   {
     timestamps: true,
@@ -32,6 +32,6 @@ const PlayingSquadSchema = new Schema<IPlayingSquad>(
 );
 
 export const PlayingSquad = mongoose.model<IPlayingSquad>(
-    "PlayingSquad",
-    PlayingSquadSchema
-  );
+  "PlayingSquad",
+  PlayingSquadSchema
+);

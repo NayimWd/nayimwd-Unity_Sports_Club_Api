@@ -4,40 +4,40 @@ import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
 
 export const getAllBlogs = asyncHandler(async (req, res) => {
-  // Extract query parameters
+  // extract query parameters
   let { page, limit, search, sort, tags } = req.query;
 
-  // Default values
+  // default values
   const pageNumber = Math.max(parseInt(page as string) || 1, 1);
   const pageSize = Math.max(parseInt(limit as string) || 12, 1);
   const skip = (pageNumber - 1) * pageSize;
 
-  // Construct search filter
+  // construct search filter
   const filter: any = { isPublished: true };
 
-  // Use full-text search
+  // use full-text search
    if (search) {
   filter.title = { $regex: search, $options: "i" };
 }
 
   if (tags) {
-    filter.tags = tags; // Exact match
+    filter.tags = tags; // exact match
   }
 
   // Sorting logic
-  let sortOption: any = { createdAt: -1 }; // Default: latest first
+  let sortOption: any = { createdAt: -1 }; // default: latest first
   if (sort === "oldest") sortOption = { createdAt: 1 };
 
-  // Fetch blogs & total count in a single query using aggregation
+  // fetch blogs & total count in a single query using aggregation
   const [blogs, totalBlogs] = await Promise.all([
     Blog.find(filter)
       .sort(sortOption)
       .skip(skip)
       .limit(pageSize)
-      .select("title tags author createdAt photo") // Only fetch required fields
-      .lean(), // Optimized read performance
+      .select("title tags author createdAt photo") 
+      .lean(), 
 
-    Blog.countDocuments(filter), // Total count for pagination
+    Blog.countDocuments(filter), 
   ]);
 
   // Return response

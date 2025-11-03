@@ -19,13 +19,15 @@ export const getProfileDetails = asyncHandler(async (req, res) => {
 
   // if player profile found try fetch manager profile
   if (!playerProfile) {
-    const managerProfile = await ManagerProfile.findOne({userId:id}).populate({
+    const managerProfile = await ManagerProfile.findOne({
+      userId: id,
+    }).populate({
       path: "userId",
       select: "name photo",
     });
 
-    if(managerProfile === null){
-        throw new ApiError(404, "Profile not found")
+    if (managerProfile === null) {
+      throw new ApiError(404, "Profile not found");
     }
 
     return res

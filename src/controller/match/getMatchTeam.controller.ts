@@ -4,7 +4,6 @@ import { ApiError } from "../../utils/ApiError";
 import { asyncHandler } from "../../utils/asyncHandler";
 import { ApiResponse } from "../../utils/ApiResponse";
 
-
 export const getMatchTeams = asyncHandler(async (req, res) => {
   // get matchId
   const { matchId } = req.params;

@@ -34,9 +34,11 @@ export const myApplication = asyncHandler(async (req, res) => {
     .status(200)
     .json(
       new ApiResponse(
-       200,
-       application,
-       application ? "Application fetched successfully" : "You have not any application!"
-    )
+        200,
+        application,
+        application
+          ? "Application fetched successfully"
+          : "You have not any application!"
+      )
     );
 });

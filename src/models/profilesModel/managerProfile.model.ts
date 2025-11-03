@@ -9,12 +9,14 @@ const managerProfileSchema: Schema<IManagerProfile> = new Schema({
   },
   teamsManaged: [
     { type: mongoose.Schema.Types.ObjectId, ref: "Team", required: true },
-
   ],
   photo: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-  }
+    ref: "User",
+  },
 });
 
-export const ManagerProfile = mongoose.model<IManagerProfile>("ManagerProfile", managerProfileSchema)
+export const ManagerProfile = mongoose.model<IManagerProfile>(
+  "ManagerProfile",
+  managerProfileSchema
+);

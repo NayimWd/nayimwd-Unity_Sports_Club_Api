@@ -10,14 +10,14 @@ import { getPlayingSquad } from "./getPlayinSquad.controller";
 import { getMatchTeams } from "./getMatchTeam.controller";
 
 export {
-    createMatch,
-    getAllMatch,
-    matchDetails,
-    updateMatchStatus,
-    updateUmpire,
-    deleteMatch,
-    addPlayingSquad,
-    updatePlayingSquad,
-    getPlayingSquad,
-    getMatchTeams
-}
+  createMatch,
+  getAllMatch,
+  matchDetails,
+  updateMatchStatus,
+  updateUmpire,
+  deleteMatch,
+  addPlayingSquad,
+  updatePlayingSquad,
+  getPlayingSquad,
+  getMatchTeams,
+};

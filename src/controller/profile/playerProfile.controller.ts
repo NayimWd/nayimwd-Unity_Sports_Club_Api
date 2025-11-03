@@ -25,9 +25,16 @@ export const create_PlayerProfile = asyncHandler(async (req, res) => {
   }
 
   // get data from req body
-  const { player_role, batingStyle, bowlingArm, bowlingStyle, DateOfBirth } = req.body;
+  const { player_role, batingStyle, bowlingArm, bowlingStyle, DateOfBirth } =
+    req.body;
   // validate
-  if (!player_role || !batingStyle || !bowlingArm || !bowlingStyle || !DateOfBirth) {
+  if (
+    !player_role ||
+    !batingStyle ||
+    !bowlingArm ||
+    !bowlingStyle ||
+    !DateOfBirth
+  ) {
     throw new ApiError(400, "Required fields are missing");
   }
 

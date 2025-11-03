@@ -15,5 +15,5 @@ export {
   getManagerProfile,
   getUmpireProfile,
   getTeamProfiles,
-  getProfileDetails
+  getProfileDetails,
 };

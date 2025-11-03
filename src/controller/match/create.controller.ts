@@ -96,15 +96,21 @@ export const createMatch = asyncHandler(async (req, res) => {
     }
   }
 
-   // Validate Umpires
-   const umpireIds = [umpire1, umpire2, umpire3].filter(Boolean); // Remove null values
-   if (umpireIds.length > 0) {
-     const umpires = await User.find({ _id: { $in: umpireIds }, role: "umpire" });
- 
-     if (umpires.length !== umpireIds.length) {
-       throw new ApiError(400, "One or more assigned umpires are not valid umpires.");
-     }
-   }
+  // Validate Umpires
+  const umpireIds = [umpire1, umpire2, umpire3].filter(Boolean); // Remove null values
+  if (umpireIds.length > 0) {
+    const umpires = await User.find({
+      _id: { $in: umpireIds },
+      role: "umpire",
+    });
+
+    if (umpires.length !== umpireIds.length) {
+      throw new ApiError(
+        400,
+        "One or more assigned umpires are not valid umpires."
+      );
+    }
+  }
 
   // create match
   const match = new Match({
@@ -118,7 +124,7 @@ export const createMatch = asyncHandler(async (req, res) => {
       secondUmpire: umpire2,
       thirdUmpire: umpire3,
     },
-    status: "upcoming"
+    status: "upcoming",
   });
   // save match
   await match.save();
