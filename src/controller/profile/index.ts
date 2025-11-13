@@ -6,6 +6,9 @@ import { getManagerProfile } from "./getManagerProfile.controller";
 import { getUmpireProfile } from "./getUmpireProfile.controller";
 import { getTeamProfiles } from "./getTeamProfile.controller";
 import { getProfileDetails } from "./profile_details.controller";
+import { updatePlayerProfile } from "./updatePlayerProfile.controller";
+import { updateUmpireProfile } from "./updateUmpireProfile.controller";
+import { updateManagerProfile } from "./updateManagerProfile.controller";
 
 export {
   create_PlayerProfile,
@@ -16,4 +19,7 @@ export {
   getUmpireProfile,
   getTeamProfiles,
   getProfileDetails,
+  updatePlayerProfile,
+  updateUmpireProfile,
+  updateManagerProfile,
 };

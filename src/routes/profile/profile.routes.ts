@@ -9,6 +9,9 @@ import {
   getUmpireProfile,
   getTeamProfiles,
   getProfileDetails,
+  updatePlayerProfile,
+  updateManagerProfile,
+  updateUmpireProfile,
 } from "../../controller/profile";
 
 const router = Router();
@@ -24,6 +27,9 @@ type Profile = {
   get_umpire_profile: "/get_umpire_profile";
   get_team_profiles: "/get_team_profiles/:teamId";
   get_profile_details: "/get_profile_details/:id";
+  update_playerProfile: "/update_playerProfile_details/:id";
+  update_managerProfile_details: "/update_managerProfile_details/:id";
+  update_umpireProfile_details: "/update_umpireProfile_details/:id";
 };
 
 const profileRoutes: Profile = {
@@ -37,6 +43,9 @@ const profileRoutes: Profile = {
   get_umpire_profile: "/get_umpire_profile",
   get_team_profiles: "/get_team_profiles/:teamId",
   get_profile_details: "/get_profile_details/:id",
+  update_playerProfile: "/update_playerProfile_details/:id",
+  update_managerProfile_details: "/update_managerProfile_details/:id",
+  update_umpireProfile_details: "/update_umpireProfile_details/:id",
 };
 
 // create profile for players
@@ -63,5 +72,15 @@ router.route(profileRoutes.get_umpire_profile).get(veryfyJWT, getUmpireProfile);
 router.route(profileRoutes.get_team_profiles).get(getTeamProfiles);
 // get profile details
 router.route(profileRoutes.get_profile_details).get(getProfileDetails);
+// update player profile
+router.route(profileRoutes.update_playerProfile).patch(updatePlayerProfile);
+// update manager profile
+router
+  .route(profileRoutes.update_managerProfile_details)
+  .patch(updateManagerProfile);
+// update umpire profile
+router
+  .route(profileRoutes.update_umpireProfile_details)
+  .patch(updateUmpireProfile);
 
 export default router;
