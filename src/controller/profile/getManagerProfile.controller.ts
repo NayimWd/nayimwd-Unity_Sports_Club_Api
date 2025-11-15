@@ -11,10 +11,15 @@ export const getManagerProfile = asyncHandler(async (req, res) => {
   }
 
   // fetch profile
-  const profile = await ManagerProfile.findOne({ userId: managerId }).populate({
-    path: "userId",
-    select: "name photo",
-  });
+  const profile = await ManagerProfile.findOne({ userId: managerId })
+    .populate({
+      path: "userId",
+      select: "name photo",
+    })
+    .populate({
+      path: "teamsManaged",
+      select: "teamName, teamLogo",
+    });
 
   // return response
   return res

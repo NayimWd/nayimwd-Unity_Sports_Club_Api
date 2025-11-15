@@ -23,7 +23,7 @@ export const getTeamProfiles = asyncHandler(async (req, res) => {
 
   // Fetch team with manager's basic details
   const team = await Team.findById(teamId)
-    .populate("managerId", "name photo")
+    .populate({path: "managerId", select: "name photo"})
     .lean();
 
   if (!team) {

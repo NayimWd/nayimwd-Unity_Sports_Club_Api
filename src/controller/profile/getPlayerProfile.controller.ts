@@ -10,8 +10,8 @@ export const getPlayerProfile = asyncHandler(async (req, res) => {
   }
 
   const profile = await PlayerProfile.findOne({ userId: player._id }).populate({
-    path: "userId",
-    select: "name photo",
+    path: "teamId",
+    select: "teamName teamLogo",
   });
 
   // return response
