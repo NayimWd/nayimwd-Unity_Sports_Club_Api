@@ -78,7 +78,7 @@ export const getTeamPlayerDetails = asyncHandler(async (req, res) => {
   const playerProfile = await PlayerProfile.findOne({
     userId: playerId,
   }).select(
-    "player_role batingStyle bowlingArm bowlingStyle DateOfBirth photo"
+    "player_role batingStyle bowlingArm bowlingStyle DateOfBirth"
   );
 
   if (!player) {

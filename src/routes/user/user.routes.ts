@@ -14,7 +14,7 @@ import {
   adminChangeRole,
 } from "../../controller/user";
 import { upload } from "../../middleware/multer.middleware";
-import { isAdmin, veryfyJWT } from "../../middleware/auth.middleware";
+import { veryfyJWT } from "../../middleware/auth.middleware";
 
 const router = Router();
 
@@ -66,7 +66,7 @@ router.route(user_routes.logout).post(veryfyJWT, logoutUser);
 // refresh access token
 router.route(user_routes.refreshToken).post(refreshAccessToken);
 // get all user
-router.route(user_routes.all_users).get(veryfyJWT, isAdmin, getAllUsers);
+router.route(user_routes.all_users).get(veryfyJWT, getAllUsers);
 // get current user
 router.route(user_routes.current_user).get(veryfyJWT, getCurrentUser);
 // update user details
@@ -80,7 +80,7 @@ router
 // change role
 router
   .route(user_routes.change_role)
-  .patch(veryfyJWT, isAdmin, adminChangeRole);
+  .patch(veryfyJWT, adminChangeRole);
 // forgot password
 router.route(user_routes.forgot_password).post(veryfyJWT, forgetPassword);
 // reset password

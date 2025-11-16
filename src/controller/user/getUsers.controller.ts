@@ -22,7 +22,7 @@ export const getAllUsers = asyncHandler(async (req, res) => {
   const user = (req as any).user;
 
   // condition for getting all users
-  if (!(user.role === "admin" || user.role === "staff")) {
+  if (!["admin", "staff"].includes(user.role)) {
     throw new ApiError(401, "Unauthorized request");
   }
 
