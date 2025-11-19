@@ -4,28 +4,34 @@ import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
 
 export const getAllTeams = asyncHandler(async (req, res) => {
-  // get and parse page and limit from query
-  const page = parseInt((req as any).query.page as string, 10) || 1;
-  const limit = parseInt((req as any).query.limit as string) || 25;
+  // query params
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const search = (req.query.search as string) || "";
+  const sort = (req.query.sort as string) || "-createdAt";
   const skip = (page - 1) * limit;
 
-  // fetch teams with pagination
-  const teams = await Team.find()
-    .sort({ createdAt: -1 })
+  // search filter
+  const searchFilter = search
+    ? { teamName: { $regex: search, $options: "i" } }
+    : {};
+
+  // DB query
+  const teams = await Team.find(searchFilter)
+    .sort(sort) // ex: "teamName", "-playerCount", "-createdAt"
     .skip(skip)
     .limit(limit)
     .select("_id teamName teamLogo playerCount")
     .lean();
 
-  // total count of team for pagination
-  const totalTeams = await Team.countDocuments();
+  // Total count
+  const totalTeams = await Team.countDocuments(searchFilter);
 
-  // response with paginated data
   const response = {
-    totalTeams,
-    totalPages: Math.ceil(totalTeams / limit),
-    currentPage: page,
     teams,
+    currentPage: page,
+    totalPages: Math.ceil(totalTeams / limit),
+    totalTeams,
   };
 
   return res
