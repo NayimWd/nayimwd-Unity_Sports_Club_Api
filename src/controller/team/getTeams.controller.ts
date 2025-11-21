@@ -1,3 +1,5 @@
+import { PlayerProfile } from "../../models/profilesModel/playerProfile.model";
+import { TeamPlayer } from "../../models/teamModel/teamPlayer.model";
 import { Team } from "../../models/teamModel/teams.model";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
@@ -18,7 +20,7 @@ export const getAllTeams = asyncHandler(async (req, res) => {
 
   // DB query
   const teams = await Team.find(searchFilter)
-    .sort(sort) // ex: "teamName", "-playerCount", "-createdAt"
+    .sort(sort)
     .skip(skip)
     .limit(limit)
     .select("_id teamName teamLogo playerCount")
@@ -42,16 +44,58 @@ export const getAllTeams = asyncHandler(async (req, res) => {
 // single team controller
 export const getTeamDetails = asyncHandler(async (req, res) => {
   const { teamId } = req.params;
-
-  const team = await Team.findById(teamId).populate("managerId", "name email");
+  // fetch team
+  const team = await Team.findById(teamId)
+    .populate("managerId", "name email photo")
+    .lean();
 
   if (!team) {
     throw new ApiError(404, "No Team found under this id");
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, team, "Team found successfully"));
+  // team player
+  const teamPlayers = await TeamPlayer.find({ teamId })
+    .populate("playerId", "_id name photo")
+    .lean();
+
+  // extract player id
+  const playerIds = teamPlayers.map((p) => p.playerId._id);
+
+  // get player profiles by player ids
+  const profiles = await PlayerProfile.find({
+    userId: { $in: playerIds },
+  })
+    .select("userId player_role")
+    .lean();
+
+  const profileMap: Record<string, any> = {};
+
+  profiles.forEach((p: any) => {
+    profileMap[p.userId.toString()] = p.player_role;
+  });
+
+  const players = teamPlayers.map((tp) => {
+    const player: any = tp.playerId;
+    return {
+      _id: player._id,
+      name: player?.name || null,
+      photo: player?.photo || null,
+      isCaptain: tp.isCaptain,
+      status: tp.status,
+      role: profileMap[player._id.toString()] || null,
+    };
+  });
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        team,
+        players,
+      },
+      "Team found successfully"
+    )
+  );
 });
 
 export const getMyteam = asyncHandler(async (req, res) => {
