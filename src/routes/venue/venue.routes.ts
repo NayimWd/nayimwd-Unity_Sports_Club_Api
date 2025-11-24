@@ -3,7 +3,8 @@ import {
   createVenue,
   deleteVenue,
   getAllVenues,
-  updateVenue,
+  updateVenueDetails,
+  updateVenuePhoto,
   venueDetails,
 } from "../../controller/venue";
 import { veryfyJWT } from "../../middleware/auth.middleware";
@@ -17,6 +18,7 @@ type VenueRoutes = {
   all: "/all";
   details: "/details/:venueId";
   update: "/update/:venueId";
+  updatePhoto: "/updatePhoto/:venueId";
   delete: "/delete/:venueId";
 };
 
@@ -25,6 +27,7 @@ const venue_routes: VenueRoutes = {
   all: "/all",
   details: "/details/:venueId",
   update: "/update/:venueId",
+  updatePhoto: "/updatePhoto/:venueId",
   delete: "/delete/:venueId",
 };
 
@@ -37,10 +40,12 @@ router
 router.route(venue_routes.all).get(getAllVenues);
 // get venue details
 router.route(venue_routes.details).get(venueDetails);
-// update venue
+// update venue details
+router.route(venue_routes.update).patch(veryfyJWT, updateVenueDetails);
+// update venue photo
 router
   .route(venue_routes.update)
-  .patch(veryfyJWT, upload.single("photo"), updateVenue);
+  .patch(veryfyJWT, upload.single("photo"), updateVenuePhoto);
 // delete venue
 router.route(venue_routes.delete).delete(veryfyJWT, deleteVenue);
 export default router;

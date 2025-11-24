@@ -43,8 +43,8 @@ export const getAllTeamMembers = asyncHandler(async (req, res) => {
     data: {
       number: teamMembers.length,
       team: teamDetails,
-      manager: team.managerId, // Include manager details
-      players: teamMembers, // Include populated player details
+      manager: team.managerId, //  manager details
+      players: teamMembers, //  populated player details
     },
     message: "Team members fetched successfully",
   });
@@ -74,21 +74,21 @@ export const getTeamPlayerDetails = asyncHandler(async (req, res) => {
     })
     .lean();
 
+  if (!player) {
+    throw new ApiError(404, "Player not found with this id");
+  }
+
   // get player profile by player id
   const playerProfile = await PlayerProfile.findOne({
     userId: playerId,
   }).select(
     "player_role batingStyle bowlingArm bowlingStyle DateOfBirth"
-  );
-
-  if (!player) {
-    throw new ApiError(404, "Player not found with this id");
-  }
+  ).lean();
 
   // make response
   const response = {
     player,
-    playerProfile,
+    playerProfile : PlayerProfile ? playerProfile : "Profile not created yet!",
   };
 
   // send response
