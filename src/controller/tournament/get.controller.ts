@@ -32,15 +32,26 @@ export const getAllTournaments = asyncHandler(async (req, res) => {
 // get ongoing tournaments
 export const getTournamentsByStatus = asyncHandler(async (req, res) => {
   // get status from request
-  const { status = "ongoing" } = req.body;
+  const { status } = req.query as { status?: string };
 
-  const tournaments = await Tournament.find({ status: status }).select(
+  const filter = status ? status : "completed";
+
+  const tournaments = await Tournament.find({ status: filter }).select(
     "tournamentName tournamentType seats status entryFee photo"
   );
 
   // validate data
   if (!tournaments) {
-    throw new ApiError(400, "No ongoing tournaments found");
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          total: 0,
+          tournaments,
+        },
+        "No Tournament Found!"
+      )
+    );
   }
 
   // send response

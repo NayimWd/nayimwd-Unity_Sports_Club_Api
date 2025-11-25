@@ -44,7 +44,7 @@ router.route(venue_routes.details).get(venueDetails);
 router.route(venue_routes.update).patch(veryfyJWT, updateVenueDetails);
 // update venue photo
 router
-  .route(venue_routes.update)
+  .route(venue_routes.updatePhoto)
   .patch(veryfyJWT, upload.single("photo"), updateVenuePhoto);
 // delete venue
 router.route(venue_routes.delete).delete(veryfyJWT, deleteVenue);

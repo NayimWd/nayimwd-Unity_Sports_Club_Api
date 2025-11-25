@@ -32,19 +32,6 @@ export const updateVenueDetails = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid venue ID");
   }
 
-  // get photo from multer
-  const photoLocalPath = req.file?.path;
-  // validate
-  if (!photoLocalPath) {
-    throw new ApiError(400, "Venue photo is required");
-  }
-  // upload photo on cloudinary
-  const photo = await uploadOnCloudinary(photoLocalPath);
-  // validate photo
-  if (!photo) {
-    throw new ApiError(400, "Update venue photo failed");
-  }
-
   // update venue
   const venue = await Venue.findByIdAndUpdate(
     venueId,
@@ -53,7 +40,6 @@ export const updateVenueDetails = asyncHandler(async (req, res) => {
       city,
       location,
       features,
-      photo: photo.url,
     },
     { new: true }
   );
