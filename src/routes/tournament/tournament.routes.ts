@@ -13,6 +13,7 @@ import {
   updateDate,
   createTournamentResult,
   getLatestTournament,
+  tournamentDetails
 } from "../../controller/tournament";
 import { getTournamentResult } from "../../controller/tournament/getTournamentResult.controller";
 
@@ -32,6 +33,7 @@ type Tournament = {
   getTeams: "/teams/:tournamentId";
   createResult: "/create_result/:tournamentId";
   getResults: "/results/:tournamentId";
+  get_details: "/tournamentDetails/:tournamentId"
 };
 
 // routes
@@ -48,6 +50,7 @@ const tournament: Tournament = {
   getTeams: "/teams/:tournamentId",
   createResult: "/create_result/:tournamentId",
   getResults: "/results/:tournamentId",
+  get_details: "/tournamentDetails/:tournamentId",
 };
 
 // create tournament
@@ -62,6 +65,8 @@ router.route(tournament.latest).get(getLatestTournament);
 router.route(tournament.get_by_status).get(getTournamentsByStatus);
 // get tournament by id
 router.route(tournament.details).get(getTournamentById);
+// get tournament by id
+router.route(tournament.get_details).get(tournamentDetails);
 // update tournament details
 router
   .route(tournament.update_details)

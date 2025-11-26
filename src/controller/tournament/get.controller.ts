@@ -121,3 +121,27 @@ export const getLatestTournament = asyncHandler(async (req, res) => {
       )
     );
 });
+
+export const tournamentDetails = asyncHandler(async(req, res)=> {
+  const { tournamentId } = req.params;
+  if (!tournamentId) {
+    throw new ApiError(400, "Tournament id is required");
+  };
+
+  const tournament = await Tournament.findById(tournamentId);
+
+  // validate data
+  if (!tournament) {
+    throw new ApiError(400, "No tournament found");
+  };
+
+  return res.status(200)
+  .json(
+    new ApiResponse(
+      200,
+      tournament,
+      "Tournament Details Found Successfully"
+    )
+  )
+
+})

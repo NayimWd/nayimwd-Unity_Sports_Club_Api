@@ -26,7 +26,7 @@ export const getTeamsOfTournament = asyncHandler(async (req, res) => {
     .populate({
       path: "teamId",
       model: "Team",
-      select: "teamName teamLogo",
+      select: "teamName teamLogo _id",
     });
 
   // return response
