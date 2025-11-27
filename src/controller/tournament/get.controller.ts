@@ -34,11 +34,16 @@ export const getTournamentsByStatus = asyncHandler(async (req, res) => {
   // get status from request
   const { status } = req.query as { status?: string };
 
-  const filter = status ? status : "completed";
-
-  const tournaments = await Tournament.find({ status: filter }).select(
-    "tournamentName tournamentType seats status entryFee photo"
+  const isValidStatus = ["upcoming", "ongoing", "completed"].includes(
+    status as string
   );
+
+  const filter: { status?: string } = isValidStatus ? { status: status } : {};
+
+  const tournaments = await Tournament.find(filter)
+    .sort({ createdAt: -1 })
+    .select("tournamentName tournamentType seats status entryFee photo startDate endDate")
+    .lean();
 
   // validate data
   if (!tournaments) {
@@ -122,26 +127,22 @@ export const getLatestTournament = asyncHandler(async (req, res) => {
     );
 });
 
-export const tournamentDetails = asyncHandler(async(req, res)=> {
+export const tournamentDetails = asyncHandler(async (req, res) => {
   const { tournamentId } = req.params;
   if (!tournamentId) {
     throw new ApiError(400, "Tournament id is required");
-  };
+  }
 
   const tournament = await Tournament.findById(tournamentId);
 
   // validate data
   if (!tournament) {
     throw new ApiError(400, "No tournament found");
-  };
+  }
 
-  return res.status(200)
-  .json(
-    new ApiResponse(
-      200,
-      tournament,
-      "Tournament Details Found Successfully"
-    )
-  )
-
-})
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, tournament, "Tournament Details Found Successfully")
+    );
+});

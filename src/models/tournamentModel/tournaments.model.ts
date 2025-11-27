@@ -92,6 +92,7 @@ const tournamentSchema: Schema<ITournament> = new Schema(
     },
     photo: {
       type: String,
+      required: [true, "Tournament Photo is required"],
     },
   },
   {
