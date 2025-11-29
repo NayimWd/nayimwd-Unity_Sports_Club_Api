@@ -72,7 +72,7 @@ router
   .route(tournament.update_details)
   .patch(veryfyJWT, updateTournamentDetails);
 // update date
-router.route(tournament.update_date).patch(veryfyJWT, updateDate);
+router.route(tournament.update_date).patch(veryfyJWT, upload.none(), updateDate);
 // update photo
 router
   .route(tournament.update_photo)

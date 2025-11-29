@@ -12,7 +12,8 @@ export const getTournamentResult = asyncHandler(async (req, res) => {
   }
 
   // check if the tournament exists
-  const tournament = await Tournament.findById(tournamentId);
+  const tournament = await Tournament.findById(tournamentId)
+  .select("tournamentName photo")
 
   if (!tournament) {
     throw new ApiError(404, "Tournament not found");
@@ -46,10 +47,15 @@ export const getTournamentResult = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Tournament result not found");
   }
 
+  const data = {
+    tournament,
+    result
+  }
+
   // send response
   return res
     .status(200)
     .json(
-      new ApiResponse(200, result, "Tournament result fetched successfully")
+      new ApiResponse(200, data, "Tournament result fetched successfully")
     );
 });

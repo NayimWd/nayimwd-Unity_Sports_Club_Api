@@ -4,74 +4,70 @@ import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
 
 export const updateDate = asyncHandler(async (req, res) => {
-  // authorize with token
   const creator = (req as any).user;
-  // validate
-  if (!creator) {
-    throw new ApiError(401, "Unauthorize request, Please Login");
-  }
 
-  // check if admin or staff
+  if (!creator) throw new ApiError(401, "Unauthorize request, Please Login");
+
   if (!["admin", "staff"].includes(creator.role)) {
-    throw new ApiError(403, "Unauthorized request to update tournament photo");
+    throw new ApiError(403, "Unauthorized request to update tournament date");
   }
 
-  // get tournamentID from req params
   const { tournamentId } = req.params;
+  if (!tournamentId) throw new ApiError(400, "Tournament Id is required");
 
-  if (!tournamentId) {
-    throw new ApiError(400, "Tournament Id is required");
-  }
   const tournament = await Tournament.findById(tournamentId);
-  if (!tournament) {
-    throw new ApiError(404, "Tournament is required");
-  }
+  if (!tournament) throw new ApiError(404, "Tournament not found");
 
   const { registrationDeadline, startDate, endDate } = req.body;
 
-  if (!registrationDeadline && !startDate && endDate) {
-    throw new ApiError(400, "Start, End date or RegDate required");
+  // require at least one param
+  if (!registrationDeadline && !startDate && !endDate) {
+    throw new ApiError(
+      400,
+      "At least one of Start, End or Registration date is required"
+    );
   }
 
-  // date validation
-  const regDate = new Date(registrationDeadline.split("-").reverse().join("-"));
-  const start = new Date(startDate.split("-").reverse().join("-"));
-  const end = new Date(endDate.split("-").reverse().join("-"));
+  // string to date converter
+  const parseDMY = (value: string) => {
+    if (!value) return undefined;
+    const [d, m, y] = value.split("-");
+    return new Date(`${y}-${m}-${d}`);
+  };
 
-  // getting current date
+  const regDate = parseDMY(registrationDeadline);
+  const start = parseDMY(startDate);
+  const end = parseDMY(endDate);
   const now = new Date();
-  const currentDate = `${String(now.getDate()).padStart(2, "0")}-${String(now.getMonth() + 1).padStart(2, "0")}-${now.getFullYear()}`;
 
-  if (startDate < currentDate) {
-    throw new ApiError(400, "start Date can not be before present date");
+  // validate dates
+  if (start && start < now) {
+    throw new ApiError(400, "Start date cannot be before present date");
   }
 
-  if (start <= regDate) {
+  if (start && regDate && start <= regDate) {
     throw new ApiError(400, "Start date must be after registration deadline");
   }
 
-  if (end <= start) {
+  if (end && start && end <= start) {
     throw new ApiError(400, "End date must be after start date");
   }
 
-  const newDate = await Tournament.findByIdAndUpdate(
-    tournamentId,
-    {
-      registrationDeadline,
-      startDate,
-      endDate,
-    },
-    { new: true }
-  );
+  // update provide date
+  const payload: any = {};
+  if (registrationDeadline) payload.registrationDeadline = registrationDeadline;
+  if (startDate) payload.startDate = startDate;
+  if (endDate) payload.endDate = endDate;
 
-  if (!newDate) {
-    throw new ApiError(500, "Tournament Date update failed");
-  }
+  const updated = await Tournament.findByIdAndUpdate(tournamentId, payload, {
+    new: true,
+  });
 
-  // return response
+  if (!updated) throw new ApiError(500, "Tournament Date update failed");
+
   return res
     .status(200)
     .json(
-      new ApiResponse(200, newDate, "Tournament Date Updated successfully")
+      new ApiResponse(200, updated, "Tournament Date Updated successfully")
     );
 });
