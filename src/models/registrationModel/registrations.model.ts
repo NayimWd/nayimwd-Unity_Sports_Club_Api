@@ -9,7 +9,6 @@ const registrationSchema: Schema<IRegistration> = new Schema(
       required: true,
     },
     teamId: {
-      // Corrected typo from `teamtId`
       type: mongoose.Schema.Types.ObjectId,
       ref: "Team",
       required: true,
@@ -21,7 +20,7 @@ const registrationSchema: Schema<IRegistration> = new Schema(
     },
     applicationDate: {
       type: Date,
-      default: Date.now(), // Use function reference for dynamic execution
+      default: Date.now(),
     },
     status: {
       type: String,
@@ -30,7 +29,7 @@ const registrationSchema: Schema<IRegistration> = new Schema(
     },
   },
   {
-    timestamps: true, // Includes createdAt and updatedAt fields
+    timestamps: true, 
   }
 );
 

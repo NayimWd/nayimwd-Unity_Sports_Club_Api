@@ -1,3 +1,4 @@
+import { PointTable } from "../../models/point table/pointTables.model";
 import { TournamentResult } from "../../models/tournamentModel/tournamentResult.model";
 import { Tournament } from "../../models/tournamentModel/tournaments.model";
 import { ApiError } from "../../utils/ApiError";
@@ -42,7 +43,9 @@ export const getTournamentsByStatus = asyncHandler(async (req, res) => {
 
   const tournaments = await Tournament.find(filter)
     .sort({ createdAt: -1 })
-    .select("tournamentName tournamentType seats status entryFee photo startDate endDate")
+    .select(
+      "tournamentName tournamentType seats status entryFee photo startDate endDate"
+    )
     .lean();
 
   // validate data
@@ -108,22 +111,64 @@ export const getTournamentById = asyncHandler(async (req, res) => {
 
 // get latest tournament
 export const getLatestTournament = asyncHandler(async (req, res) => {
-  const latestTounament = await Tournament.findOne()
+  // fetch the latest tournament by status
+  const latestTournament = await Tournament.findOne({
+    status: { $in: ["ongoing", "completed"] },
+  })
     .sort({ createdAt: -1 })
-    .select("_id tournamentName")
+    .select("_id tournamentName status")
     .lean();
 
-  // return response
+  if (!latestTournament) {
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          null,
+          "No completed or ongoing tournament available"
+        )
+      );
+  }
+
+  //  if the latest tournament is ongoing, check point table
+  if (latestTournament.status === "ongoing") {
+    const pointTable = await PointTable.findOne({
+      tournamentId: latestTournament._id,
+    });
+
+    if (pointTable) {
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(200, latestTournament, "Latest ongoing tournament")
+        );
+    }
+
+    // if ongoing has not point table latest completed tournament
+    const latestCompleted = await Tournament.findOne({ status: "completed" })
+      .sort({ createdAt: -1 })
+      .select("_id tournamentName status")
+      .lean();
+
+    if (!latestCompleted) {
+      return res
+        .status(200)
+        .json(new ApiResponse(200, null, "No tournament available"));
+    }
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, latestCompleted, "Latest completed tournament")
+      );
+  }
+
+  // If the latest tournament is complete
   return res
     .status(200)
     .json(
-      new ApiResponse(
-        200,
-        latestTounament || null,
-        latestTounament
-          ? "Latest tournament found successfully"
-          : "Tournament Not Found"
-      )
+      new ApiResponse(200, latestTournament, "Latest completed tournament")
     );
 });
 

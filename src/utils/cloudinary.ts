@@ -13,14 +13,14 @@ cloudinary.config({
 
 //  upload function
 const uploadOnCloudinary = async (localFilePath: any) => {
+  if (!localFilePath) return null;
   try {
-    if (!localFilePath) return null;
     // upload the file on cloudinary
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
       transformation: [
-        { width: 360, height: 360, crop: "limit" },
-        { quality: 90 },
+        { width: 560, height: 560, crop: "limit" },
+        { quality: "auto:good" },
       ],
     });
 

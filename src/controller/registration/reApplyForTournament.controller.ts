@@ -52,7 +52,7 @@ export const reApplyForTournament = asyncHandler(async (req, res) => {
           "This Team is not regestered in this tournament"
         )
       );
-  }
+  };
 
   if (existingRegistration.status !== "withdrawn") {
     throw new ApiError(400, "Your Application is not withdrawn");

@@ -71,7 +71,7 @@ export const updateStatus = asyncHandler(async (req, res) => {
     await tournament.save();
   }
 
-  // Return response
+  // Return response 
   return res
     .status(200)
     .json(
