@@ -116,7 +116,7 @@ export const getLatestTournament = asyncHandler(async (req, res) => {
     status: { $in: ["ongoing", "completed"] },
   })
     .sort({ createdAt: -1 })
-    .select("_id tournamentName status")
+    .select("_id tournamentName status photo")
     .lean();
 
   if (!latestTournament) {

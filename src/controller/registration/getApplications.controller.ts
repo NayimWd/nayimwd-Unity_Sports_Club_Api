@@ -16,12 +16,16 @@ export const getTournamentApplication = asyncHandler(async (req, res) => {
   }
 
   // Get status filter (optional)
-  const { status } = req.query;
+  let { status } = req.query;
 
-  // Build query dynamically
-  const query: any = { tournamentId };
-  if (status) {
-    query.status = status; // Only add status filter if provided
+  const validStatus = ["pending", "approved", "rejected", "withdrawn"];
+
+  const query: any = {
+    tournamentId: tournamentId,
+  };
+
+  if (status && validStatus.includes(String(status))) {
+    query.status = status;
   }
 
   // find registration
@@ -33,7 +37,7 @@ export const getTournamentApplication = asyncHandler(async (req, res) => {
     })
     .populate({
       path: "teamId",
-      select: "teamName",
+      select: "teamName teamLogo",
     })
     .lean();
 
