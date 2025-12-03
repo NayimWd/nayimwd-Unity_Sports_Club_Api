@@ -26,7 +26,7 @@ export const applicationDetails = asyncHandler(async (req, res) => {
     .populate({
       path: "teamId",
       model: "Team",
-      select: "teamName",
+      select: "teamName teamLogo",
     })
     .lean();
 

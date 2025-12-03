@@ -11,6 +11,7 @@ import matchRoutes from "./match/match.routes";
 import iningsRoutes from "./innings/innings.routes";
 import pointTableRoutes from "./pointTable/pointTable.routes";
 import blogRoutes from "./blog/blog.routes";
+import summaryRoutes from "./summary/summary.routes";
 
 const router = Router();
 
@@ -29,6 +30,7 @@ type RoutePath = {
   innings: "/api/v1/innings";
   pointTable: "/api/v1/pointTable";
   blog: "/api/v1/blog";
+  summary: "/api/v1/report"
 };
 
 // creating routes for semi root routes path
@@ -46,6 +48,7 @@ const route_path: RoutePath = {
   innings: "/api/v1/innings",
   pointTable: "/api/v1/pointTable",
   blog: "/api/v1/blog",
+  summary: "/api/v1/report"
 };
 
 // Health check route with proper typing
@@ -79,5 +82,7 @@ router.use(route_path.innings, iningsRoutes);
 router.use(route_path.pointTable, pointTableRoutes);
 // ---------- Blog routes ----------------
 router.use(route_path.blog, blogRoutes);
+// ---------- summary routes ----------------
+router.use(route_path.summary, summaryRoutes);
 
 export default router;
