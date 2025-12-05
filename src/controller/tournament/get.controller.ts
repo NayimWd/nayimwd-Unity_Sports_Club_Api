@@ -89,24 +89,11 @@ export const getTournamentById = asyncHandler(async (req, res) => {
     throw new ApiError(400, "No tournament found");
   }
 
-  // fetch tournament result
-  const result = await TournamentResult.findOne({ tournamentId })
-    .populate("result.champion", "teamName teamLogo")
-    .populate("result.runnerUp", "teamName teamLogo")
-    .populate("result.thirdPlace", "teamName teamLogo")
-    .populate("manOfTheTournament", "name photo")
-    .lean();
-
-  // build response
-  const response = {
-    tournament,
-    result: result ? result : "Tournament is not completed yet",
-  };
 
   // return response
   return res
     .status(200)
-    .json(new ApiResponse(200, response, "Tournament Fetched successfully"));
+    .json(new ApiResponse(200, tournament, "Tournament Fetched successfully"));
 });
 
 // get latest tournament
@@ -116,7 +103,7 @@ export const getLatestTournament = asyncHandler(async (req, res) => {
     status: { $in: ["ongoing", "completed"] },
   })
     .sort({ createdAt: -1 })
-    .select("_id tournamentName status photo")
+    .select("_id  status")
     .lean();
 
   if (!latestTournament) {

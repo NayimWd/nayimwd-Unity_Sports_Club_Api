@@ -12,7 +12,7 @@ import { asyncHandler } from "../../utils/asyncHandler";
 export const getAllMatch = asyncHandler(async (req, res) => {
   // extract parameters
   const { tournamentId } = req.params;
-  const { teamName, status } = req.query;
+  const {  status } = req.query;
 
   // validate inputs
   if (!tournamentId) {
@@ -41,17 +41,6 @@ export const getAllMatch = asyncHandler(async (req, res) => {
     filter.status = status;
   }
 
-  // filter by team name if provided
-  if (teamName) {
-    const teams = await Team.find({
-      teamName: new RegExp(teamName as string, "i"),
-    }).select("_id");
-    if (teams.length > 0) {
-      filter.$or = [{ teamA: { $in: teams } }, { teamB: { $in: teams } }];
-    } else {
-      return res.status(200).json([]); // Return empty if no teams match
-    }
-  }
 
   // fetch matches
   const matches = await Match.find(filter)
@@ -64,13 +53,12 @@ export const getAllMatch = asyncHandler(async (req, res) => {
     matches.map(async (match) => {
       // Fetch innings data
       const [innings1, innings2] = await Promise.all([
-        Innings.findOne({ matchId: match._id, inningsNumber: 1 }),
-        Innings.findOne({ matchId: match._id, inningsNumber: 2 }),
+        Innings.findOne({ matchId: match._id, inningsNumber: 1 }).lean(),
+        Innings.findOne({ matchId: match._id, inningsNumber: 2 }).lean(),
       ]);
 
       // Fetch match result
       const matchResult = await MatchResult.findOne({ matchId: match._id })
-        .populate("manOfTheMatch", "name photo")
         .lean();
 
       // Prepare match summary
@@ -80,7 +68,7 @@ export const getAllMatch = asyncHandler(async (req, res) => {
           teamA_stats: `${(match as any).teamA.teamName} ${innings1?.totalRuns || 0}-${innings1?.wicket || 0}`,
           teamB_stats: `${(match as any).teamB.teamName} ${innings2?.totalRuns || 0}-${innings2?.wicket || 0}`,
           margin: matchResult.margin,
-          manOftheMatch: matchResult.manOfTheMatch,
+        
         };
       } else {
         // Fetch schedule data if match result is unavailable

@@ -13,7 +13,7 @@ export const getLetestTournamentResult = asyncHandler(async (req, res) => {
     throw new ApiError(404, "tournament not found");
   }
 
-  const result = await TournamentResult.findById(tournament._id)
+  const result = await TournamentResult.findOne({tournamentId: tournament._id})
     .populate({
       path: "manOfTheTournament",
       model: "User",
