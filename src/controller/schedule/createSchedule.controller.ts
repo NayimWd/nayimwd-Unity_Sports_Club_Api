@@ -185,6 +185,11 @@ export const createSchedule = asyncHandler(async (req, res) => {
     }
   }
 
+  // change tournament status while update 1st match
+  if (newSchedule || matchNumber === 1) {
+    await Tournament.findOneAndUpdate({ _id: tournamentId, status: "ongoing" });
+  }
+
   res
     .status(201)
     .json(new ApiResponse(201, newSchedule, "Schedule created successfully"));

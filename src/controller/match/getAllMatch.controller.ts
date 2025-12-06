@@ -44,6 +44,7 @@ export const getAllMatch = asyncHandler(async (req, res) => {
 
   // fetch matches
   const matches = await Match.find(filter)
+    .select("-umpires")
     .populate("teamA", "teamName teamLogo")
     .populate("teamB", "teamName teamLogo")
     .lean();
