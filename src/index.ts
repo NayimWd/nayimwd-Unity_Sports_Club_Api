@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import connectDB from "./db";
 import app from "./app/app";
 import { initDataBases } from "./infrastructure/database";
 

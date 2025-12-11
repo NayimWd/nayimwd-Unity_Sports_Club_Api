@@ -4,7 +4,10 @@ import { createClient } from "redis";
 const redis = createClient({
   url: process.env.REDIS_URL,
   socket: {
-    reconnectStrategy: (retries) => Math.min(retries * 50, 3000),
+    reconnectStrategy: (retries) => {
+      if (retries > 4) return null; 
+      return Math.min(retries * 100, 2000);
+    }
   },
 });
 

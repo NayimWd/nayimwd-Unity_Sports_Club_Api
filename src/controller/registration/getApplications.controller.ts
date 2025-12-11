@@ -33,10 +33,12 @@ export const getTournamentApplication = asyncHandler(async (req, res) => {
     .select("status")
     .populate({
       path: "managerId",
+      model: "User",
       select: "name",
     })
     .populate({
       path: "teamId",
+      model: "Team",
       select: "teamName teamLogo",
     })
     .lean();
@@ -76,11 +78,13 @@ export const getPendingRegistration = asyncHandler(async (req, res) => {
     .select("status")
     .populate({
       path: "managerId",
+      model: "User",
       select: "name",
     })
     .populate({
       path: "teamId",
-      select: "teamName",
+      model: "Team",
+      select: "teamName teamLogo",
     })
     .lean();
 
