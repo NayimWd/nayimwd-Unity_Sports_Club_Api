@@ -10,7 +10,7 @@ export function buildCacheKey(baseKey: string, query: any = {}): string | any {
   // sort keys
   const keys = Object.keys(query).sort();
 
-  // filter ampty query
+  // filter out empty query
   for (const q of keys) {
     if (query[q] !== undefined && query[q] !== "" && query[q] !== null) {
       cleanQuery[q] = query[q];

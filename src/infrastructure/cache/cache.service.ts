@@ -15,26 +15,45 @@ class CacheService {
     }
   }
 
-  // set value to redis with ttl
+  /**
+   * Set value to redis with ttl
+   * If ttl === 0 → permanent (no expire)
+   * Optionally register the key to one or more groups (Redis Sets)
+   */
   static async setCache(
     key: string,
     value: any,
-    ttl: number = 3600
+    ttl: number = 3600,
+    groups?: string[]
   ): Promise<void> {
     try {
       const payload = JSON.stringify(value);
+
       if (ttl === 0) {
-        // if ttl = 0 set permanently
         await redis.set(key, payload);
       } else {
+        // setEx sets with expiration in seconds
         await redis.setEx(key, ttl, payload);
       }
+
+      // register key in provided groups (so we can invalidate by group)
+      if (Array.isArray(groups) && groups.length > 0) {
+        // use SADD for each group
+        for (const group of groups) {
+          try {
+            // add the cache key to the group set
+            await redis.sAdd(group, key);
+          } catch (err) {
+            console.error("Redis add key to group error:", err);
+          }
+        }
+      }
     } catch (error) {
-      console.error("Redis cache error", error);
+      console.error("Redis setCache error", error);
     }
   }
 
-  //delete cache for a specefic key
+  // delete a specific key
   static async deleteCache(key: string): Promise<void> {
     try {
       await redis.del(key);
@@ -43,7 +62,7 @@ class CacheService {
     }
   }
 
-  // delete cache group keys with pattern
+  // delete keys by wildcard pattern (scan + del)
   static async deleteByPattern(pattern: string): Promise<void> {
     try {
       const iter = redis.scanIterator({
@@ -56,6 +75,34 @@ class CacheService {
       }
     } catch (error) {
       console.error("Redis delete key group pattern error", error);
+    }
+  }
+
+  /**
+   * Delete a group: read all members from the group's Redis Set,
+   * delete each member (cache keys), then delete the group set itself.
+   */
+  static async deleteGroup(groupKey: string): Promise<void> {
+    try {
+      // get all members of the set
+      const members = await redis.sMembers(groupKey);
+      const memberArray = Array.isArray(members) ? members : Array.from(members);
+      if (memberArray && memberArray.length > 0) {
+        // delete all cache keys in this group
+        // use pipeline for efficiency
+        const pipeline = redis.multi();
+        for (const memberKey of memberArray) {
+          pipeline.del(memberKey);
+        }
+        // also delete the set itself
+        pipeline.del(groupKey);
+        await pipeline.exec();
+      } else {
+        // if set exists but no members, remove the set just in case
+        await redis.del(groupKey);
+      }
+    } catch (error) {
+      console.error("Redis deleteGroup error:", error);
     }
   }
 }

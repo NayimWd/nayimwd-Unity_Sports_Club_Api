@@ -5,38 +5,39 @@ import { ApiResponse } from "../../utils/ApiResponse";
 
 interface CacheOption {
   key: string;
-  ttl: number;
+  ttl?: number;
+  groups?: string[]; // group keys to register this cache under
 }
 
 export function cacheMiddleware(options: CacheOption) {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const { key, ttl = 3600 } = options;
 
-    // build keys for normalized data, including qeury params if exists
     const finalKey = buildCacheKey(key, req.query);
 
     try {
       const cacheData = await CacheService.getCache(finalKey);
 
       if (cacheData) {
-        return res
-          .status(200)
-          .json(new ApiResponse(200, cacheData, "from redis cache"));
+        // send cached response as-is
+        res.status(200).json(cacheData);
+        return; // stop further processing
       }
 
-      // response override in controller
+      // override res.json to cache the response
       const originalJson = res.json.bind(res);
+      res.json = (body: any) => {
+        CacheService.setCache(finalKey, body, ttl).catch((err) => {
+          console.error("Cache set error:", err);
+        });
+        return originalJson(body);
+      };
 
-      if (res.json !== null)
-        res.json = (body: any) => {
-          CacheService.setCache(finalKey, body, ttl).catch((err) => {
-            console.error("Cache set error:", err);
-          });
-
-          return originalJson(body);
-        };
-
-      next();
+      next(); // continue to controller
     } catch (error) {
       console.error("Cache middleware error: ", error);
       next();

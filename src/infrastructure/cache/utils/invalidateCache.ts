@@ -1,39 +1,59 @@
-// src/utils/cache/invalidateCache.ts
-import { cacheKeys, CachePatterns } from "./cacheKeys";
+import { CacheGroups } from "./cacheKeys";
 import CacheService from "../cache.service";
 
 export const invalidateCache = {
-  player: {
-    list: () => CacheService.deleteByPattern(CachePatterns.list("player")),
-    details: (id: string) => CacheService.deleteCache(cacheKeys.playerDetails(id)),
+  // TEAM
+  onTeamUpdate: async (teamId: string) => {
+    await CacheService.deleteGroup(CacheGroups.TEAM(teamId));
+    await CacheService.deleteGroup(CacheGroups.TEAM_LIST);
   },
 
-  tournament: {
-    list: () => CacheService.deleteByPattern(CachePatterns.list("tournament")),
-    details: (id: string) => CacheService.deleteCache(cacheKeys.tournamentDetails(id)),
-    results: (id: string) => CacheService.deleteCache(cacheKeys.tournamentResult(id)),
-    pointTable: (id: string) => CacheService.deleteCache(cacheKeys.pointTable(id)),
+  // PLAYER
+  onPlayerUpdate: async (playerId: string) => {
+    await CacheService.deleteGroup(CacheGroups.PLAYER(playerId));
+    await CacheService.deleteGroup(CacheGroups.PLAYER_LIST);
+    // many pages reference player, also clear match/tournament groups if needed:
+    await CacheService.deleteGroup(CacheGroups.MATCH_LIST("*")); // optional broad clear if you used wildcard groups
   },
 
-  team: {
-    list: () => CacheService.deleteByPattern(CachePatterns.list("team")),
-    details: (id: string) => CacheService.deleteCache(cacheKeys.teamDetails(id)),
+  // TOURNAMENT
+  onTournamentUpdate: async (tournamentId: string) => {
+    await CacheService.deleteGroup(CacheGroups.TOURNAMENT(tournamentId));
+    await CacheService.deleteGroup(CacheGroups.TOURNAMENT_LIST);
+    await CacheService.deleteGroup(CacheGroups.POINT_TABLE(tournamentId));
+    await CacheService.deleteGroup(CacheGroups.TOURNAMENT_RESULT(tournamentId));
   },
 
-  match: {
-    list: (tournamentId: string) => CacheService.deleteByPattern(cacheKeys.matchList(tournamentId)),
-    details: (id: string) => CacheService.deleteCache(cacheKeys.matchDetails(id)),
-    result: (id: string) => CacheService.deleteCache(cacheKeys.matchResult(id)),
+  // SCHEDULE
+  onScheduleUpdate: async (tournamentId: string) => {
+    await CacheService.deleteGroup(CacheGroups.SCHEDULE(tournamentId));
+    await CacheService.deleteGroup(CacheGroups.MATCH_LIST(tournamentId));
   },
 
-  venue: {
-    list: () => CacheService.deleteByPattern(CachePatterns.list("venue")),
-    details: (id: string) => CacheService.deleteCache(cacheKeys.venueDetails(id)),
-    booking: (id: string) => CacheService.deleteCache(cacheKeys.venueBooking(id)),
+  // MATCH
+  onMatchUpdate: async (matchId: string, tournamentId?: string) => {
+    await CacheService.deleteGroup(CacheGroups.MATCH(matchId));
+    if (tournamentId)
+      await CacheService.deleteGroup(CacheGroups.MATCH_LIST(tournamentId));
   },
 
-  blog: {
-    list: () => CacheService.deleteByPattern(CachePatterns.list("blog")),
-    details: (id: string) => CacheService.deleteCache(cacheKeys.blogDetails(id)),
+  // MATCH RESULT -> affects match, point table, tournament result
+  onMatchResultUpdate: async (matchId: string, tournamentId: string) => {
+    await CacheService.deleteGroup(CacheGroups.MATCH(matchId));
+    await CacheService.deleteGroup(CacheGroups.MATCH_LIST(tournamentId));
+    await CacheService.deleteGroup(CacheGroups.POINT_TABLE(tournamentId));
+    await CacheService.deleteGroup(CacheGroups.TOURNAMENT_RESULT(tournamentId));
+  },
+
+  // VENUE
+  onVenueUpdate: async (venueId: string) => {
+    await CacheService.deleteGroup(CacheGroups.VENUE(venueId));
+    await CacheService.deleteGroup(CacheGroups.VENUE_LIST);
+  },
+
+  // BLOG
+  onBlogUpdate: async (blogId: string) => {
+    await CacheService.deleteGroup(CacheGroups.BLOG(blogId));
+    await CacheService.deleteGroup(CacheGroups.BLOG_LIST);
   },
 };
