@@ -41,7 +41,7 @@ const blog: Blog = {
   details: "/details/:blogId",
 };
 
-// create blog
+// Create blog
 router
   .route(blog.create)
   .post(
@@ -50,41 +50,51 @@ router
     invalidateCacheMiddleware([CacheGroups.BLOG_LIST]),
     createBlog
   );
-// update blog
-router.route(blog.update).patch(
-  veryfyJWT,
-  (req, res, next) => {
-    invalidateCacheMiddleware([
-      CacheGroups.BLOG(req.params.blogId),
-      CacheGroups.BLOG_LIST,
-    ])(req, res, next);
-  },
-  updateBlog
-);
-// update blog photo
-router.route(blog.updatePhoto).patch(
-  veryfyJWT,
-  upload.single("photo"),
-  (req, res, next) => {
-    invalidateCacheMiddleware([
-      CacheGroups.BLOG(req.params.blogId),
-      CacheGroups.BLOG_LIST,
-    ]);
-  },
-  updateBlogPhoto
-);
-// update publish status
-router.route(blog.publishStatus).patch(
-  veryfyJWT,
-  (req, res, next) => {
-    invalidateCacheMiddleware([
-      CacheGroups.BLOG(req.params.blogId),
-      CacheGroups.BLOG_LIST,
-    ]);
-  },
-  blogPublish
-);
-// get all blogs
+
+// Update blog
+router
+  .route(blog.update) // MUST include :blogId => e.g. "/blogs/:blogId"
+  .patch(
+    veryfyJWT,
+    (req, res, next) => {
+      invalidateCacheMiddleware([
+        CacheGroups.BLOG(req.params.blogId),
+        CacheGroups.BLOG_LIST,
+      ])(req, res, next);
+    },
+    updateBlog
+  );
+
+// Update blog photo
+router
+  .route(blog.updatePhoto) // path MUST include :blogId
+  .patch(
+    veryfyJWT,
+    upload.single("photo"),
+    (req, res, next) => {
+      invalidateCacheMiddleware([
+        CacheGroups.BLOG(req.params.blogId),
+        CacheGroups.BLOG_LIST,
+      ])(req, res, next);
+    },
+    updateBlogPhoto
+  );
+
+// Update publish status
+router
+  .route(blog.publishStatus) // MUST include :blogId
+  .patch(
+    veryfyJWT,
+    (req, res, next) => {
+      invalidateCacheMiddleware([
+        CacheGroups.BLOG(req.params.blogId),
+        CacheGroups.BLOG_LIST,
+      ])(req, res, next);
+    },
+    blogPublish
+  );
+
+// Get all blogs
 router.route(blog.getAll).get(
   cacheMiddleware({
     key: cacheKeys.blogList,
@@ -93,7 +103,8 @@ router.route(blog.getAll).get(
   }),
   getAllBlogs
 );
-// manage blogs
+
+// Manage blogs
 router.route(blog.manage).get(
   veryfyJWT,
   cacheMiddleware({
@@ -103,13 +114,14 @@ router.route(blog.manage).get(
   }),
   manageBlogs
 );
-// get blog details
+
+// Blog details
 router.route(blog.details).get((req, res, next) => {
-  cacheMiddleware({ key: cacheKeys.blogDetails(req.params.blogId) })(
-    req,
-    res,
-    next
-  );
+  cacheMiddleware({
+    key: cacheKeys.blogDetails(req.params.blogId),
+    groups: [CacheGroups.BLOG(req.params.blogId)],
+    ttl: 60
+  })(req, res, next);
 }, blogDetails);
 
 export default router;

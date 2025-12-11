@@ -1,7 +1,6 @@
-import { Request, Response, NextFunction, response } from "express";
 import { buildCacheKey } from "./utils/keyBuilder";
 import CacheService from "./cache.service";
-import { ApiResponse } from "../../utils/ApiResponse";
+
 
 interface CacheOption {
   key: string;
@@ -9,38 +8,32 @@ interface CacheOption {
   groups?: string[]; // group keys to register this cache under
 }
 
-export function cacheMiddleware(options: CacheOption) {
-  return async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    const { key, ttl = 3600 } = options;
-
-    const finalKey = buildCacheKey(key, req.query);
-
-    try {
-      const cacheData = await CacheService.getCache(finalKey);
-
-      if (cacheData) {
-        // send cached response as-is
-        res.status(200).json(cacheData);
-        return; // stop further processing
-      }
-
-      // override res.json to cache the response
-      const originalJson = res.json.bind(res);
-      res.json = (body: any) => {
-        CacheService.setCache(finalKey, body, ttl).catch((err) => {
-          console.error("Cache set error:", err);
-        });
-        return originalJson(body);
-      };
-
-      next(); // continue to controller
-    } catch (error) {
-      console.error("Cache middleware error: ", error);
-      next();
+export const cacheMiddleware = ({ key, ttl = 3600, groups = [] }: CacheOption) => {
+  return async (req, res, next) => {
+    const finalKey = buildCacheKey(key, req.query); // ← normalized key
+    const cached = await CacheService.getCache(finalKey);
+    
+    if (cached) {
+      res.setHeader('X-Cache-Status', 'HIT'); //  cache header
+      return res.status(200).json(cached);
     }
+    
+    res.setHeader('X-Cache-Status', 'MISS');
+    const originalJson = res.json.bind(res);
+    
+    res.json = (body) => {
+      originalJson(body);
+      
+      if (res.statusCode >= 200 && res.statusCode < 300) { // ← only cache success
+        (async () => {
+          await CacheService.setCache(finalKey, body, ttl, groups);
+        })();
+      }
+      
+      return body;
+    };
+    
+    next();
   };
-}
+};
+

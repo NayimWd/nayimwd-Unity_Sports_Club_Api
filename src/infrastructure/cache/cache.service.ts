@@ -1,14 +1,16 @@
 import redis from "../database/redis";
 
 class CacheService {
-  // get values from redis and convert to json
+  /**
+   * GET CACHE
+   */
   static async getCache<T>(key: string): Promise<T | null> {
     try {
       const data = await redis.get(key);
       if (!data) return null;
 
-      const stringData = typeof data === "string" ? data : data.toString();
-      return JSON.parse(stringData) as T;
+      const dataString = typeof data === "string" ? data : data.toString();
+      return JSON.parse(dataString) as T;
     } catch (error) {
       console.error("Redis get cache error", error);
       return null;
@@ -16,9 +18,7 @@ class CacheService {
   }
 
   /**
-   * Set value to redis with ttl
-   * If ttl === 0 → permanent (no expire)
-   * Optionally register the key to one or more groups (Redis Sets)
+   * SET CACHE + GROUP REGISTRATION
    */
   static async setCache(
     key: string,
@@ -29,22 +29,18 @@ class CacheService {
     try {
       const payload = JSON.stringify(value);
 
-      if (ttl === 0) {
-        await redis.set(key, payload);
-      } else {
-        // setEx sets with expiration in seconds
         await redis.setEx(key, ttl, payload);
-      }
-
-      // register key in provided groups (so we can invalidate by group)
+    
+      // --- FIX: sanitize keys before saving to groups ---
       if (Array.isArray(groups) && groups.length > 0) {
-        // use SADD for each group
         for (const group of groups) {
-          try {
-            // add the cache key to the group set
+          if (
+            typeof key === "string" &&
+            key.trim().length > 0 &&
+            typeof group === "string" &&
+            group.trim().length > 0
+          ) {
             await redis.sAdd(group, key);
-          } catch (err) {
-            console.error("Redis add key to group error:", err);
           }
         }
       }
@@ -53,56 +49,66 @@ class CacheService {
     }
   }
 
-  // delete a specific key
+  /**
+   * DELETE SINGLE KEY
+   */
   static async deleteCache(key: string): Promise<void> {
     try {
-      await redis.del(key);
+      if (key && key.trim().length > 0) {
+        await redis.del(key);
+      }
     } catch (error) {
       console.error("Redis delete cache error", error);
     }
   }
 
-  // delete keys by wildcard pattern (scan + del)
+  /**
+   * DELETE BY WILDCARD PATTERN (SAFE)
+   */
   static async deleteByPattern(pattern: string): Promise<void> {
     try {
-      const iter = redis.scanIterator({
+      const iterator = redis.scanIterator({
         MATCH: pattern,
         COUNT: 100,
       });
 
-      for await (const key of iter) {
-        await redis.del(key as any);
+      for await (const key of iterator) {
+        if (key && typeof key === "string" && (key as any)?.trim().length > 0) {
+          await redis.del(key);
+        }
       }
     } catch (error) {
-      console.error("Redis delete key group pattern error", error);
+      console.error("Redis delete key by pattern error", error);
     }
   }
 
   /**
-   * Delete a group: read all members from the group's Redis Set,
-   * delete each member (cache keys), then delete the group set itself.
+   * DELETE A GROUP + ALL STORE KEYS
    */
   static async deleteGroup(groupKey: string): Promise<void> {
     try {
-      // get all members of the set
+      if (!groupKey || !groupKey.trim().length) return;
+
       const members = await redis.sMembers(groupKey);
-      const memberArray = Array.isArray(members) ? members : Array.from(members);
-      if (memberArray && memberArray.length > 0) {
-        // delete all cache keys in this group
-        // use pipeline for efficiency
+
+      if (Array.isArray(members) && members.length > 0) {
         const pipeline = redis.multi();
-        for (const memberKey of memberArray) {
-          pipeline.del(memberKey);
+
+        for (const key of members) {
+          if (key && key.length > 0) {
+            pipeline.del(key);
+          }
         }
-        // also delete the set itself
+
         pipeline.del(groupKey);
+
         await pipeline.exec();
       } else {
-        // if set exists but no members, remove the set just in case
+        // no members but group still exists
         await redis.del(groupKey);
       }
     } catch (error) {
-      console.error("Redis deleteGroup error:", error);
+      console.error("Redis deleteGroup error", error);
     }
   }
 }
