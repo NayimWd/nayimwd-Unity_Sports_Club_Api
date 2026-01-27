@@ -69,7 +69,8 @@ export const getAllMatch = asyncHandler(async (req, res) => {
           teamA_stats: `${(match as any).teamA.teamName} ${innings1?.totalRuns || 0}-${innings1?.wicket || 0}`,
           teamB_stats: `${(match as any).teamB.teamName} ${innings2?.totalRuns || 0}-${innings2?.wicket || 0}`,
           margin: matchResult.margin,
-        
+          report: matchResult.matchReport,
+          winner: matchResult.winner
         };
       } else {
         // Fetch schedule data if match result is unavailable
