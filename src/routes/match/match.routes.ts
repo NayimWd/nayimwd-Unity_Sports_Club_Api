@@ -27,7 +27,8 @@ const router = Router();
 type Match = {
   create: "/create/:tournamentId";
   all: "/all/:tournamentId";
-  details: "/details/:tournamentId/:matchId";
+  // details: "/details/:tournamentId/:matchId";
+  details: "/details/:matchId";
   delete: "/delete/:matchId";
   updateStatus: "/update_status/:tournamentId/:matchId";
   updateUmpires: "/update_umpires/:tournamentId/:matchId";
@@ -43,7 +44,8 @@ type Match = {
 const MatchRoutes: Match = {
   create: "/create/:tournamentId",
   all: "/all/:tournamentId",
-  details: "/details/:tournamentId/:matchId",
+  // details: "/details/:tournamentId/:matchId",
+  details: "/details/:matchId",
   delete: "/delete/:matchId",
   updateStatus: "/update_status/:tournamentId/:matchId",
   updateUmpires: "/update_umpires/:tournamentId/:matchId",

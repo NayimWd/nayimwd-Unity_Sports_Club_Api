@@ -15,7 +15,7 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-const allowedOrigins = process.env.CORS_ORIGIN?.split(",");
+const allowedOrigins = process.env.CORS_ORIGIN?.split(",") || [];
 
 const appMiddleware = [
   express.json({
@@ -28,7 +28,7 @@ const appMiddleware = [
     origin: allowedOrigins,
     credentials: true,
   }),
-  helmet(),
+  helmet({contentSecurityPolicy: false}),
   hpp(),
   limiter,
 ];

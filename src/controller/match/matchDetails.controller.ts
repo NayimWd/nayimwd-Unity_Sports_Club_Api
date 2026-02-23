@@ -9,18 +9,14 @@ import { asyncHandler } from "../../utils/asyncHandler";
 
 export const matchDetails = asyncHandler(async (req, res) => {
   // get tournament Id and match id from req params
-  const { tournamentId, matchId } = req.params;
+  const {  matchId } = req.params;
 
   // validate inputs
-  if (!tournamentId || !matchId) {
+  if (!matchId) {
     throw new ApiError(400, "Please provide tournament ID and match ID");
   }
 
-  // check if the tournament and match exists
-  const existingTournament = await Tournament.findById(tournamentId).select("_id");
-  if (!existingTournament) {
-    throw new ApiError(404, "Tournament not found");
-  }
+  // check if the match exists
 
   const existingMatch = await Match.findById(matchId);
 
@@ -29,11 +25,7 @@ export const matchDetails = asyncHandler(async (req, res) => {
   }
 
   // fetch match details
-  const match = await Match.findById({ _id: matchId, tournamentId })
-    .populate(
-      "tournamentId",
-      "tournamentName format startDate endDate tournamentLogo"
-    )
+  const match = await Match.findById({ _id: matchId})
     .populate("teamA", "teamName teamLogo")
     .populate("teamB", "teamName teamLogo")
     .populate("umpires.firstUmpire", "name")
@@ -48,12 +40,14 @@ export const matchDetails = asyncHandler(async (req, res) => {
   // fetch schedule for match details
   const schedule = await Schedule.findOne({ matchId })
     .select("-teams -previousMatches -tournamentId -matchId")
-    .populate("venueId", "venueName location")
+    .populate("venueId", "name location")
     .lean();
 
   // fetch result if available
   const result = await MatchResult.findOne({ matchId })
+    .select("winner defeated method margin manOfTheMatch matchReport")
     .populate("manOfTheMatch", "name photo")
+    .populate("winner", "teamName")
     .lean();
 
   // fetch innings details for each team if available
@@ -69,6 +63,9 @@ export const matchDetails = asyncHandler(async (req, res) => {
       teamA_stats: `${(match as any).teamA.teamName} ${innings1?.totalRuns || 0}-${innings1?.wicket || 0}`,
       teamB_stats: `${(match as any).teamB.teamName} ${innings2?.totalRuns || 0}-${innings2?.wicket || 0}`,
       margin: result?.margin,
+      winner: result?.winner,
+      report: result?.matchReport,
+      method: result?.method,
       manOftheMatch: result.manOfTheMatch,
     };
   }
