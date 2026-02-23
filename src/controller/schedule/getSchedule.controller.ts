@@ -30,6 +30,8 @@ export const getSchedules = asyncHandler(async (req, res) => {
     .select("-createdAt -updatedAt")
     .populate("teams.teamA", "teamName teamLogo")
     .populate("teams.teamB", "teamName teamLogo")
+    .populate("previousMatches.matchA", "matchNumber")
+    .populate("previousMatches.matchB", "matchNumber")
     .populate("venueId", "name")
     .sort({ matchDate: 1, matchTime: 1 })
     .lean();

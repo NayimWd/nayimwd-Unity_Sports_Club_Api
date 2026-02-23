@@ -45,8 +45,9 @@ export const matchDetails = asyncHandler(async (req, res) => {
 
   // fetch result if available
   const result = await MatchResult.findOne({ matchId })
-    .select("winner defeated method manOfTheMatch matchReport")
+    .select("winner defeated method margin manOfTheMatch matchReport")
     .populate("manOfTheMatch", "name photo")
+    .populate("winner", "teamName")
     .lean();
 
   // fetch innings details for each team if available

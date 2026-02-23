@@ -60,6 +60,7 @@ export const getAllMatch = asyncHandler(async (req, res) => {
 
       // Fetch match result
       const matchResult = await MatchResult.findOne({ matchId: match._id })
+        .populate("winner", "teamName")
         .lean();
 
       // Prepare match summary
