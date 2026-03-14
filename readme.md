@@ -13,7 +13,7 @@
 🔗 **Live API** → [Railway Deployment](https://nayimwd-unitysportsclubapi-production.up.railway.app/api/v1)
 🔗 **API Docs** → [Swagger UI](https://nayimwd-unitysportsclubapi-production.up.railway.app/api-docs/)
 🔗 **Data Model** → [Google Drive](https://drive.google.com/file/d/1DgaWpyFdYuJjKmeVMf8zARfbjvqLuZwq/view?usp=sharing)
-🔗 **Repository** → [GitHub](https://github.com/your-username/cricket-club-management)
+🔗 **Repository** → [GitHub](https://github.com/NayimWd/nayimwd-Unity_Sports_Club_Api)
 
 ---
 
