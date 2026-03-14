@@ -1,7 +1,8 @@
 # 🏏 Cricket Club Management System
 
 > **The backend of a fullstack cricket tournament management app — built to solve a real local problem for Unity Sports Club.**  
-> My first API, built with one philosophy: *learn by building something that actually matters. No shortcuts.*
+> > My first API, built with one philosophy: *learn by building something that actually matters. No shortcuts.*  
+> **~30,000+ lines of backend code. Built from scratch.**
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
@@ -50,7 +51,7 @@ I didn't want to build a to-do app. I wanted to solve a **real problem I could s
 
 This repository is the **backend** of what will be a complete fullstack application. The API is live. The frontend is currently in progress — built with React.js(dashboard for management) and Next.js(public site). This README covers the backend system in full.
 
-This project is the result of me going from *"what is a REST API?"* to shipping a **110+ endpoint production system** with role-based auth, Redis caching, file uploads, API timeouts, structured logging, and full Swagger documentation — entirely from scratch, on my own time, while working and studying.
+This project is the result of me going from *"what is a REST API?"* to shipping a **100+ endpoint production system** with role-based auth, Redis caching, file uploads, API timeouts, structured logging, and full Swagger documentation — entirely from scratch, on my own time, while working and studying.
 
 It's not perfect. But it's mine, and every line of code taught me something.
 
