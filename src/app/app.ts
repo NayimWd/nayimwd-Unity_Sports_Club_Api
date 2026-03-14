@@ -5,6 +5,7 @@ import setupSwagger from "../config/swagger-config";
 import { requestId } from "../utils/requestId";
 import { requestLogger } from "../middleware/requestLogger";
 import { errorHandler } from "../middleware/errorHandler";
+import { timeoutMiddleware } from "../middleware/timeout.middleware";
 
 // initialize app
 const app = express();
@@ -18,6 +19,9 @@ setupSwagger(app);
 // logger
 app.use(requestId);
 app.use(requestLogger);
+
+// timeout handler
+app.use(timeoutMiddleware({ ms: 25000 }));
 
 // connect router
 app.use(router);
