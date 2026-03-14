@@ -9,7 +9,9 @@ export const getPlayerProfile = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid token, player not found");
   }
 
-  const profile = await PlayerProfile.findOne({ userId: player._id }).populate({
+  const profile = await PlayerProfile.findOne({ userId: player._id })
+  .populate({path: "userId", select: "name photo"})
+  .populate({
     path: "teamId",
     select: "teamName teamLogo",
   });
