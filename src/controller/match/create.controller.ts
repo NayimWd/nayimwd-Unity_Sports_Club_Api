@@ -35,7 +35,7 @@ export const createMatch = asyncHandler(async (req, res) => {
   }
 
   // check if the tournament exists
-  const tournament = await Tournament.findById(tournamentId);
+  const tournament = await Tournament.exists({_id: tournamentId});
   if (!tournament) {
     throw new ApiError(404, "Tournament not found");
   }

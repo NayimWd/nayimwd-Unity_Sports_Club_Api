@@ -19,7 +19,7 @@ export const getManagerProfile = asyncHandler(async (req, res) => {
     .populate({
       path: "teamsManaged",
       select: "teamName, teamLogo",
-    });
+    }).lean();
 
   // return response
   return res

@@ -18,7 +18,7 @@ export const matchDetails = asyncHandler(async (req, res) => {
 
   // check if the match exists
 
-  const existingMatch = await Match.findById(matchId);
+  const existingMatch = await Match.exists({_id: matchId});
 
   if (!existingMatch) {
     throw new ApiError(404, "Match not found");

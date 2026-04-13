@@ -28,7 +28,7 @@ export const updateBlog = asyncHandler(async (req, res) => {
   }
 
   // check if the blog exists
-  const blog = await Blog.findById(blogId);
+  const blog = await Blog.findById(blogId).lean();
   if (!blog) {
     throw new ApiError(404, "Blog not found");
   }
@@ -57,7 +57,7 @@ export const updateBlog = asyncHandler(async (req, res) => {
       content: content || blog.content,
       tags: tags || blog.tags,
     },
-    { new: true }
+    { new: true, runValidators: true }
   );
 
   if (!updateBlog) {

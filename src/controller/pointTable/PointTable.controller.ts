@@ -17,7 +17,8 @@ export const getPointTable = asyncHandler(async (req, res) => {
   // check if tournament exists
   const tournament = await Tournament.findById(tournamentId).select(
     "tournamentName photo"
-  );
+  ).lean();
+  
   if (!tournament) {
     throw new ApiError(404, "Tournament not found");
   }

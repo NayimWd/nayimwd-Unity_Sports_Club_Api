@@ -12,7 +12,7 @@ export const getPlayerProfile = asyncHandler(async (req, res) => {
   const profile = await PlayerProfile.findOne({ userId: player._id }).populate({
     path: "teamId",
     select: "teamName teamLogo",
-  });
+  }).lean();
 
   // return response
   return res

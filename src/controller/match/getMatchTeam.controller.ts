@@ -26,8 +26,11 @@ export const getMatchTeams = asyncHandler(async (req, res) => {
       select: "teamName teamLogo",
     });
 
+    
   // reteurn response
   return res
     .status(200)
     .json(new ApiResponse(200, match, "teams fetched successfully"));
 });
+
+

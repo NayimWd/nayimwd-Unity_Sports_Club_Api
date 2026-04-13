@@ -14,12 +14,6 @@ export const getTeamProfiles = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Team ID is required");
   }
 
-  // check if team exists with the given ID
-  const existingTeam = await Team.findById(teamId);
-  // validate
-  if (!existingTeam) {
-    throw new ApiError(404, "Team not found");
-  }
 
   // Fetch team with manager's basic details
   const team = await Team.findById(teamId)
