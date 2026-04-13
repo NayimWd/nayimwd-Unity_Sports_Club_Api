@@ -9,23 +9,15 @@ import { asyncHandler } from "../../utils/asyncHandler";
 
 export const matchDetails = asyncHandler(async (req, res) => {
   // get tournament Id and match id from req params
-  const {  matchId } = req.params;
+  const { matchId } = req.params;
 
   // validate inputs
   if (!matchId) {
     throw new ApiError(400, "Please provide tournament ID and match ID");
   }
 
-  // check if the match exists
-
-  const existingMatch = await Match.exists({_id: matchId});
-
-  if (!existingMatch) {
-    throw new ApiError(404, "Match not found");
-  }
-
   // fetch match details
-  const match = await Match.findById({ _id: matchId})
+  const match: any = await Match.findById({ _id: matchId })
     .populate("teamA", "teamName teamLogo")
     .populate("teamB", "teamName teamLogo")
     .populate("umpires.firstUmpire", "name")
@@ -38,35 +30,41 @@ export const matchDetails = asyncHandler(async (req, res) => {
   }
 
   // fetch schedule for match details
-  const schedule = await Schedule.findOne({ matchId })
-    .select("-teams -previousMatches -tournamentId -matchId")
-    .populate("venueId", "name location")
-    .lean();
+  const [schedule, result, innings1, innings2] = await Promise.all([
+    Schedule.findOne({ matchId })
+      .select("-teams -previousMatches -tournamentId -matchId")
+      .populate("venueId", "name location")
+      .lean(),
 
-  // fetch result if available
-  const result = await MatchResult.findOne({ matchId })
-    .select("winner defeated method margin manOfTheMatch matchReport")
-    .populate("manOfTheMatch", "name photo")
-    .populate("winner", "teamName")
-    .lean();
+    MatchResult.findOne({ matchId })
+      .select("winner defeated method margin manOfTheMatch matchReport")
+      .populate([
+        { path: "manOfTheMatch", select: "name photo" },
+        { path: "winner", select: "teamName" },
+      ])
+      .lean(),
 
-  // fetch innings details for each team if available
-  const [innings1, innings2] = await Promise.all([
-    Innings.findOne({ matchId, inningsNumber: 1 }).lean(),
-    Innings.findOne({ matchId, inningsNumber: 2 }).lean(),
+    Innings.findOne({ matchId, inningsNumber: 1 })
+      .select("totalRuns wicket teamId overs")
+      .lean(),
+
+    Innings.findOne({ matchId, inningsNumber: 2 })
+      .select("totalRuns wicket teamId overs")
+      .lean(),
   ]);
 
-  // match summary
-  let matchSummary;
+  // 3. Build match summary only if result exists
+  let matchSummary = null;
+
   if (result) {
     matchSummary = {
-      teamA_stats: `${(match as any).teamA.teamName} ${innings1?.totalRuns || 0}-${innings1?.wicket || 0}`,
-      teamB_stats: `${(match as any).teamB.teamName} ${innings2?.totalRuns || 0}-${innings2?.wicket || 0}`,
-      margin: result?.margin,
-      winner: result?.winner,
-      report: result?.matchReport,
-      method: result?.method,
-      manOftheMatch: result.manOfTheMatch,
+      teamA_stats: `${match.teamA.teamName} ${innings1?.totalRuns || 0}-${innings1?.wicket || 0}`,
+      teamB_stats: `${match.teamB.teamName} ${innings2?.totalRuns || 0}-${innings2?.wicket || 0}`,
+      margin: result.margin,
+      winner: result.winner,
+      report: result.matchReport,
+      method: result.method,
+      manOfTheMatch: result.manOfTheMatch,
     };
   }
 

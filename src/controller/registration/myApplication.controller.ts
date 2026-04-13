@@ -18,11 +18,6 @@ export const myApplication = asyncHandler(async (req, res) => {
     throw new ApiError(400, "TournamentId required");
   }
 
-  const tournament = await Tournament.findById(tournamentId);
-  if (!tournament) {
-    throw new ApiError(404, "Tournament not exists");
-  }
-
   // find my application
   const application = await Registration.findOne({
     tournamentId: tournamentId,

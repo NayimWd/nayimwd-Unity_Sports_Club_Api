@@ -5,6 +5,7 @@ const managerProfileSchema: Schema<IManagerProfile> = new Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    unique: true,
     required: [true, "manager Id is required"],
   },
   teamsManaged: [

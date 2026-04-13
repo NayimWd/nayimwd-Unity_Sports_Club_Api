@@ -24,12 +24,12 @@ export const updateStatus = asyncHandler(async (req, res) => {
   }
 
   // Check if tournament and team exist
-  const tournament = await Tournament.findById(tournamentId);
+  const tournament = await Tournament.findById(tournamentId).select("format teamCount").lean();
   if (!tournament) {
     throw new ApiError(404, "Tournament not found");
   }
 
-  const team = await Team.findById(teamId);
+  const team = await Team.exists({_id:teamId});
   if (!team) {
     throw new ApiError(404, "Team not found");
   }

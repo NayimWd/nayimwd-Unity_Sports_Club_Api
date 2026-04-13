@@ -61,7 +61,7 @@ export const getAllMatch = asyncHandler(async (req, res) => {
     Innings.find({
       matchId: { $in: matchIds },
     })
-      .select("matchId inningsNumber totalRuns wicket teamId")
+      .select("matchId inningsNumber totalRuns wicket teamId overs")
       .lean(),
 
     MatchResult.find({
@@ -139,4 +139,30 @@ export const getAllMatch = asyncHandler(async (req, res) => {
       "Matches fetched successfully"
     )
   );
+});
+
+// in this controller i am doing fetch match for search optimized, it should as lean as possible, the list will be match list with match number(completed or not completed), the objecttive is i will fetch match list for create schedule with this match ids, like match 1 vs match 4. This is required for qualifer round, cz no on knows whoich team will win the match. so after completed the match the black TeamA or B will fulfill while posting result.
+export const getMatchOverview = asyncHandler(async (req, res) => {
+  const { tournamentId } = req.params;
+
+  // validate inputs
+  if (!tournamentId) {
+    throw new ApiError(400, "Please provide tournament ID");
+  }
+
+  const matchList = await Match.find({ tournamentId })
+    .select("_id matchNumber status")
+    .sort({ matchNumber: 1 });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        matchList,
+        matchList.length
+          ? "match list found successfully"
+          : "there is not match list"
+      )
+    );
 });
