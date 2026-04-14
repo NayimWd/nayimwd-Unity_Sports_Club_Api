@@ -15,19 +15,17 @@ export const createBlog = asyncHandler(async (req, res) => {
   }
 
   // extract data from req body
-  const { title, content, tags, isPublished=true } = req.body;
+  const { title, content, tags, isPublished = true } = req.body;
   if (!title || !content || !tags || !isPublished) {
     throw new ApiError(400, "All fields are required");
   }
 
   // Validate title and content length
   if (title.length < 10 || title.length > 500) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Title must be between 10 and 500 characters",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "Title must be between 10 and 500 characters",
+    });
   }
   if (!content || content.trim().length === 0) {
     return res
@@ -41,29 +39,24 @@ export const createBlog = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: "Invalid tag" });
   }
 
-   // get photo from request file
-   let photoUrl = null;
-   if (req.file?.path) {
-     const photoUploadPromise = uploadOnCloudinary(req.file.path);
-     const [photo] = await Promise.all([photoUploadPromise]); // Run parallelly
-     if (!photo) throw new ApiError(400, "Upload photo failed");
-     photoUrl = photo.url;
-   }
+  // get photo from request file
+  let photoUrl = null;
+  if (req.file?.path) {
+    const photoUploadPromise = uploadOnCloudinary(req.file.path);
+    const [photo] = await Promise.all([photoUploadPromise]); // Run parallelly
+    if (!photo) throw new ApiError(400, "Upload photo failed");
+    photoUrl = photo.url;
+  }
 
   // create blog
   const blog = await Blog.create({
-    title: title,
-    content: content,
-    author: writer.name,
-    tags: tags,
-    createdAt: new Date(),
-    isPublished: isPublished,
+    title,
+    content,
+    author: writer._id,
+    tags,
+    isPublished,
     photo: photoUrl,
   });
-
-  if (!blog) {
-    throw new ApiError(500, "Blog creation failed");
-  }
 
   // return response
   res.status(201).json(new ApiResponse(201, blog, "Blog created successfully"));

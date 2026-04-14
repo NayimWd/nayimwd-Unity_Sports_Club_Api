@@ -30,6 +30,29 @@ export const getAllTournaments = asyncHandler(async (req, res) => {
   );
 });
 
+// get  tournament for search & select
+export const SearcableTournaments = asyncHandler((async(req, res)=>{
+  const tournaments = await Tournament.find({
+    status: {$in: ["upcoming", "ongoing"]},
+  })
+  .select("_id tournamentName")
+  .limit(5)
+  .sort({createdAt: -1})
+  .lean();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      tournaments,
+      tournaments.length
+        ? "Tournaments fetched successfully"
+        : "No tournaments found"
+    )
+  )
+
+}));
+
+
 // get ongoing tournaments
 export const getTournamentsByStatus = asyncHandler(async (req, res) => {
   // get status from request

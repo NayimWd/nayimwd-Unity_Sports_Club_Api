@@ -14,7 +14,7 @@ export const getPlayerProfile = asyncHandler(async (req, res) => {
   .populate({
     path: "teamId",
     select: "teamName teamLogo",
-  });
+  }).lean();
 
   // return response
   return res

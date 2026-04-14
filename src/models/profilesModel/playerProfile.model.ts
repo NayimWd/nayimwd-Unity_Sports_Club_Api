@@ -5,6 +5,7 @@ const playerProfileSchema: Schema<IPlayerProfile> = new Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    unique: true,
     required: [true, "User id is required"],
   },
   teamId: {

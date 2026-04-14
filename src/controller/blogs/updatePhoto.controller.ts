@@ -23,12 +23,6 @@ export const updateBlogPhoto = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Blog Id is required");
   }
 
-  // check if blog exists
-  const blog = await Blog.findById(blogId);
-  if (!blog) {
-    throw new ApiError(404, "Blog not found");
-  }
-
   // get photo from req body
   const photoLocalPath = req.file?.path;
   if (!photoLocalPath) {
@@ -57,5 +51,5 @@ export const updateBlogPhoto = asyncHandler(async (req, res) => {
   // return response
   return res
     .status(200)
-    .json(new ApiResponse(200, blogPhoto.photo, "Blog Photo updated successfully"));
+    .json(new ApiResponse(200, null, "Blog Photo updated successfully"));
 });

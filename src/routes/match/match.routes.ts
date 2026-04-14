@@ -1,9 +1,5 @@
 import { Router } from "express";
-import {
-  isAdmin,
-  isManager,
-  veryfyJWT,
-} from "../../middleware/auth.middleware";
+import { veryfyJWT } from "../../middleware/auth.middleware";
 import {
   createMatch,
   deleteMatch,
@@ -15,6 +11,7 @@ import {
   updatePlayingSquad,
   getPlayingSquad,
   getMatchTeams,
+  getMatchOverview,
 } from "../../controller/match";
 import {
   createMatchResult,
@@ -27,7 +24,6 @@ const router = Router();
 type Match = {
   create: "/create/:tournamentId";
   all: "/all/:tournamentId";
-  // details: "/details/:tournamentId/:matchId";
   details: "/details/:matchId";
   delete: "/delete/:matchId";
   updateStatus: "/update_status/:tournamentId/:matchId";
@@ -38,13 +34,13 @@ type Match = {
   createResult: "/createResult/:tournamentId/:matchId";
   matchResult: "/matchResult/:matchId";
   teamOfMatch: "/teamsOfMatch/:matchId";
+  matchOverview: "/overview/:tournamentId";
 };
 
 // endpoints
 const MatchRoutes: Match = {
   create: "/create/:tournamentId",
   all: "/all/:tournamentId",
-  // details: "/details/:tournamentId/:matchId",
   details: "/details/:matchId",
   delete: "/delete/:matchId",
   updateStatus: "/update_status/:tournamentId/:matchId",
@@ -55,6 +51,7 @@ const MatchRoutes: Match = {
   createResult: "/createResult/:tournamentId/:matchId",
   matchResult: "/matchResult/:matchId",
   teamOfMatch: "/teamsOfMatch/:matchId",
+  matchOverview: "/overview/:tournamentId",
 };
 
 // create match
@@ -81,5 +78,7 @@ router.route(MatchRoutes.createResult).post(veryfyJWT, createMatchResult);
 router.route(MatchRoutes.matchResult).get(getMatchResult);
 // get match teams
 router.route(MatchRoutes.teamOfMatch).get(getMatchTeams);
+// get match overview
+router.route(MatchRoutes.matchOverview).get(getMatchOverview);
 
 export default router;

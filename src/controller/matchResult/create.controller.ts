@@ -30,8 +30,8 @@ export const createMatchResult = asyncHandler(async (req, res) => {
 
   // fetch tournament and match data
   const [tournament, match] = await Promise.all([
-    Tournament.findById(tournamentId),
-    Match.findById(matchId),
+    Tournament.exists({_id:tournamentId}),
+    Match.findById(matchId).select("teamA teamB").lean(),
   ]);
 
   // validate
@@ -40,10 +40,10 @@ export const createMatchResult = asyncHandler(async (req, res) => {
   }
 
   // fetch innings for metch
-  const [innings1, innings2] = await Promise.all([
-    Innings.findOne({ matchId, inningsNumber: 1 }),
-    Innings.findOne({ matchId, inningsNumber: 2 }),
-  ]);
+  const innings = await Innings.find({ matchId }).lean();
+
+const innings1 = innings.find(i => i.inningsNumber === 1);
+const innings2 = innings.find(i => i.inningsNumber === 2);
 
   if (!innings1 || !innings2) {
     throw new ApiError(

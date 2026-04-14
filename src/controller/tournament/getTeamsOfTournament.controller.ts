@@ -14,7 +14,7 @@ export const getTeamsOfTournament = asyncHandler(async (req, res) => {
   }
 
   // check if tournament exists
-  const tournament = await Tournament.findById(tournamentId);
+  const tournament = await Tournament.exists({ _id: tournamentId });
 
   if (!tournament) {
     throw new ApiError(400, "Tournament Not found");
@@ -42,4 +42,38 @@ export const getTeamsOfTournament = asyncHandler(async (req, res) => {
         : "No Team Exists in this Tournament"
     )
   );
+});
+
+// get search & select controller
+export const getApprovedTeamsForSelect = asyncHandler(async (req, res) => {
+  const { tournamentId } = req.params;
+
+  const exists = await Tournament.exists({ _id: tournamentId });
+
+  if (!exists) {
+    throw new ApiError(400, "No team found");
+  }
+
+  const teams = await Registration.find({
+    tournamentId,
+    status: "approved",
+  })
+    .select("teamId")
+    .populate({
+      path: "teamId",
+      model: "Team",
+      select: "_id teamName",
+    })
+    .lean();
+
+  const formatted = teams.map((t: any) => ({
+    _id: t.teamId._id,
+    teamName: t.teamId?.teamName ? t.teamId?.teamName : "Name Not found",
+  }));
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, formatted, 
+      formatted.length ? "Team found successfully" : "No team approved yet"
+    ));
 });

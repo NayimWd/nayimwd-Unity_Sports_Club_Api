@@ -38,13 +38,14 @@ export const updateMatchStatus = asyncHandler(async (req, res) => {
   }
 
   // check if the tournament exists
-  const tournament = await Tournament.findById(tournamentId);
+  const tournament = await Tournament.exists({ _id: tournamentId });
   if (!tournament) {
     throw new ApiError(404, "Tournament not found");
   }
 
   // check if the match exists
-  const match = await Match.findOne({ _id: matchId, tournamentId });
+  const match = await Match.findOne({ _id: matchId, tournamentId })
+    .select("status")
   if (!match) {
     throw new ApiError(404, "Match not found");
   }
@@ -59,7 +60,8 @@ export const updateMatchStatus = asyncHandler(async (req, res) => {
   }
 
   // fetch schedule
-  const schedule = await Schedule.findOne({ matchId });
+  const schedule = await Schedule.findOne({ matchId })
+    .select("status")
   if (!schedule) {
     throw new ApiError(404, "Schedule not found");
   }
@@ -68,7 +70,10 @@ export const updateMatchStatus = asyncHandler(async (req, res) => {
   match.status = newStatus;
   schedule.status = newStatus;
 
-  await Promise.all([match.save(), schedule.save()]);
+  await Promise.all([
+    Match.updateOne({ _id: matchId, tournamentId }, { status: newStatus }),
+    Schedule.updateOne({ matchId }, { status: newStatus }),
+  ]);
 
   // return response
   return res

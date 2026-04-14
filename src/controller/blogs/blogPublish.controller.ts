@@ -24,7 +24,7 @@ export const blogPublish = asyncHandler(async (req, res) => {
   }
 
   // check if blog exists
-  const blog = await Blog.findById(blogId);
+  const blog = await Blog.exists({id: blogId});
   if (!blog) {
     throw new ApiError(404, "Blog not found");
   }

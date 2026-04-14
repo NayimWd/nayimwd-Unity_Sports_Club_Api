@@ -16,9 +16,9 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
   const filter: any = { isPublished: true };
 
   // use full-text search
-   if (search) {
-  filter.title = { $regex: search, $options: "i" };
-}
+  if (search) {
+    filter.title = { $regex: search, $options: "i" };
+  }
 
   if (tags) {
     filter.tags = tags; // exact match
@@ -34,14 +34,14 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
       .sort(sortOption)
       .skip(skip)
       .limit(pageSize)
-      .select("title tags author createdAt photo") 
-      .lean(), 
+      .select("title tags author createdAt photo")
+      .lean(),
 
-    Blog.countDocuments(filter), 
+    Blog.countDocuments(filter),
   ]);
 
   // Return response
-   return res.status(200).json(
+  return res.status(200).json(
     new ApiResponse(
       200,
       {
@@ -56,7 +56,6 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
       "Blogs fetched successfully"
     )
   );
-
 });
 
 export const blogDetails = asyncHandler(async (req, res) => {
@@ -70,11 +69,11 @@ export const blogDetails = asyncHandler(async (req, res) => {
 
   // fetch blog details
   const blog = await Blog.findOne({ _id: blogId, isPublished: true }).lean();
+
+  // opt 2: if this is best i will keep it
   if (!blog) {
     throw new ApiError(404, "Blog not found");
   }
-
-  
 
   // return response
   res.status(200).json(new ApiResponse(200, blog, "Blog fetched successfully"));
