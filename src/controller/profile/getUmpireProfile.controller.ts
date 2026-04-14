@@ -12,7 +12,7 @@ export const getUmpireProfile = asyncHandler(async (req, res) => {
   const profile = await UmpireProfile.findOne({ userId: umpireId }).populate({
     path: "userId",
     select: "name photo yearsOfExperience",
-  });
+  }).lean();
 
   // return response
   return res

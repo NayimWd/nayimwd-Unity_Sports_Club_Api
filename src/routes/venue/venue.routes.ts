@@ -6,6 +6,7 @@ import {
   updateVenueDetails,
   updateVenuePhoto,
   venueDetails,
+  venueSearch,
 } from "../../controller/venue";
 import { veryfyJWT } from "../../middleware/auth.middleware";
 import { upload } from "../../middleware/multer.middleware";
@@ -20,6 +21,7 @@ type VenueRoutes = {
   update: "/update/:venueId";
   updatePhoto: "/updatePhoto/:venueId";
   delete: "/delete/:venueId";
+  search: "/search";
 };
 
 const venue_routes: VenueRoutes = {
@@ -29,6 +31,7 @@ const venue_routes: VenueRoutes = {
   update: "/update/:venueId",
   updatePhoto: "/updatePhoto/:venueId",
   delete: "/delete/:venueId",
+  search: "/search",
 };
 
 // routes
@@ -40,6 +43,8 @@ router
 router.route(venue_routes.all).get(getAllVenues);
 // get venue details
 router.route(venue_routes.details).get(venueDetails);
+// get search venue
+router.route(venue_routes.search).get(venueSearch);
 // update venue details
 router.route(venue_routes.update).patch(veryfyJWT, updateVenueDetails);
 // update venue photo

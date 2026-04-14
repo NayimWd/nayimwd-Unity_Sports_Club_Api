@@ -30,6 +30,8 @@ export const createSchedule = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (
+    !teamA ||
+    !teamB ||
     !tournamentId ||
     !matchNumber ||
     !round ||
@@ -85,7 +87,6 @@ export const createSchedule = asyncHandler(async (req, res) => {
   let matchData: any = {
     tournamentId,
     matchNumber,
-    status: "upcoming",
     teamA: null,
     teamB: null,
     previousMatches: { matchA: null, matchB: null },
@@ -192,5 +193,5 @@ export const createSchedule = asyncHandler(async (req, res) => {
 
   res
     .status(201)
-    .json(new ApiResponse(201, newSchedule, "Schedule created successfully"));
+    .json(new ApiResponse(201, null, "Schedule created successfully"));
 });

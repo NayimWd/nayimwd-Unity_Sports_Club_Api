@@ -21,7 +21,7 @@ export const withdrawApplication = asyncHandler(async (req, res) => {
   }
 
   // Check if tournament exists
-  const tournament = await Tournament.findById(tournamentId);
+  const tournament = await Tournament.findById(tournamentId).select("teamCount").lean();
   if (!tournament) {
     throw new ApiError(404, "Tournament not found");
   }

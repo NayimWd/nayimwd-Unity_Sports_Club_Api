@@ -32,6 +32,28 @@ export const getAllVenues = asyncHandler(async (req, res) => {
   );
 });
 
+// search venue
+export const venueSearch = asyncHandler(async (req, res) => {
+  const { limit = 10 } = req.query;
+
+  // get  venues
+  const venues = await Venue.find()
+    .select("_id name city")
+    .sort({name: 1})
+    .limit(Number(limit))
+    .lean();
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        venues,
+        venues.length ? "Venue found successfully" : "No venue Found"
+      )
+    );
+});
+
 export const venueDetails = asyncHandler(async (req, res) => {
   // get venue id from request params
   const { venueId } = req.params;

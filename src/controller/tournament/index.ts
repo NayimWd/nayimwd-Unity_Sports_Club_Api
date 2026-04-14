@@ -4,13 +4,14 @@ import {
   getTournamentsByStatus,
   getTournamentById,
   getLatestTournament,
-  tournamentDetails
+  tournamentDetails,
+  SearcableTournaments
 } from "./get.controller";
 import { updateTournamentDetails } from "./updateDetails.controller";
 import { updateDate } from "./updatedate.controller";
 import { updateTournamentPhoto } from "./updatePhoto.controller";
 import { updateTournamentStatus } from "./updateStatur.controller";
-import { getTeamsOfTournament } from "./getTeamsOfTournament.controller";
+import { getTeamsOfTournament, getApprovedTeamsForSelect } from "./getTeamsOfTournament.controller";
 import { createTournamentResult } from "./createResult.controller";
 
 export {
@@ -25,5 +26,7 @@ export {
   getTeamsOfTournament,
   createTournamentResult,
   getLatestTournament,
-  tournamentDetails
+  tournamentDetails,
+  SearcableTournaments,
+  getApprovedTeamsForSelect
 };

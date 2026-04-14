@@ -24,10 +24,16 @@ export const getMatchTeams = asyncHandler(async (req, res) => {
       path: "teamB",
       model: "Team",
       select: "teamName teamLogo",
-    });
+    }).lean();
 
+    if(!match._id){
+      throw new ApiError(404, "No team found")
+    }
+    
   // reteurn response
   return res
     .status(200)
     .json(new ApiResponse(200, match, "teams fetched successfully"));
 });
+
+
