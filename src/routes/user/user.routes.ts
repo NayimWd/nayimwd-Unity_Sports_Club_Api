@@ -12,6 +12,7 @@ import {
   forgetPassword,
   resetPassword,
   adminChangeRole,
+  getUmpireSearch,
 } from "../../controller/user";
 import { upload } from "../../middleware/multer.middleware";
 import { veryfyJWT } from "../../middleware/auth.middleware";
@@ -31,6 +32,7 @@ type UserRoutes = {
   change_password: "/change_password";
   forgot_password: "/forgot_password";
   reset_password: "/reset_password/:token";
+  umpire_list: "/umpire_list";
 };
 
 const user_routes: UserRoutes = {
@@ -46,6 +48,7 @@ const user_routes: UserRoutes = {
   change_password: "/change_password",
   forgot_password: "/forgot_password",
   reset_password: "/reset_password/:token",
+  umpire_list: "/umpire_list",
 };
 
 // routes
@@ -69,6 +72,8 @@ router.route(user_routes.refreshToken).post(refreshAccessToken);
 router.route(user_routes.all_users).get(veryfyJWT, getAllUsers);
 // get current user
 router.route(user_routes.current_user).get(veryfyJWT, getCurrentUser);
+// get umpire search list
+router.route(user_routes.umpire_list).get(veryfyJWT, getUmpireSearch);
 // update user details
 router.route(user_routes.update_account).patch(veryfyJWT, updateAccount);
 // change password
@@ -78,9 +83,7 @@ router
   .route(user_routes.photo)
   .patch(veryfyJWT, upload.single("photo"), updateUserPhoto);
 // change role
-router
-  .route(user_routes.change_role)
-  .patch(veryfyJWT, adminChangeRole);
+router.route(user_routes.change_role).patch(veryfyJWT, adminChangeRole);
 // forgot password
 router.route(user_routes.forgot_password).post(veryfyJWT, forgetPassword);
 // reset password

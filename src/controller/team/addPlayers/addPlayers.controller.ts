@@ -5,87 +5,85 @@ import { Team } from "../../../models/teamModel/teams.model";
 import { TeamPlayer } from "../../../models/teamModel/teamPlayer.model";
 import { PlayerProfile } from "../../../models/profilesModel/playerProfile.model";
 import { ApiResponse } from "../../../utils/ApiResponse";
-import { User } from "../../../models/userModel/user.model";
+
 
 export const addPlayers = asyncHandler(async (req, res) => {
-  // starting mongodb session
   const session = await mongoose.startSession();
-  session.startTransaction();
 
-  // working on adding player by manager
   try {
-    // get manager ID from auth token
-    const managerId = (req as any).user._id;
-    if (!managerId) {
-      throw new ApiError(400, "Invalid token, user not found");
-    }
+    await session.withTransaction(async () => {
+      const managerId = (req as any).user._id;
+      const { teamId } = req.params;
+      const { playerId } = req.body;
 
-    // validate request payload
-    const { teamId } = req.params;
-    const { playerId } = req.body;
+      if (!teamId || !playerId) {
+        throw new ApiError(400, "TeamId and playerId are required");
+      }
 
-    // validate players array
-    if (!teamId || !playerId) {
-      throw new ApiError(400, "TeamId and player ID both are required");
-    }
+      // 1. fetch team 
+      const team = await Team.findById(teamId).session(session);
 
-    // validate team by team id
-    const team = await Team.findById(teamId);
-    if (!team) {
-      throw new ApiError(404, "Team not found by this ID");
-    }
+      if (!team) {
+        throw new ApiError(404, "Team not found");
+      }
 
-    // validate manager authority
-    if (team.managerId.toString() !== managerId.toString()) {
-      throw new ApiError(
-        403,
-        "You are not authorized to add players to this team"
+      // 2. authorization check
+      if (team.managerId.toString() !== managerId.toString()) {
+        throw new ApiError(403, "Not authorized to modify this team");
+      }
+
+      // 3. capacity check (fail fast)
+      if (team.playerCount >= 18) {
+        throw new ApiError(400, "Team already has maximum players");
+      }
+
+      // 4. validate player by profile 
+      const profile = await PlayerProfile.findOne({
+        userId: playerId,
+      }).session(session);
+
+      if (!profile) {
+        throw new ApiError(400, "Player profile not completed");
+      }
+
+      // 5. checking player is not already in a team
+      if (profile.teamId) {
+        throw new ApiError(400, "Player already assigned to a team");
+      }
+
+      // 6. stop duplicate relation
+      const exists = await TeamPlayer.exists({
+        playerId,
+      }).session(session);
+
+      if (exists) {
+        throw new ApiError(400, "Player already exists in a team");
+      }
+
+      // 7. create team-player relation
+      await TeamPlayer.create(
+        [{ teamId, playerId }],
+        { session }
       );
-    }
 
-    // prevent adding players if more that 18
-    if (team.playerCount >= 18) {
-      throw new ApiError(400, "You can not add players more that 18");
-    }
+      // 8. update profile 
+      profile.teamId = team._id;
+      await profile.save({ session });
 
-    // validate player
-    const player = await User.findOne({ _id: playerId, role: "player" });
-    if (!player) {
-      throw new ApiError(404, "Player not found or not a valid player");
-    }
+      // 9.  increment team player count
+      await Team.updateOne(
+        { _id: teamId },
+        { $inc: { playerCount: 1 } },
+        { session }
+      );
+    });
 
-    // check if player alaready exist on team
-    const existingPlayer = await TeamPlayer.findOne({ playerId });
-
-    if (existingPlayer) {
-      throw new ApiError(400, "Player already exist in another team");
-    }
-
-    // add player to the team
-    const teamPlayer = new TeamPlayer({ teamId, playerId });
-    await teamPlayer.save({ session });
-
-    // update or create new team player profile
-    await PlayerProfile.updateOne(
-      { userId: playerId },
-      { teamId },
-      { upsert: true, session }
-    );
-
-    // update team player count
-    team.playerCount += 1;
-    await team.save({ session });
-
-    // commit transaction
-    await session.commitTransaction();
-    session.endSession();
-
-    // Return success response
-    res.status(200).json(new ApiResponse(200, {}, "Player added successfully"));
+    res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Player added successfully"));
   } catch (error) {
-    // Rollback transaction
-    await session.abortTransaction();
-    session.endSession();
     throw error;
+  } finally {
+    session.endSession();
   }
 });

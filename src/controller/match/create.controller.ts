@@ -41,7 +41,8 @@ export const createMatch = asyncHandler(async (req, res) => {
   }
 
   // ensure match number is unique per tournament
-  const existingMatch = await Match.findOne({ tournamentId, matchNumber });
+  const existingMatch = await Match.findOne({ tournamentId, matchNumber }).select("_id").lean();
+  
   if (existingMatch) {
     throw new ApiError(400, "Match number already exists for this tournament");
   }

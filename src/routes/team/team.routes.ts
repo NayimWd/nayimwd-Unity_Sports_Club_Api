@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-  isAdmin,
   isManager,
   veryfyJWT,
 } from "../../middleware/auth.middleware";
