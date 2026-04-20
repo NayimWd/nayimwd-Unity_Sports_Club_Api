@@ -24,7 +24,8 @@ export const updateTeamName = asyncHandler(async (req, res) => {
   }
 
   // Check if the team exists under the user's management
-  const existingTeam = await Team.findOne({ _id: teamId, managerId: userId });
+  const existingTeam = await Team.findOne({ _id: teamId, managerId: userId }).select("_id managerId").lean();
+  
   if (!existingTeam) {
     throw new ApiError(
       404,

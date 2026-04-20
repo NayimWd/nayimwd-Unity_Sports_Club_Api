@@ -11,78 +11,83 @@ export const addPlayers = asyncHandler(async (req, res) => {
   const session = await mongoose.startSession();
 
   try {
+    const user = (req as any).user;
+    const { teamId } = req.params;
+    const { playerId } = req.body;
+
+    if (!user?._id) {
+      throw new ApiError(401, "Unauthorized");
+    }
+
+    if (
+      !mongoose.isValidObjectId(teamId) ||
+      !mongoose.isValidObjectId(playerId)
+    ) {
+      throw new ApiError(400, "Invalid teamId or playerId");
+    }
+
     await session.withTransaction(async () => {
-      const managerId = (req as any).user._id;
-      const { teamId } = req.params;
-      const { playerId } = req.body;
-
-      if (!teamId || !playerId) {
-        throw new ApiError(400, "TeamId and playerId are required");
-      }
-
-      // 1. fetch team 
-      const team = await Team.findById(teamId).session(session);
+      // 1. Validate team + ownership + capacity 
+      const team = await Team.findOne({
+        _id: teamId,
+        managerId: user._id,
+      })
+        .select("playerCount")
+        .session(session)
+        .lean();
 
       if (!team) {
-        throw new ApiError(404, "Team not found");
+        throw new ApiError(403, "Not authorized or team not found");
       }
 
-      // 2. authorization check
-      if (team.managerId.toString() !== managerId.toString()) {
-        throw new ApiError(403, "Not authorized to modify this team");
-      }
-
-      // 3. capacity check (fail fast)
       if (team.playerCount >= 18) {
-        throw new ApiError(400, "Team already has maximum players");
+        throw new ApiError(400, "Team is full");
       }
 
-      // 4. validate player by profile 
+      // 2. Validate player profile 
       const profile = await PlayerProfile.findOne({
         userId: playerId,
-      }).session(session);
+      })
+        .select("teamId")
+        .session(session)
+        .lean();
 
       if (!profile) {
         throw new ApiError(400, "Player profile not completed");
       }
 
-      // 5. checking player is not already in a team
       if (profile.teamId) {
         throw new ApiError(400, "Player already assigned to a team");
       }
 
-      // 6. stop duplicate relation
-      const exists = await TeamPlayer.exists({
-        playerId,
-      }).session(session);
-
-      if (exists) {
-        throw new ApiError(400, "Player already exists in a team");
+      // 3. Create relation 
+      try {
+        await TeamPlayer.create([{ teamId, playerId }], { session });
+      } catch (err: any) {
+        if (err.code === 11000) {
+          throw new ApiError(400, "Player already exists in a team");
+        }
+        throw err;
       }
 
-      // 7. create team-player relation
-      await TeamPlayer.create(
-        [{ teamId, playerId }],
-        { session }
-      );
-
-      // 8. update profile 
-      profile.teamId = team._id;
-      await profile.save({ session });
-
-      // 9.  increment team player count
-      await Team.updateOne(
-        { _id: teamId },
-        { $inc: { playerCount: 1 } },
-        { session }
-      );
+      // 4. Update profile + increment count 
+      await Promise.all([
+        PlayerProfile.updateOne(
+          { userId: playerId },
+          { $set: { teamId } },
+          { session }
+        ),
+        Team.updateOne(
+          { _id: teamId },
+          { $inc: { playerCount: 1 } },
+          { session }
+        ),
+      ]);
     });
 
-    res
+    return res
       .status(200)
       .json(new ApiResponse(200, {}, "Player added successfully"));
-  } catch (error) {
-    throw error;
   } finally {
     session.endSession();
   }

@@ -17,6 +17,7 @@ import {
   removePlayers,
   updateTeamLogo,
   updateTeamName,
+  getTeamPlayerList
 } from "../../controller/team";
 
 const router = Router();
@@ -34,6 +35,7 @@ type TeamRoutes = {
   members: "/members/:teamId";
   player_details: "/player_details/:playerId";
   makeCaptain: "/makeCaptain/:teamId";
+  playerList: "/player_list/:teamId"
 };
 
 const teamRoutes: TeamRoutes = {
@@ -49,6 +51,7 @@ const teamRoutes: TeamRoutes = {
   members: "/members/:teamId",
   player_details: "/player_details/:playerId",
   makeCaptain: "/makeCaptain/:teamId",
+  playerList: "/player_list/:teamId",
 };
 
 // create team
@@ -79,5 +82,7 @@ router.route(teamRoutes.members).get(getAllTeamMembers);
 router.route(teamRoutes.player_details).get(getTeamPlayerDetails);
 // make team captain
 router.route(teamRoutes.makeCaptain).patch(veryfyJWT, isManager, makeCaptain);
+// get player list 
+router.route(teamRoutes.playerList).get(getTeamPlayerList);
 
 export default router;
