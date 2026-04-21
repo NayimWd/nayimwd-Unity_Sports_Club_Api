@@ -11,6 +11,7 @@ import {
 } from "./getTeamPlayers.controller";
 import { removePlayers } from "./addPlayers/removePlayers.controller";
 import { makeCaptain } from "./makeCaptain.controller";
+import { teamSummary } from "./teamSummary";
 
 export {
   createTeam,
@@ -25,5 +26,6 @@ export {
   getAllTeamMembers,
   getTeamPlayerDetails,
   makeCaptain, 
-  getTeamPlayerList
+  getTeamPlayerList,
+  teamSummary
 };

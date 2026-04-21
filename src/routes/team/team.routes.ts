@@ -17,7 +17,8 @@ import {
   removePlayers,
   updateTeamLogo,
   updateTeamName,
-  getTeamPlayerList
+  getTeamPlayerList,
+  teamSummary
 } from "../../controller/team";
 
 const router = Router();
@@ -35,7 +36,8 @@ type TeamRoutes = {
   members: "/members/:teamId";
   player_details: "/player_details/:playerId";
   makeCaptain: "/makeCaptain/:teamId";
-  playerList: "/player_list/:teamId"
+  playerList: "/player_list/:teamId";
+  summary: "/summary/:teamId";
 };
 
 const teamRoutes: TeamRoutes = {
@@ -52,18 +54,19 @@ const teamRoutes: TeamRoutes = {
   player_details: "/player_details/:playerId",
   makeCaptain: "/makeCaptain/:teamId",
   playerList: "/player_list/:teamId",
+  summary: "/summary/:teamId",
 };
 
 // create team
 router
   .route(teamRoutes.create)
-  .post(veryfyJWT, upload.single("logo"), createTeam);
+  .post(veryfyJWT, upload.single("teamLogo"), createTeam);
 // update team name
 router.route(teamRoutes.updateName).patch(veryfyJWT, isManager, updateTeamName);
 // update team logo
 router
   .route(teamRoutes.updateLogo)
-  .patch(veryfyJWT, isManager, upload.single("logo"), updateTeamLogo);
+  .patch(veryfyJWT, isManager, upload.single("teamLogo"), updateTeamLogo);
 // get all teams
 router.route(teamRoutes.all_teams).get(getAllTeams);
 // get team details
@@ -84,5 +87,7 @@ router.route(teamRoutes.player_details).get(getTeamPlayerDetails);
 router.route(teamRoutes.makeCaptain).patch(veryfyJWT, isManager, makeCaptain);
 // get player list 
 router.route(teamRoutes.playerList).get(getTeamPlayerList);
+// team summary
+router.route(teamRoutes.summary).get(veryfyJWT, teamSummary);
 
 export default router;
