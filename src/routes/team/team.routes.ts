@@ -18,7 +18,8 @@ import {
   updateTeamLogo,
   updateTeamName,
   getTeamPlayerList,
-  teamSummary
+  teamSummary,
+  myTeamSummary
 } from "../../controller/team";
 
 const router = Router();
@@ -38,6 +39,7 @@ type TeamRoutes = {
   makeCaptain: "/makeCaptain/:teamId";
   playerList: "/player_list/:teamId";
   summary: "/summary/:teamId";
+  teamSummary: "/team_summary"
 };
 
 const teamRoutes: TeamRoutes = {
@@ -55,6 +57,7 @@ const teamRoutes: TeamRoutes = {
   makeCaptain: "/makeCaptain/:teamId",
   playerList: "/player_list/:teamId",
   summary: "/summary/:teamId",
+  teamSummary: "/team_summary"
 };
 
 // create team
@@ -72,7 +75,7 @@ router.route(teamRoutes.all_teams).get(getAllTeams);
 // get team details
 router.route(teamRoutes.details).get(getTeamDetails);
 // get my team
-router.route(teamRoutes.my_team).get(veryfyJWT, isManager, getMyteam);
+router.route(teamRoutes.my_team).get(veryfyJWT, getMyteam);
 // delete team
 router.route(teamRoutes.delete).delete(veryfyJWT, isManager, deleteTeam);
 // add player to team
@@ -89,5 +92,7 @@ router.route(teamRoutes.makeCaptain).patch(veryfyJWT, isManager, makeCaptain);
 router.route(teamRoutes.playerList).get(getTeamPlayerList);
 // team summary
 router.route(teamRoutes.summary).get(veryfyJWT, teamSummary);
+// team summary
+router.route(teamRoutes.teamSummary).get(veryfyJWT, myTeamSummary);
 
 export default router;

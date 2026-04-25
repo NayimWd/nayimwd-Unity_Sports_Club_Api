@@ -183,6 +183,14 @@ naimh6931@gmail.com
     manager Name  : Mostafizur Rahman
     manager Email : m.mostafiz@gmail.com -*-
 
+22. new: m.shakilA@gmail.com
+         
+player
+
+p.ismileS@gmail.com
+
+umpire
+u.aminulI@gmail.com
 {
     "tournamentName": "Grassroots Cricket League (GCL)",
     "tournamentType": "knockout",

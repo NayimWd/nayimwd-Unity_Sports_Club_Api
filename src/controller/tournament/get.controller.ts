@@ -201,3 +201,20 @@ export const tournamentDetails = asyncHandler(async (req, res) => {
       new ApiResponse(200, tournament, "Tournament Details Found Successfully")
     );
 });
+
+export const upcomingTournament = asyncHandler(async(req, res)=> {
+  const tournament = await Tournament.find({status: "upcoming"})
+  .select("champion entryFee runnerUp startDate tournamentName registrationDeadline tournamentType")
+  .lean();
+
+   // validate data
+  if (!tournament) {
+    throw new ApiError(400, "No tournament found");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, tournament, "Tournament Details Found Successfully")
+    );
+})

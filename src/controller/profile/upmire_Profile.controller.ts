@@ -15,7 +15,7 @@ export const createUmpireProfile = asyncHandler(async (req, res) => {
   }
 
   // check existing profile
-  const existingProfile = await UmpireProfile.findOne({ userId: umpire._id });
+  const existingProfile = await UmpireProfile.exists({ userId: umpire._id });
 
   if (existingProfile) {
     throw new ApiError(409, "Profile already exists");
@@ -39,5 +39,5 @@ export const createUmpireProfile = asyncHandler(async (req, res) => {
   // return response
   return res
     .status(201)
-    .json(new ApiResponse(200, profile, "Umpire profile successfully created"));
+    .json(new ApiResponse(200, null, "Umpire profile successfully created"));
 });

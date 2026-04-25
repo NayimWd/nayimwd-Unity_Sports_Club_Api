@@ -20,6 +20,7 @@ const teamSchema: Schema<ITeams> = new Schema(
     status: {
       type: String,
       enum: ["active", "disqualified"],
+      default: "active"
     },
     teamLogo: {
       type: String,

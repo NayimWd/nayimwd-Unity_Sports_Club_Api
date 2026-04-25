@@ -44,7 +44,7 @@ export const applyForTournament = asyncHandler(async (req, res) => {
   }
 
   // check minimum team player
-  if (team.playerCount < 14) {
+  if (team.playerCount < 14 && team.status !== "active") {
     throw new ApiError(400, "Each Team Should be minimum 14 players");
   }
 

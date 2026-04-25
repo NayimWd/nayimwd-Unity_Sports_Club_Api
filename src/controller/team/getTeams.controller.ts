@@ -105,7 +105,27 @@ export const getMyteam = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid token, user not found");
   }
 
-  const team = await Team.findOne({ managerId: userId });
+  const team = await Team.findOne({ managerId: userId }).lean();
+
+  if (!team) {
+    throw new ApiError(404, "You do not have any team yet!");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, team, "Team fetched successfully"));
+});
+
+export const myTeamSummary = asyncHandler(async (req, res) => {
+  // get manager id
+  const userId = (req as any).user._id;
+  if (!userId) {
+    throw new ApiError(400, "Invalid token, user not found");
+  }
+
+  const team = await Team.findOne({ managerId: userId })
+    .select("playerCount status teamName teamLogo")
+    .lean();
 
   if (!team) {
     throw new ApiError(404, "You do not have any team yet!");
