@@ -129,7 +129,7 @@ export const getLatestTournament = asyncHandler(async (req, res) => {
   if (isValidStatus) {
     const tournament = await Tournament.findOne({ status })
       .sort({ createdAt: -1 })
-      .select("_id status tournamentName")
+      .select("_id status tournamentName teamCount")
       .lean();
 
     return res

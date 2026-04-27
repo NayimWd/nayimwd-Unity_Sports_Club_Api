@@ -4,55 +4,62 @@ import { VenueBooking } from "../../models/venueModel/venueBooking.model";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
+import mongoose from "mongoose";
 
 export const deleteSchedule = asyncHandler(async (req, res) => {
-  // Authentication
   const author = (req as any).user;
 
-  // Check if the user is an admin or staff
   if (!author || !["admin", "staff"].includes(author.role)) {
-    throw new ApiError(403, "You are not authorized to delete the schedule");
+    throw new ApiError(403, "You are not authorized to change the schedule");
   }
-
-  // Get the schedule ID from the request params
+  // validate admin
   const { scheduleId } = req.params;
 
-  // Validate input
   if (!scheduleId) {
     throw new ApiError(400, "Please provide a valid schedule ID.");
   }
 
-  // Find the schedule
-  const schedule = await Schedule.findById(scheduleId);
-  if (!schedule) {
-    throw new ApiError(404, "Schedule not found");
+  const session = await mongoose.startSession();
+
+  try {
+    await session.withTransaction(async () => {
+      const schedule = await Schedule.findById(scheduleId)
+        .select("venueId matchDate matchTime matchId status")
+        .session(session);
+
+      if (!schedule) {
+        throw new ApiError(404, "Schedule not found");
+      }
+
+      if (["in-progress", "completed"].includes(schedule.status)) {
+        throw new ApiError(
+          400,
+          "Cannot delete a schedule for an in-progress or completed match."
+        );
+      }
+
+      await Promise.all([
+        VenueBooking.deleteOne(
+          {
+            venueId: schedule.venueId,
+            bookingDate: schedule.matchDate,
+            startTime: schedule.matchTime,
+          },
+          { session }
+        ),
+
+        schedule.matchId
+          ? Match.deleteOne({ _id: schedule.matchId }, { session })
+          : Promise.resolve(),
+
+        Schedule.deleteOne({ _id: scheduleId }, { session }),
+      ]);
+    });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, null, "Schedule deleted successfully."));
+  } finally {
+    await session.endSession();
   }
-
-  //  Prevent deletion if match is already in progress or completed
-  if (["in-progress", "completed"].includes(schedule.status)) {
-    throw new ApiError(
-      400,
-      "Cannot delete a schedule for an in-progress or completed match."
-    );
-  }
-
-  // Cancel venue booking
-  await VenueBooking.findOneAndDelete({
-    venueId: schedule.venueId,
-    bookingDate: schedule.matchDate,
-    startTime: schedule.matchTime,
-  });
-
-  //  Check if there is a match linked to this schedule and delete it
-  if (schedule.matchId) {
-    await Match.findByIdAndDelete(schedule.matchId);
-  }
-
-  // Delete the schedule
-  await Schedule.findByIdAndDelete(scheduleId);
-
-  // Return response
-  res
-    .status(200)
-    .json(new ApiResponse(200, null, "Schedule deleted successfully."));
 });
