@@ -71,7 +71,7 @@ It's not perfect. But it's mine, and every line of code taught me something.
 
 ## 📸 Architecture Diagram
 
-<img width="700" src="https://github.com/user-attachments/assets/d07b03af-d3fb-4952-8bc3-275dde165f4b" alt="Backend Architecture Diagram" />
+<img width="700" src="https://github.com/user-attachments/assets/6d314f7a-4e36-4b6d-ba6a-4a0db54f53b0" alt="Backend Architecture Diagram" />
 
 ---
 
