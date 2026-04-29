@@ -65,6 +65,10 @@ This project is the result of me going from *"what is a REST API?"* to shipping 
 
 It's not perfect. But it's mine, and every line of code taught me something.
 
+##  ERD Diagram
+
+<img width="4739" height="4011" alt="Image" src="https://github.com/user-attachments/assets/9a462dd1-c94d-4d44-905e-308fd9bd0927" />
+
 ## 📸 Architecture Diagram
 
 <img width="700" src="https://github.com/user-attachments/assets/d07b03af-d3fb-4952-8bc3-275dde165f4b" alt="Backend Architecture Diagram" />
