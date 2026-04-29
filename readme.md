@@ -2,7 +2,11 @@
 
 > **The backend of a fullstack cricket tournament management app — built to solve a real local problem for Unity Sports Club.**  
 > > My first API, built with one philosophy: *learn by building something that actually matters. No shortcuts.*  
-> **~30,000+ lines of backend code. Built from scratch.**
+### What I learned building this
+
+When I started, I had no concept of normalization or query optimization. I was fetching full documents just to check if a record existed — before I learned to use `.select('_id').lean()` with `.exists()`. I was making 3–4 database round-trips where a single query would do. I had no idea about `transaction rollback` when I wrote the first version of critical write operations.
+
+As I learned each concept, I refactored immediately. This codebase is a direct record of that growth.
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
@@ -47,6 +51,12 @@ I took that challenge — alongside my studies and a part-time job.
 
 But I didn't want to just *ship* something. I made a deliberate choice: **learn first, build second.** No jumping ahead with AI-generated code. No copy-pasting solutions I didn't understand. Topic by topic, concept by concept — which is why it took a long time. And that's exactly why every part of this codebase actually makes sense to me.
 
+### What I learned building this
+
+I had no concept of normalization or query optimization when I started. I was fetching full documents just to check if a record existed — before I learned to chain `.select('_id').lean().exists()`. I was making multiple database round-trips where a single optimized query would do. Transaction rollback didn't exist in my vocabulary when I wrote the first version of critical multi-step write operations.
+
+As I learned each concept — I refactored immediately. This codebase is a direct record of that growth.
+
 I didn't want to build a to-do app. I wanted to solve a **real problem I could see around me**. Local cricket tournaments in my area had no structured management — schedules were communicated informally, team registrations were messy, and there was no single place for players, managers, and umpires to track anything. So I picked that as my problem.
 
 This repository is the **backend** of what will be a complete fullstack application. The API is live. The frontend is currently in progress — built with React.js(dashboard for management) and Next.js(public site). This README covers the backend system in full.
@@ -54,6 +64,10 @@ This repository is the **backend** of what will be a complete fullstack applicat
 This project is the result of me going from *"what is a REST API?"* to shipping a **100+ endpoint production system** with role-based auth, Redis caching, file uploads, API timeouts, structured logging, and full Swagger documentation — entirely from scratch, on my own time, while working and studying.
 
 It's not perfect. But it's mine, and every line of code taught me something.
+
+## 📸 Architecture Diagram
+
+<img width="700" src="https://github.com/user-attachments/assets/d07b03af-d3fb-4952-8bc3-275dde165f4b" alt="Backend Architecture Diagram" />
 
 ---
 
