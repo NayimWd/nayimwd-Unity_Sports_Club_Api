@@ -7,77 +7,71 @@ import { PlayerProfile } from "../../../models/profilesModel/playerProfile.model
 import { ApiResponse } from "../../../utils/ApiResponse";
 
 export const removePlayers = asyncHandler(async (req, res) => {
-  // starting mongodb session
   const session = await mongoose.startSession();
-  session.startTransaction();
 
-  //start operation
   try {
-    // verify manager from token
-    const managerId = (req as any).user._id;
-    if (!managerId) {
-      throw new ApiError(400, "Invalid Token, User not found");
-    }
-    // get team and player ID from req body and params
+    const user = (req as any).user;
     const { teamId } = req.params;
     const { playerId } = req.body;
-    // validate
-    if (!teamId || !playerId) {
-      throw new ApiError(400, "Team ID and Player ID both are required");
+
+    if (!user?._id) {
+      throw new ApiError(401, "Unauthorized");
     }
 
-    // verify if team exist or not
-    const team = await Team.findById(teamId);
-    if (!team) {
-      throw new ApiError(400, "Team not found");
+    if (
+      !mongoose.isValidObjectId(teamId) ||
+      !mongoose.isValidObjectId(playerId)
+    ) {
+      throw new ApiError(400, "Invalid teamId or playerId");
     }
 
-    // verfy manager authority
-    if (team.managerId.toString() !== managerId.toString()) {
-      throw new ApiError(
-        400,
-        "You are not authorized to remove players from this team"
+    await session.withTransaction(async () => {
+      // 1. Validate team + ownership 
+      const team = await Team.findOne({
+        _id: teamId,
+        managerId: user._id,
+      })
+        .select("_id")
+        .session(session)
+        .lean();
+
+      if (!team) {
+        throw new ApiError(403, "Not authorized or team not found");
+      }
+
+      // 2. Delete relation 
+      const deletion = await TeamPlayer.deleteOne(
+        { teamId, playerId },
+        { session }
       );
-    }
 
-    // check if the player exist in the team
-    const teamPlayer = await TeamPlayer.findOne({ teamId, playerId });
-    if (!teamPlayer) {
-      throw new ApiError(404, "Player not found in the team");
-    }
+      if (deletion.deletedCount === 0) {
+        throw new ApiError(404, "Player not found in the team");
+      }
 
-    // remove player from TeamPlayer collection
-    await TeamPlayer.deleteOne({ teamId, playerId }, { session });
+      // 3. Update profile + decrement count 
+      await Promise.all([
+        PlayerProfile.updateOne(
+          { userId: playerId },
+          { $unset: { teamId: 1 } },
+          { session }
+        ),
+        Team.updateOne(
+          { _id: teamId, playerCount: { $gt: 0 } },
+          { $inc: { playerCount: -1 } },
+          { session }
+        ),
+      ]);
+    });
 
-    // Remove Team ID from players profile
-    await PlayerProfile.updateOne(
-      { userId: playerId },
-      { $unset: { teamId: 1 } },
-      { session }
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {},
+        `Player ${playerId} removed from team successfully`
+      )
     );
-
-    // Update team player count
-    team.playerCount -= 1;
-    await team.save({ session });
-
-    // Commit and end transaction
-    await session.commitTransaction();
+  } finally {
     session.endSession();
-
-    // response
-    res
-      .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          {},
-          `Player ${playerId} removed from team successfully`
-        )
-      );
-  } catch (error) {
-    // Rollback transaction if failed
-    await session.abortTransaction();
-    session.endSession();
-    throw error;
   }
 });

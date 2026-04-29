@@ -24,6 +24,7 @@ export const myApplication = asyncHandler(async (req, res) => {
     managerId: teamManager._id.toString(),
   }).lean();
 
+  
   // response
   return res
     .status(200)

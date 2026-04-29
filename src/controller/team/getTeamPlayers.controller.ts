@@ -20,7 +20,8 @@ export const getAllTeamMembers = asyncHandler(async (req, res) => {
     .populate({
       path: "managerId",
       select: "name photo", // Fetch manager details
-    });
+    })
+    .lean();
 
   if (!team) {
     throw new ApiError(404, "Team not found");
@@ -48,6 +49,39 @@ export const getAllTeamMembers = asyncHandler(async (req, res) => {
     },
     message: "Team members fetched successfully",
   });
+});
+
+// get leaner team member list
+export const getTeamPlayerList = asyncHandler(async (req, res) => {
+  const { teamId } = req.params;
+
+  // Validate team ID
+  if (!teamId) {
+    throw new ApiError(400, "Team ID is required");
+  }
+
+  // Fetch team members with populated player details
+  const teamMembers = await TeamPlayer.find({ teamId })
+  .select("playerId")
+    .populate({
+      path: "playerId", // "playerId" references the User schema
+      select: "name", // Fetch name
+    })
+    .lean();
+
+  // sent data
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        totalMember: teamMembers.length,
+        teamMembers,
+      },
+      teamMembers.length
+        ? "Team member list found"
+        : "Team member list not found"
+    )
+  );
 });
 
 // get team player details
@@ -81,14 +115,14 @@ export const getTeamPlayerDetails = asyncHandler(async (req, res) => {
   // get player profile by player id
   const playerProfile = await PlayerProfile.findOne({
     userId: playerId,
-  }).select(
-    "player_role batingStyle bowlingArm bowlingStyle DateOfBirth"
-  ).lean();
+  })
+    .select("player_role batingStyle bowlingArm bowlingStyle DateOfBirth")
+    .lean();
 
   // make response
   const response = {
     player,
-    playerProfile : PlayerProfile ? playerProfile : "Profile not created yet!",
+    playerProfile: PlayerProfile ? playerProfile : "Profile not created yet!",
   };
 
   // send response

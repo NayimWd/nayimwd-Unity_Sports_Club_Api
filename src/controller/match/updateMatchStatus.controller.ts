@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Match } from "../../models/matchModel/match.model";
 import { Schedule } from "../../models/sceduleModel/schedules.model";
 import { Tournament } from "../../models/tournamentModel/tournaments.model";
@@ -15,11 +16,12 @@ const validStatusTransitions: Record<string, string[]> = {
 export const updateMatchStatus = asyncHandler(async (req, res) => {
   // authenticate user
   const author = (req as any).user;
+
   if (!author || !["admin", "staff"].includes(author.role)) {
     throw new ApiError(403, "You are not authorized to update match status");
   }
 
-  // extract data from request
+  // extract request data
   const { tournamentId, matchId } = req.params;
   const { newStatus } = req.body;
 
@@ -37,52 +39,117 @@ export const updateMatchStatus = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid status provided");
   }
 
-  // check if the tournament exists
-  const tournament = await Tournament.exists({ _id: tournamentId });
-  if (!tournament) {
-    throw new ApiError(404, "Tournament not found");
-  }
+  const session = await mongoose.startSession();
 
-  // check if the match exists
-  const match = await Match.findOne({ _id: matchId, tournamentId })
-    .select("status")
-  if (!match) {
-    throw new ApiError(404, "Match not found");
-  }
+  try {
+    let responseData: any;
 
-  // check if the status transition is valid
-  const allowedTransitions = validStatusTransitions[match.status];
-  if (!allowedTransitions.includes(newStatus)) {
-    throw new ApiError(
-      400,
-      `Invalid status transition from ${match.status} to ${newStatus}`
+    await session.withTransaction(
+      async () => {
+        /**
+         validate match, tournament, schedule
+         */
+        const [tournament, match, schedule] = await Promise.all([
+          Tournament.exists({ _id: tournamentId }).session(session),
+
+          Match.findOne({
+            _id: matchId,
+            tournamentId,
+          })
+            .select("status")
+            .lean()
+            .session(session),
+
+          Schedule.findOne({ matchId })
+            .select("status")
+            .lean()
+            .session(session),
+        ]);
+
+        // validate tournament
+        if (!tournament) {
+          throw new ApiError(404, "Tournament not found");
+        }
+
+        // validate match
+        if (!match) {
+          throw new ApiError(404, "Match not found");
+        }
+
+        // validate schedule
+        if (!schedule) {
+          throw new ApiError(404, "Schedule not found");
+        }
+
+        // validate transition
+        const allowedTransitions = validStatusTransitions[match.status] || [];
+
+        if (!allowedTransitions.includes(newStatus)) {
+          throw new ApiError(
+            400,
+            `Invalid status transition from ${match.status} to ${newStatus}`
+          );
+        }
+
+        /**
+         update match and schedule, stop race condition of promise all
+         */
+        const [matchUpdate, scheduleUpdate] = await Promise.all([
+          Match.updateOne(
+            {
+              _id: matchId,
+              tournamentId,
+              status: match.status,
+            },
+            {
+              $set: { status: newStatus },
+            },
+            { session }
+          ),
+
+          Schedule.updateOne(
+            {
+              matchId,
+              status: schedule.status,
+            },
+            {
+              $set: { status: newStatus },
+            },
+            { session }
+          ),
+        ]);
+
+        if (matchUpdate.matchedCount === 0) {
+          throw new ApiError(
+            409,
+            "Match status changed during update. Please try again"
+          );
+        }
+
+        if (scheduleUpdate.matchedCount === 0) {
+          throw new ApiError(
+            409,
+            "Schedule status changed during update. Please try again"
+          );
+        }
+
+        responseData = { status: newStatus };
+      },
+      {
+        readConcern: { level: "snapshot" },
+        writeConcern: { w: "majority" },
+      }
     );
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, responseData, "Match status updated successfully")
+      );
+  } catch (error) {
+    // transaction auto rollback on throw
+    throw error;
+  } finally {
+    await session.endSession();
   }
-
-  // fetch schedule
-  const schedule = await Schedule.findOne({ matchId })
-    .select("status")
-  if (!schedule) {
-    throw new ApiError(404, "Schedule not found");
-  }
-
-  // update match and schedule status
-  match.status = newStatus;
-  schedule.status = newStatus;
-
-  await Promise.all([
-    Match.updateOne({ _id: matchId, tournamentId }, { status: newStatus }),
-    Schedule.updateOne({ matchId }, { status: newStatus }),
-  ]);
-
-  // return response
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        { status: match.status },
-        "Match status updated successfully"
-      )
-    );
 });

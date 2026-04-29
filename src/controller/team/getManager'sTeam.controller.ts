@@ -22,3 +22,4 @@ export const getMyteam = asyncHandler(async (req, res) => {
       )
     );
 });
+

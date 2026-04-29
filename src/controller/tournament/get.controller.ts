@@ -1,5 +1,5 @@
 import { PointTable } from "../../models/point table/pointTables.model";
-import { TournamentResult } from "../../models/tournamentModel/tournamentResult.model";
+import { Schedule } from "../../models/sceduleModel/schedules.model";
 import { Tournament } from "../../models/tournamentModel/tournaments.model";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
@@ -31,27 +31,27 @@ export const getAllTournaments = asyncHandler(async (req, res) => {
 });
 
 // get  tournament for search & select
-export const SearcableTournaments = asyncHandler((async(req, res)=>{
+export const SearcableTournaments = asyncHandler(async (req, res) => {
   const tournaments = await Tournament.find({
-    status: {$in: ["upcoming", "ongoing"]},
+    status: { $in: ["upcoming", "ongoing", "completed"] },
   })
-  .select("_id tournamentName")
-  .limit(5)
-  .sort({createdAt: -1})
-  .lean();
+    .select("_id tournamentName status teamCount")
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .lean();
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      tournaments,
-      tournaments.length
-        ? "Tournaments fetched successfully"
-        : "No tournaments found"
-    )
-  )
-
-}));
-
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        tournaments,
+        tournaments.length
+          ? "Tournaments fetched successfully"
+          : "No tournaments found"
+      )
+    );
+});
 
 // get ongoing tournaments
 export const getTournamentsByStatus = asyncHandler(async (req, res) => {
@@ -112,7 +112,6 @@ export const getTournamentById = asyncHandler(async (req, res) => {
     throw new ApiError(400, "No tournament found");
   }
 
-
   // return response
   return res
     .status(200)
@@ -126,7 +125,8 @@ export const getLatestTournament = asyncHandler(async (req, res) => {
     status: { $in: ["ongoing", "completed"] },
   })
     .sort({ createdAt: -1 })
-    .select("_id  status")
+    .limit(4)
+    .select("_id tournamentName status teamCount")
     .lean();
 
   if (!latestTournament) {
@@ -158,7 +158,8 @@ export const getLatestTournament = asyncHandler(async (req, res) => {
     // if ongoing has not point table latest completed tournament
     const latestCompleted = await Tournament.findOne({ status: "completed" })
       .sort({ createdAt: -1 })
-      .select("_id tournamentName status")
+      .limit(4)
+      .select("_id tournamentName status teamCount")
       .lean();
 
     if (!latestCompleted) {
@@ -189,6 +190,25 @@ export const tournamentDetails = asyncHandler(async (req, res) => {
   }
 
   const tournament = await Tournament.findById(tournamentId);
+
+  // validate data
+  if (!tournament) {
+    throw new ApiError(400, "No tournament found");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, tournament, "Tournament Details Found Successfully")
+    );
+});
+
+export const upcomingTournament = asyncHandler(async (req, res) => {
+  const tournament = await Tournament.find({ status: "upcoming" })
+    .select(
+      "champion entryFee runnerUp startDate tournamentName registrationDeadline tournamentType"
+    )
+    .lean();
 
   // validate data
   if (!tournament) {

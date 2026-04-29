@@ -36,9 +36,9 @@ export const createInnings = asyncHandler(async (req, res) => {
 
   // vallidate if tournament, match and  existsing innings
   const [match, tournament, existingInnings] = await Promise.all([
-    Match.findById(matchId),
-    Tournament.findById(tournamentId),
-    Innings.findOne({ matchId, inningsNumber }),
+    Match.findById(matchId).select("teamA teamB status"),
+    Tournament.findById(tournamentId).select("matchOver"),
+    Innings.exists({ matchId, inningsNumber }),
   ]);
 
   if (!match || !tournament) {

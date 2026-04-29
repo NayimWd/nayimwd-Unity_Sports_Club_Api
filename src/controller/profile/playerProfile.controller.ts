@@ -4,15 +4,15 @@ import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
 
 export const create_PlayerProfile = asyncHandler(async (req, res) => {
-  const player = (req as any).user;
+  const playerId = (req as any).user;
 
   // validate user
-  if (!player || !player._id) {
+  if (!playerId || !playerId._id) {
     throw new ApiError(400, "Invalid token, user not found");
   }
 
   // create player profile
-  if (player.role !== "player") {
+  if (playerId.role !== "player") {
     // check profile already exist or not
     throw new ApiError(403, "User role is not player");
   }
@@ -33,7 +33,7 @@ export const create_PlayerProfile = asyncHandler(async (req, res) => {
 
   try {
     const profile = await PlayerProfile.create({
-      userId: player._id,
+      userId: playerId._id,
       player_role,
       batingStyle,
       bowlingArm,
@@ -41,11 +41,14 @@ export const create_PlayerProfile = asyncHandler(async (req, res) => {
       DateOfBirth,
     });
 
+    if(!profile){
+       throw new ApiError(400, "Profile creation failed");
+    }
     // retun response
     return res
       .status(201)
       .json(
-        new ApiResponse(201, profile, "Player Profile created successfully")
+        new ApiResponse(201, null, "Player Profile created successfully")
       );
   } catch (err: any) {
     if (err.code === 11000) {

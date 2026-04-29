@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-  isAdmin,
   isManager,
   veryfyJWT,
 } from "../../middleware/auth.middleware";
@@ -18,6 +17,9 @@ import {
   removePlayers,
   updateTeamLogo,
   updateTeamName,
+  getTeamPlayerList,
+  teamSummary,
+  myTeamSummary
 } from "../../controller/team";
 
 const router = Router();
@@ -35,6 +37,9 @@ type TeamRoutes = {
   members: "/members/:teamId";
   player_details: "/player_details/:playerId";
   makeCaptain: "/makeCaptain/:teamId";
+  playerList: "/player_list/:teamId";
+  summary: "/summary/:teamId";
+  teamSummary: "/team_summary"
 };
 
 const teamRoutes: TeamRoutes = {
@@ -50,24 +55,27 @@ const teamRoutes: TeamRoutes = {
   members: "/members/:teamId",
   player_details: "/player_details/:playerId",
   makeCaptain: "/makeCaptain/:teamId",
+  playerList: "/player_list/:teamId",
+  summary: "/summary/:teamId",
+  teamSummary: "/team_summary"
 };
 
 // create team
 router
   .route(teamRoutes.create)
-  .post(veryfyJWT, upload.single("logo"), createTeam);
+  .post(veryfyJWT, upload.single("teamLogo"), createTeam);
 // update team name
 router.route(teamRoutes.updateName).patch(veryfyJWT, isManager, updateTeamName);
 // update team logo
 router
   .route(teamRoutes.updateLogo)
-  .patch(veryfyJWT, isManager, upload.single("logo"), updateTeamLogo);
+  .patch(veryfyJWT, isManager, upload.single("teamLogo"), updateTeamLogo);
 // get all teams
 router.route(teamRoutes.all_teams).get(getAllTeams);
 // get team details
 router.route(teamRoutes.details).get(getTeamDetails);
 // get my team
-router.route(teamRoutes.my_team).get(veryfyJWT, isManager, getMyteam);
+router.route(teamRoutes.my_team).get(veryfyJWT, getMyteam);
 // delete team
 router.route(teamRoutes.delete).delete(veryfyJWT, isManager, deleteTeam);
 // add player to team
@@ -80,5 +88,11 @@ router.route(teamRoutes.members).get(getAllTeamMembers);
 router.route(teamRoutes.player_details).get(getTeamPlayerDetails);
 // make team captain
 router.route(teamRoutes.makeCaptain).patch(veryfyJWT, isManager, makeCaptain);
+// get player list 
+router.route(teamRoutes.playerList).get(getTeamPlayerList);
+// team summary
+router.route(teamRoutes.summary).get(veryfyJWT, teamSummary);
+// team summary
+router.route(teamRoutes.teamSummary).get(veryfyJWT, myTeamSummary);
 
 export default router;

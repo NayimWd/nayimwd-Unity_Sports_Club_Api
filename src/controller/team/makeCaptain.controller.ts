@@ -26,34 +26,31 @@ export const makeCaptain = asyncHandler(async (req, res) => {
   }
 
   // find the team
-  const team = await Team.findById(teamId);
+  const team = await Team.findOne({
+    _id: teamId,
+    managerId: creator._id,
+  })
+    .select("_id")
+    .lean();
 
-  // check if team exists
   if (!team) {
-    throw new ApiError(404, "Team not found");
+    throw new ApiError(403, "Not authorized or team not found");
   }
 
-  // check if the creator is the manager of the team
-  if (team.managerId.toString() !== creator._id.toString()) {
-    throw new ApiError(
-      403,
-      "You are not authorized to make changes to this team"
-    );
-  }
-
-  // check if the player is in the team
-  const player = await TeamPlayer.findOne({ playerId, teamId }).populate({
-    path: "playerId",
-    select: "name",
-  });
+  // check if the player is in the team and active
+  const player = await TeamPlayer.findOne({
+    playerId,
+    teamId,
+    status: "active",
+  })
+    .populate({
+      path: "playerId",
+      select: "name",
+    })
+    .lean();
 
   if (!player) {
-    throw new ApiError(404, "Player not found in the team");
-  }
-
-  // make sure player is active
-  if (player.status !== "active") {
-    throw new ApiError(400, "Player is not active in the team");
+    throw new ApiError(404, "Active player not found in team");
   }
 
   // if player already a captain, return error
@@ -61,32 +58,28 @@ export const makeCaptain = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Player is already a captain");
   }
 
-  // find the current captain
-  const currentCaptain = await TeamPlayer.findOne({
-    teamId,
-    isCaptain: true,
-  });
+  // remove old captain and add new
 
-  // if current captain exists, make him a player
-  if (currentCaptain) {
-    currentCaptain.isCaptain = false;
-    await currentCaptain.save();
-  }
-
-  // make player the new captain
-  player.isCaptain = true;
-  await player.save();
-
-  // return success message
-  res.status(200).json(
-    new ApiResponse(
-      200,
-      {
-        newCaptain: {
-          playerId: player.playerId,
+  // remove existing captain (only active ones, safer)
+  await TeamPlayer.updateOne(
+    { teamId, isCaptain: true },
+    { $set: { isCaptain: false } }
+  ),
+    // set new captain using playerId (User._id)
+    await TeamPlayer.updateOne(
+      { teamId, playerId },
+      { $set: { isCaptain: true } }
+    ),
+    // return success message
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          newCaptain: {
+            playerId: player.playerId,
+          },
         },
-      },
-      "Player is now the captain of the team"
-    )
-  );
+        "Player is now the captain of the team"
+      )
+    );
 });

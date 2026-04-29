@@ -18,7 +18,7 @@ export const createTeam = asyncHandler(async (req, res) => {
   const { teamName } = req.body;
 
   // Check for duplicate team name
-  const existingTeam = await Team.findOne({ teamName, managerId: user._id });
+  const existingTeam = await Team.exists({ teamName, managerId: user._id });
   if (existingTeam) {
     throw new ApiError(409, "You already have a team with this name");
   }
@@ -42,6 +42,7 @@ export const createTeam = asyncHandler(async (req, res) => {
     teamName,
     managerId: user._id,
     teamLogo: logo.url,
+    status: "active"
   });
 
   if (!team) {
@@ -66,5 +67,5 @@ export const createTeam = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(200, team, "Team Created Successfully"));
+    .json(new ApiResponse(200, null, "Team Created Successfully"));
 });

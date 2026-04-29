@@ -15,7 +15,8 @@ import {
   getLatestTournament,
   tournamentDetails,
   SearcableTournaments,
-  getApprovedTeamsForSelect
+  getApprovedTeamsForSelect,
+  upcomingTournament
 } from "../../controller/tournament";
 import { getTournamentResult } from "../../controller/tournament/getTournamentResult.controller";
 
@@ -38,6 +39,7 @@ type Tournament = {
   get_details: "/tournamentDetails/:tournamentId";
   search: "/search";
   approved_Team: "/approved_teams/:tournamentId";
+  upcoming_Tournament: "/upcoming";
 };
 
 // routes
@@ -56,7 +58,8 @@ const tournament: Tournament = {
   getResults: "/results/:tournamentId",
   get_details: "/tournamentDetails/:tournamentId",
   search: "/search",
-  approved_Team: "/approved_teams/:tournamentId"
+  approved_Team: "/approved_teams/:tournamentId",
+  upcoming_Tournament: "/upcoming",
 };
 
 // create tournament
@@ -67,6 +70,8 @@ router
 router.route(tournament.get_all).get(getAllTournaments);
 // get latest tournament
 router.route(tournament.latest).get(getLatestTournament);
+// get upcoming tournament
+router.route(tournament.upcoming_Tournament).get(upcomingTournament)
 // get tournament by status
 router.route(tournament.get_by_status).get(getTournamentsByStatus);
 // get tournament by id
@@ -98,5 +103,6 @@ router.route(tournament.createResult).post(veryfyJWT, createTournamentResult);
 router.route(tournament.getResults).get(getTournamentResult);
 // get approved team list
 router.route(tournament.approved_Team).get(getApprovedTeamsForSelect);
+
 
 export default router;

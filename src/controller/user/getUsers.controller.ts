@@ -83,3 +83,34 @@ export const getAllUsers = asyncHandler(async (req, res) => {
     )
   );
 });
+
+// const get umpires
+export const getUmpireSearch = asyncHandler(async (req, res) => {
+  const admin = (req as any).user;
+  const { name } = req.query;
+
+  if (!admin || !["admin", "staff"].includes(admin.role)) {
+    throw new ApiError(401, "Unauthorized request");
+  }
+
+  const filter: any = { role: "umpire" };
+
+  if (name) {
+    filter.name = { $regex: name, $options: "i" };
+  }
+
+  const umpires = await User.find(filter)
+    .select("name role _id")
+    .limit(6)
+    .lean();
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { umpires, count: umpires.length },
+        umpires.length ? "Umpire found successfully" : "Umpire not found"
+      )
+    );
+});

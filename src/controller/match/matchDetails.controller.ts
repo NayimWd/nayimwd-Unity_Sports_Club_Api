@@ -2,7 +2,6 @@ import { Innings } from "../../models/matchModel/innings.model";
 import { Match } from "../../models/matchModel/match.model";
 import { MatchResult } from "../../models/matchModel/matchResult.model";
 import { Schedule } from "../../models/sceduleModel/schedules.model";
-import { Tournament } from "../../models/tournamentModel/tournaments.model";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
