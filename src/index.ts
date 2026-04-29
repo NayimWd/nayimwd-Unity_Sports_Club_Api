@@ -1,8 +1,10 @@
 import dotenv from "dotenv";
 import app from "./app/app";
-import { initDataBases } from "./infrastructure/database";
 
 dotenv.config();
+
+import { initDataBases } from "./infrastructure/database";
+
 
 const port = process.env.PORT || 8000;
 
