@@ -31,6 +31,8 @@ export const createSchedule = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (
+    !teamA ||
+    !teamB ||
     !tournamentId ||
     !matchNumber ||
     !round ||
