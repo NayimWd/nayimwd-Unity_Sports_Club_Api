@@ -4,7 +4,6 @@ import { asyncHandler } from "../../utils/asyncHandler";
 import { Tournament } from "../../models/tournamentModel/tournaments.model";
 import { TournamentResult } from "../../models/tournamentModel/tournamentResult.model";
 import { PointTable } from "../../models/point table/pointTables.model";
-import { User } from "../../models/userModel/user.model";
 import { PlayerProfile } from "../../models/profilesModel/playerProfile.model";
 import { ApiResponse } from "../../utils/ApiResponse";
 

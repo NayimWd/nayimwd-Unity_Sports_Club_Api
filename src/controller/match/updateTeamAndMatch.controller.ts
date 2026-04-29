@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Match } from "../../models/matchModel/match.model";
 import { Schedule } from "../../models/sceduleModel/schedules.model";
 import { ApiError } from "../../utils/ApiError";
@@ -8,11 +9,11 @@ export const updateTeamAndMatch = asyncHandler(async (req, res) => {
   // authenticate and authorize user
   const author = (req as any).user;
 
-  if (!author || !["admin", "staff"].includes(author.role())) {
+  if (!author || !["admin", "staff"].includes(author.role)) {
     throw new ApiError(403, "You are not authorized to update match status");
   }
 
-  // get Match Id and data
+  // get params + body
   const { matchId } = req.params;
   const {
     teamA: newTeamA,
@@ -20,107 +21,190 @@ export const updateTeamAndMatch = asyncHandler(async (req, res) => {
     previousMatches: newPreviousMatches,
   } = req.body;
 
-  // validate data
   if (!matchId) {
     throw new ApiError(400, "Match Id is required");
   }
 
-  // find Match
-  const match = await Match.findById(matchId);
-  if (!match) {
-    throw new ApiError(404, "Match not found");
-  }
+  const session = await mongoose.startSession();
 
-  // check match status
-  if (["completed", "in-progress", "cancelled"].includes(match.status)) {
-    throw new ApiError(
-      400,
-      `Match cannot be updated as it is already ${match.status}`
+  try {
+    await session.withTransaction(
+      async () => {
+        /**
+         fetch match and validate + based on match id fetch schedule
+         */
+        const match = await Match.findById(matchId)
+          .select("status tournamentId teamA teamB previousMatches")
+          .lean()
+          .session(session);
+
+        if (!match) {
+          throw new ApiError(404, "Match not found");
+        }
+
+        // block updates on locked states
+        if (["completed", "in-progress", "cancelled"].includes(match.status)) {
+          throw new ApiError(
+            400,
+            `Match cannot be updated as it is already ${match.status}`
+          );
+        }
+
+        /**
+         * load schedule
+         */
+        const schedule = await Schedule.findOne({ matchId })
+          .select("matchDate teams previousMatches status")
+          .lean()
+          .session(session);
+
+        if (!schedule) {
+          throw new ApiError(
+            404,
+            "Schedule not found for this match. Cannot proceed with update."
+          );
+        }
+
+        // final values
+        const finalTeamA = newTeamA || match.teamA;
+        const finalTeamB = newTeamB || match.teamB;
+        const finalPreviousMatches =
+          newPreviousMatches || match.previousMatches;
+
+        /**
+         check team conflict
+         */
+        const [scheduleConflict, matchConflict] = await Promise.all([
+          Schedule.findOne({
+            matchId: { $ne: matchId },
+            tournamentId: match.tournamentId,
+            matchDate: { $lt: schedule.matchDate },
+            $or: [
+              { "teams.teamA": { $in: [finalTeamA, finalTeamB] } },
+              { "teams.teamB": { $in: [finalTeamA, finalTeamB] } },
+            ],
+          })
+            .select("_id")
+            .lean()
+            .session(session),
+
+          Match.findOne({
+            _id: { $ne: matchId },
+            tournamentId: match.tournamentId,
+            $or: [
+              { teamA: { $in: [finalTeamA, finalTeamB] } },
+              { teamB: { $in: [finalTeamA, finalTeamB] } },
+            ],
+          })
+            .select("_id")
+            .lean()
+            .session(session),
+        ]);
+
+        if (scheduleConflict || matchConflict) {
+          throw new ApiError(
+            400,
+            "One or both teams have already played a scheduled match before this match."
+          );
+        }
+
+        /**
+         previous match conflict checks
+         */
+        if (finalPreviousMatches?.matchA && finalPreviousMatches?.matchB) {
+          const previousIds = [
+            finalPreviousMatches.matchA,
+            finalPreviousMatches.matchB,
+          ];
+
+          const [prevScheduleConflict, prevMatchConflict] = await Promise.all([
+            Schedule.findOne({
+              matchId: { $in: previousIds, $ne: matchId },
+              matchDate: { $lt: schedule.matchDate },
+            })
+              .select("_id")
+              .lean()
+              .session(session),
+
+            Match.findOne({
+              _id: { $in: previousIds, $ne: matchId },
+            })
+              .select("_id")
+              .lean()
+              .session(session),
+          ]);
+
+          if (prevScheduleConflict || prevMatchConflict) {
+            throw new ApiError(
+              400,
+              "One or both previous matches have already been scheduled before this match."
+            );
+          }
+        }
+
+        /**
+          updates with status guard
+         */
+        const [matchUpdate, scheduleUpdate] = await Promise.all([
+          Match.updateOne(
+            {
+              _id: matchId,
+              status: match.status,
+            },
+            {
+              $set: {
+                teamA: finalTeamA,
+                teamB: finalTeamB,
+                previousMatches: finalPreviousMatches,
+              },
+            },
+            { session }
+          ),
+
+          Schedule.updateOne(
+            {
+              matchId,
+              status: schedule.status,
+            },
+            {
+              $set: {
+                "teams.teamA": finalTeamA,
+                "teams.teamB": finalTeamB,
+                previousMatches: finalPreviousMatches,
+              },
+            },
+            { session }
+          ),
+        ]);
+
+        if (matchUpdate.matchedCount === 0) {
+          throw new ApiError(
+            409,
+            "Match changed during update. Please try again."
+          );
+        }
+
+        if (scheduleUpdate.matchedCount === 0) {
+          throw new ApiError(
+            409,
+            "Schedule changed during update. Please try again."
+          );
+        }
+      },
+      {
+        readConcern: { level: "snapshot" },
+        writeConcern: { w: "majority" },
+      }
     );
-  }
 
-  // Find Associated Schedule
-  const schedule = await Schedule.findOne({ matchId });
-  if (!schedule) {
-    throw new ApiError(
-      404,
-      "Schedule not found for this match. Cannot proceed with update."
-    );
-  }
-
-  // Check If New Teams Are Already Scheduled Before This Match in Both Match & Schedule
-  const teamConflict = await Promise.all([
-    Schedule.findOne({
-      tournamentId: match.tournamentId,
-      "teams.teamA": { $in: [newTeamA, newTeamB] },
-      "teams.teamB": { $in: [newTeamA, newTeamB] },
-      matchDate: { $lt: schedule.matchDate },
-    }),
-    Match.findOne({
-      tournamentId: match.tournamentId,
-      teamA: { $in: [newTeamA, newTeamB] },
-      teamB: { $in: [newTeamA, newTeamB] },
-    }),
-  ]);
-
-  if (teamConflict[0] || teamConflict[1]) {
-    throw new ApiError(
-      400,
-      "One or both teams have already played a scheduled match before this match."
-    );
-  }
-
-  // Check If New Previous Matches Are Already Scheduled
-  if (
-    newPreviousMatches &&
-    newPreviousMatches.matchA &&
-    newPreviousMatches.matchB
-  ) {
-    const prevMatchConflict = await Promise.all([
-      Schedule.findOne({
-        matchId: {
-          $in: [newPreviousMatches.matchA, newPreviousMatches.matchB],
-        },
-        matchDate: { $lt: schedule.matchDate },
-      }),
-      Match.findOne({
-        _id: { $in: [newPreviousMatches.matchA, newPreviousMatches.matchB] },
-      }),
-    ]);
-
-    if (prevMatchConflict[0] || prevMatchConflict[1]) {
-      throw new ApiError(
-        400,
-        "One or both previous matches have already been scheduled before this match."
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, null, "Match and schedule updated successfully")
       );
-    }
+  } catch (error) {
+    throw error;
+  } finally {
+    await session.endSession();
   }
-
-  // Update Match and Schedule in Parallel
-  await Promise.all([
-    Match.findByIdAndUpdate(
-      matchId,
-      {
-        teamA: newTeamA || match.teamA,
-        teamB: newTeamB || match.teamB,
-        previousMatches: newPreviousMatches || match.previousMatches,
-      },
-      { new: true }
-    ),
-    Schedule.findOneAndUpdate(
-      { matchId },
-      {
-        "teams.teamA": newTeamA || schedule.teams.teamA,
-        "teams.teamB": newTeamB || schedule.teams.teamB,
-        previousMatches: newPreviousMatches || schedule.previousMatches,
-      },
-      { new: true }
-    ),
-  ]);
-
-  res
-    .status(200)
-    .json(
-      new ApiResponse(200, null, "Match and schedule updated successfully")
-    );
 });

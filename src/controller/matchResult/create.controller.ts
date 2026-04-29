@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Innings } from "../../models/matchModel/innings.model";
 import { Match } from "../../models/matchModel/match.model";
 import { MatchResult } from "../../models/matchModel/matchResult.model";
@@ -12,15 +13,14 @@ import { asyncHandler } from "../../utils/asyncHandler";
 export const createMatchResult = asyncHandler(async (req, res) => {
   // Authentication
   const author = (req as any).user;
+
   if (!author || !["admin", "staff"].includes(author.role)) {
     throw new ApiError(403, "You are not authorized to create a match");
   }
-
-  // extract data from req params and body
+  // get tournament  match id and data
   const { tournamentId, matchId } = req.params;
   const { manOfTheMatch, method = "normal", matchReport } = req.body;
 
-  // validate data
   if (!tournamentId || !matchId || !manOfTheMatch) {
     throw new ApiError(
       400,
@@ -28,189 +28,256 @@ export const createMatchResult = asyncHandler(async (req, res) => {
     );
   }
 
-  // fetch tournament and match data
-  const [tournament, match] = await Promise.all([
-    Tournament.exists({_id:tournamentId}),
-    Match.findById(matchId).select("teamA teamB").lean(),
-  ]);
+  const session = await mongoose.startSession();
 
-  // validate
-  if (!tournament || !match) {
-    throw new ApiError(404, "Tournament or Match not found.");
-  }
+  try {
+    const result = await session.withTransaction(async () => {
+      // ----------------------------
+      // 1. get main- match + tournament in parallel
+      // ----------------------------
+      const [tournament, match] = await Promise.all([
+        Tournament.exists({ _id: tournamentId }).session(session),
+        Match.findById(matchId)
+          .select("teamA teamB status tournamentId")
+          .lean()
+          .session(session),
+      ]);
 
-  // fetch innings for metch
-  const innings = await Innings.find({ matchId }).lean();
+      if (!tournament || !match) {
+        throw new ApiError(404, "Tournament or Match not found.");
+      }
 
-const innings1 = innings.find(i => i.inningsNumber === 1);
-const innings2 = innings.find(i => i.inningsNumber === 2);
+      // ----------------------------
+      // 2. match must be contain innings, validation innings
+      // ----------------------------
+      const innings = await Innings.find({ matchId }).lean().session(session);
 
-  if (!innings1 || !innings2) {
-    throw new ApiError(
-      400,
-      "Both innings must completed before creating a match result"
-    );
-  }
+      const innings1 = innings.find((i) => i.inningsNumber === 1);
+      const innings2 = innings.find((i) => i.inningsNumber === 2);
 
-  // select winnner and defeated team and margin
-  let winner;
-  let defeated;
-  let margin;
-  // select winner by most runs of match innings
-  if (innings1.totalRuns > innings2.totalRuns) {
-    winner = innings1.teamId;
-    defeated = innings2.teamId;
-    margin = `${innings1.totalRuns - innings2.totalRuns} runs`;
-  } else if (innings2.totalRuns > innings1.totalRuns) {
-    winner = innings2.teamId;
-    defeated = innings1.teamId;
-    margin = `${innings2.totalRuns - innings1.totalRuns} runs`;
-  } else {
-    winner = null;
-    defeated = null;
-    margin = "Match Tied";
-  }
+      if (!innings1 || !innings2) {
+        throw new ApiError(
+          400,
+          "Both innings must be completed before creating a match result"
+        );
+      }
 
-  // wicket margin calculation if any winner
-  if (winner) {
-    const winnerInnings = winner.equals(innings1.teamId) ? innings1 : innings2;
-    const wicketMargin = 10 - winnerInnings.wicket;
-    margin += ` and ${wicketMargin} wickets`;
-  }
+      // ----------------------------
+      // 3. winner + defeated
+      // ----------------------------
+      let winner: any;
+      let defeated: any;
+      let margin: string;
 
-  // validate man of the  match
-  if (manOfTheMatch) {
-    const existingPlayer = await TeamPlayer.findOne({
-      playerId: manOfTheMatch,
-      teamId: { $in: [match.teamA, match.teamB] },
+      if (innings1.totalRuns > innings2.totalRuns) {
+        winner = innings1.teamId;
+        defeated = innings2.teamId;
+        margin = `${innings1.totalRuns - innings2.totalRuns} runs`;
+      } else if (innings2.totalRuns > innings1.totalRuns) {
+        winner = innings2.teamId;
+        defeated = innings1.teamId;
+        margin = `${innings2.totalRuns - innings1.totalRuns} runs`;
+      } else {
+        winner = null;
+        defeated = null;
+        margin = "Match Tied";
+      }
+
+      if (winner) {
+        const winnerInnings = winner.equals(innings1.teamId)
+          ? innings1
+          : innings2;
+
+        const wicketMargin = 10 - winnerInnings.wicket;
+        margin += ` and ${wicketMargin} wickets`;
+      }
+
+      // ----------------------------
+      // 4. Validate man of the match
+      // ----------------------------
+      const existingPlayer = await TeamPlayer.findOne({
+        playerId: manOfTheMatch,
+        teamId: { $in: [match.teamA, match.teamB] },
+      }).session(session);
+
+      if (!existingPlayer) {
+        throw new ApiError(
+          400,
+          "Man of the Match must belong to one of the playing teams."
+        );
+      }
+
+      // ----------------------------
+      // 5. create match result
+      // ----------------------------
+      const matchResult = await MatchResult.create(
+        [
+          {
+            tournamentId,
+            matchId,
+            winner,
+            defeated,
+            margin,
+            method,
+            manOfTheMatch,
+            matchReport,
+            photo: null,
+          },
+        ],
+        { session }
+      );
+
+      if (!matchResult || !matchResult.length) {
+        throw new ApiError(500, "Failed to create match result.");
+      }
+
+      // ----------------------------
+      // 6. update match + schedule atomically
+      // ----------------------------
+      await Promise.all([
+        Match.updateOne(
+          { _id: matchId },
+          { $set: { status: "completed" } },
+          { session }
+        ),
+        Schedule.updateOne(
+          { matchId },
+          { $set: { status: "completed" } },
+          { session }
+        ),
+      ]);
+
+      // ----------------------------
+      // 7. update points table atomically
+      // ----------------------------
+      if (winner) {
+        await Promise.all([
+          PointTable.updateOne(
+            { tournamentId, teamId: winner },
+            {
+              $inc: {
+                wins: 1,
+                losses: 0,
+                ties: 0,
+                matchPlayed: 1,
+                points: 2,
+              },
+            },
+            { upsert: true, session }
+          ),
+          PointTable.updateOne(
+            { tournamentId, teamId: defeated },
+            {
+              $inc: {
+                wins: 0,
+                losses: 1,
+                ties: 0,
+                matchPlayed: 1,
+                points: 0,
+              },
+            },
+            { upsert: true, session }
+          ),
+        ]);
+      } else {
+        await Promise.all([
+          PointTable.updateOne(
+            { tournamentId, teamId: match.teamA },
+            {
+              $inc: {
+                wins: 0,
+                losses: 0,
+                ties: 1,
+                matchPlayed: 1,
+                points: 1,
+              },
+            },
+            { upsert: true, session }
+          ),
+          PointTable.updateOne(
+            { tournamentId, teamId: match.teamB },
+            {
+              $inc: {
+                wins: 0,
+                losses: 0,
+                ties: 1,
+                matchPlayed: 1,
+                points: 1,
+              },
+            },
+            { upsert: true, session }
+          ),
+        ]);
+      }
+
+      // ----------------------------
+      // 8. update future match team a or b
+      // ----------------------------
+      const futureMatches = await Match.find({
+        tournamentId,
+        $or: [
+          { "previousMatches.matchA": matchId },
+          { "previousMatches.matchB": matchId },
+        ],
+      })
+        .session(session)
+        .lean();
+
+      await Promise.all(
+        futureMatches.map(async (fm) => {
+          if (fm.previousMatches?.matchA?.toString() === matchId.toString()) {
+            await Match.updateOne(
+              { _id: fm._id },
+              { $set: { teamA: winner } },
+              { session }
+            );
+
+            await Schedule.updateOne(
+              { matchId: fm._id },
+              { $set: { "teams.teamA": winner } },
+              { session }
+            );
+          }
+
+          if (fm.previousMatches?.matchB?.toString() === matchId.toString()) {
+            await Match.updateOne(
+              { _id: fm._id },
+              { $set: { teamB: winner } },
+              { session }
+            );
+
+            await Schedule.updateOne(
+              { matchId: fm._id },
+              { $set: { "teams.teamB": winner } },
+              { session }
+            );
+          }
+        })
+      );
+
+      // ----------------------------
+      // 9. if final match completed update tournament to completed
+      // ----------------------------
+      const finalSchedule = await Schedule.findOne({
+        round: "final",
+        status: "completed",
+      }).session(session);
+
+      if (finalSchedule) {
+        await Tournament.updateOne(
+          { _id: tournamentId },
+          { $set: { status: "completed" } },
+          { session }
+        );
+      }
+
+      return matchResult[0];
     });
 
-    if (!existingPlayer) {
-      throw new ApiError(
-        400,
-        "Man of the Match must belong to one of the playing teams."
-      );
-    }
+    return res
+      .status(201)
+      .json(new ApiResponse(201, result, "Match Result created successfully"));
+  } finally {
+    await session.endSession();
   }
-
-  // create result
-  const matchResult = await MatchResult.create({
-    tournamentId,
-    matchId,
-    winner,
-    defeated,
-    margin,
-    method: method || "normal",
-    manOfTheMatch,
-    matchReport,
-    photo: null,
-  });
-
-  if (!matchResult) {
-    throw new ApiError(500, "Failed to create match result.");
-  }
-
-  // update match and schedule status
-  await Promise.all([
-    Match.findByIdAndUpdate(matchId, { status: "completed" }),
-    Schedule.findOneAndUpdate({ matchId }, { status: "completed" }),
-  ]);
-
-  // update point table
-  if (winner) {
-    await Promise.all([
-      PointTable.findOneAndUpdate(
-        {
-          tournamentId,
-          teamId: winner,
-        },
-        {
-          $inc: { wins: 1, losses: 0, ties: 0, matchPlayed: 1, points: 2 },
-        },
-        { upsert: true, new: true }
-      ),
-      PointTable.findOneAndUpdate(
-        {
-          tournamentId,
-          teamId: defeated,
-        },
-        {
-          $inc: { wins: 0, losses: 1, ties: 0, matchPlayed: 1, points: 0 },
-        },
-        { upsert: true, new: true }
-      ),
-    ]);
-  } else {
-    await Promise.all([
-      PointTable.findOneAndUpdate(
-        {
-          tournamentId,
-          teamId: match.teamA,
-        },
-        {
-          $inc: { wins: 0, losses: 0, ties: 1, matchPlayed: 1, points: 1 },
-        },
-        { upsert: true, new: true }
-      ),
-      PointTable.findOneAndUpdate(
-        {
-          tournamentId,
-          teamId: match.teamB,
-        },
-        {
-          $inc: { wins: 0, losses: 0, ties: 1, matchPlayed: 1, points: 1 },
-        },
-        { upsert: true, new: true }
-      ),
-    ]);
-  }
-
-  // update future match for later round
-  const futureMatch = await Match.find({
-    tournamentId,
-    $or: [
-      { "previousMatches.matchA": matchId },
-      { "previousMatches.matchB": matchId },
-    ],
-  });
-  // update prevMatch A or B to teamA and b on match and schedule based on future match winner team Id
-  await Promise.all(
-    futureMatch.map(async (futureMatch) => {
-      if (
-        futureMatch.previousMatches?.matchA?.toString() === matchId.toString()
-      ) {
-        await Match.findByIdAndUpdate(futureMatch._id, { teamA: winner });
-        await Schedule.findOneAndUpdate(
-          { matchId: futureMatch._id },
-          { "teams.teamA": winner }
-        );
-      }
-
-      if (
-        futureMatch.previousMatches?.matchB?.toString() === matchId.toString()
-      ) {
-        await Match.findByIdAndUpdate(futureMatch._id, { teamB: winner });
-        await Schedule.findOneAndUpdate(
-          { matchId: futureMatch._id },
-          { "teams.teamB": winner }
-        );
-      }
-    })
-  );
-
-  // update tournament Status after final match completed
-  const schedule = await Schedule.findOne({
-    round: "final",
-    status: "completed",
-  });
-  if (schedule) {
-    await Tournament.findByIdAndUpdate(tournamentId, { status: "completed" });
-  }
-
-  // return response
-  return res
-    .status(201)
-    .json(
-      new ApiResponse(201, matchResult, "Match Result created successfully")
-    );
 });

@@ -1,5 +1,5 @@
 import { PointTable } from "../../models/point table/pointTables.model";
-import { TournamentResult } from "../../models/tournamentModel/tournamentResult.model";
+import { Schedule } from "../../models/sceduleModel/schedules.model";
 import { Tournament } from "../../models/tournamentModel/tournaments.model";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
@@ -33,11 +33,11 @@ export const getAllTournaments = asyncHandler(async (req, res) => {
 // get  tournament for search & select
 export const SearcableTournaments = asyncHandler(async (req, res) => {
   const tournaments = await Tournament.find({
-    status: { $in: ["upcoming", "ongoing"] },
+    status: { $in: ["upcoming", "ongoing", "completed"] },
   })
-    .select("_id tournamentName")
-    .limit(5)
+    .select("_id tournamentName status teamCount")
     .sort({ createdAt: -1 })
+    .limit(5)
     .lean();
 
   return res
@@ -120,57 +120,54 @@ export const getTournamentById = asyncHandler(async (req, res) => {
 
 // get latest tournament
 export const getLatestTournament = asyncHandler(async (req, res) => {
-  const { status } = req.query as { status?: string };
+  // fetch the latest tournament by status
+  const latestTournament = await Tournament.findOne({
+    status: { $in: ["ongoing", "completed"] },
+  })
+    .sort({ createdAt: -1 })
+    .limit(4)
+    .select("_id tournamentName status teamCount")
+    .lean();
 
-  const validStatuses = ["upcoming", "ongoing", "completed"];
-  const isValidStatus = status && validStatuses.includes(status);
-
-  // if status send 
-  if (isValidStatus) {
-    const tournament = await Tournament.findOne({ status })
-      .sort({ createdAt: -1 })
-      .select("_id status tournamentName teamCount")
-      .lean();
-
+  if (!latestTournament) {
     return res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          tournament || null,
-          tournament
-            ? `Latest ${status} tournament`
-            : `No ${status} tournament found`
+          null,
+          "No completed or ongoing tournament available"
         )
       );
   }
 
- // if status not send 
-  //  find latest ongoing
-  const latestOngoing = await Tournament.findOne({ status: "ongoing" })
-    .sort({ createdAt: -1 })
-    .select("_id status tournamentName")
-    .lean();
-
-  if (latestOngoing) {
+  //  if the latest tournament is ongoing, check point table
+  if (latestTournament.status === "ongoing") {
     const pointTable = await PointTable.findOne({
-      tournamentId: latestOngoing._id,
-    }).lean();
+      tournamentId: latestTournament._id,
+    });
 
     if (pointTable) {
       return res
         .status(200)
-        .json(new ApiResponse(200, latestOngoing, "Latest ongoing tournament"));
+        .json(
+          new ApiResponse(200, latestTournament, "Latest ongoing tournament")
+        );
     }
-  }
 
-  //  if not ongoing found - latest completed
-  const latestCompleted = await Tournament.findOne({ status: "completed" })
-    .sort({ createdAt: -1 })
-    .select("_id status tournamentName")
-    .lean();
+    // if ongoing has not point table latest completed tournament
+    const latestCompleted = await Tournament.findOne({ status: "completed" })
+      .sort({ createdAt: -1 })
+      .limit(4)
+      .select("_id tournamentName status teamCount")
+      .lean();
 
-  if (latestCompleted) {
+    if (!latestCompleted) {
+      return res
+        .status(200)
+        .json(new ApiResponse(200, null, "No tournament available"));
+    }
+
     return res
       .status(200)
       .json(
@@ -178,10 +175,12 @@ export const getLatestTournament = asyncHandler(async (req, res) => {
       );
   }
 
-  //  nothing found
+  // If the latest tournament is complete
   return res
     .status(200)
-    .json(new ApiResponse(200, null, "No tournament available"));
+    .json(
+      new ApiResponse(200, latestTournament, "Latest completed tournament")
+    );
 });
 
 export const tournamentDetails = asyncHandler(async (req, res) => {
