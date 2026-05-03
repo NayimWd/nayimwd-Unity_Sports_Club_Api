@@ -3,6 +3,7 @@ import { asyncHandler } from "../../utils/asyncHandler";
 import { ApiError } from "../../utils/ApiError";
 import { User } from "../../models/userModel/user.model";
 import { ApiResponse } from "../../utils/ApiResponse";
+import {cookieOptions, refreshCookieOptions} from "./cookies";
 
 export const generateAccessAndRefreshToken = async (userId: string) => {
   try {
@@ -62,17 +63,12 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     ...loginUser
   } = existingUser.toObject();
 
-  // set cookies
-  const options = {
-    httpOnly: true,
-    secure: true,
-    maxAge: 24 * 60 * 60 * 1000,
-  };
+
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, cookieOptions)
+    .cookie("refreshToken", refreshToken, refreshCookieOptions)
     .json(
       new ApiResponse(
         200,
