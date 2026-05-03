@@ -9,7 +9,6 @@ import { timeoutMiddleware } from "../middleware/timeout.middleware";
 
 // initialize app
 const app = express();
-
 // middleware
 app.use(...(appMiddleware as RequestHandler[]));
 

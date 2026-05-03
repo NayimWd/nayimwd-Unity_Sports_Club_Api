@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 
 dotenv.config();
-
+console.log("CORS Origins:", process.env.CORS_ORIGIN);
 import app from "./app/app";
 import { initDataBases } from "./infrastructure/database";
 import { disconnectMongoDB } from "./infrastructure/database/mongodb";
