@@ -3,9 +3,6 @@ import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import hpp from "hpp";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -14,14 +11,6 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-const allowedOrigins = process.env.CORS_ORIGIN?.split(",") || [];
-
-const corsOptions = {
-  origin: allowedOrigins,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
 
 const appMiddleware = [
   express.json({

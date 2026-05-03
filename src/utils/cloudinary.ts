@@ -17,6 +17,7 @@ const uploadOnCloudinary = async (localFilePath: any) => {
   try {
     // upload the file on cloudinary
     const response = await cloudinary.uploader.upload(localFilePath, {
+      secure: true,
       resource_type: "auto",
       transformation: [
         { width: 560, height: 560, crop: "limit" },
