@@ -6,9 +6,30 @@ import { requestId } from "../utils/requestId";
 import { requestLogger } from "../middleware/requestLogger";
 import { errorHandler } from "../middleware/errorHandler";
 import { timeoutMiddleware } from "../middleware/timeout.middleware";
+import cors from "cors";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // initialize app
 const app = express();
+
+const allowedOrigins =
+  process.env.CORS_ORIGIN?.split(",").map((o) => o.trim()) || [];
+
+const corsOptions = {
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+// cors
+app.use(cors(corsOptions));
+
+// cors - preflight
+app.options("*", cors(corsOptions));
+
 // middleware
 app.use(...(appMiddleware as RequestHandler[]));
 

@@ -1,6 +1,5 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import cors from "cors";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import hpp from "hpp";
@@ -17,6 +16,13 @@ const limiter = rateLimit({
 
 const allowedOrigins = process.env.CORS_ORIGIN?.split(",") || [];
 
+const corsOptions = {
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
 const appMiddleware = [
   express.json({
     limit: "160kb",
@@ -24,11 +30,7 @@ const appMiddleware = [
   express.static("public"),
   express.urlencoded({ extended: true, limit: "160kb" }),
   cookieParser(),
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-  }),
-  helmet({contentSecurityPolicy: false}),
+  helmet({ contentSecurityPolicy: false }),
   hpp(),
   limiter,
 ];
