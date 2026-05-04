@@ -4,6 +4,7 @@ import { asyncHandler } from "../../utils/asyncHandler";
 import jwt from "jsonwebtoken";
 import { generateAccessAndRefreshToken } from "./login.controller";
 import { ApiResponse } from "../../utils/ApiResponse";
+import { cookieOptions, refreshCookieOptions } from "./cookies";
 
 export const refreshAccessToken = asyncHandler(async (req, res) => {
   try {
@@ -53,8 +54,8 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
+      .cookie("accessToken", accessToken, cookieOptions)
+      .cookie("refreshToken", refreshToken, refreshCookieOptions)
       .json(
         new ApiResponse(
           200,
