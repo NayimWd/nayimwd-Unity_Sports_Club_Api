@@ -26,7 +26,7 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
   const options = {
     httpOnly: true,
     secure: true,
-    // sameSite: "none" as const,
+    sameSite: "none" as const,
   };
 
   return res
