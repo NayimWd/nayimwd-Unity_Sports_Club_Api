@@ -8,13 +8,12 @@ import { asyncHandler } from "../../utils/asyncHandler";
 import mongoose from "mongoose";
 
 export const createMatch = asyncHandler(async (req, res) => {
-  // Authentication
   const author = (req as any).user;
+
   if (!author || !["admin", "staff"].includes(author.role)) {
     throw new ApiError(403, "You are not authorized to create a match");
   }
 
-  // Extract parameters
   const { tournamentId } = req.params;
   const {
     teamA,
@@ -27,29 +26,20 @@ export const createMatch = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (!tournamentId || !matchNumber) {
-    throw new ApiError(
-      400,
-      "Please provide tournament ID status, and match number."
-    );
+    throw new ApiError(400, "Tournament ID and match number are required");
   }
-  // check team or prev match provided
+
   const hasTeams = !!(teamA && teamB);
   const hasPreviousMatches = !!(
     previousMatches?.matchA && previousMatches?.matchB
   );
-  // validate require for only one option
+
   if (!hasTeams && !hasPreviousMatches) {
-    throw new ApiError(
-      400,
-      "Please provide either teamA and teamB or previousMatches.matchA and matchB"
-    );
+    throw new ApiError(400, "Provide either teams or previous matches");
   }
-  // validate 2 option can not provide at once
+
   if (hasTeams && hasPreviousMatches) {
-    throw new ApiError(
-      400,
-      "Provide either direct teams or previous matches, not both."
-    );
+    throw new ApiError(400, "Cannot provide both teams and previous matches");
   }
 
   const session = await mongoose.startSession();
@@ -58,15 +48,19 @@ export const createMatch = asyncHandler(async (req, res) => {
     let createdMatch: any;
 
     await session.withTransaction(async () => {
-      // check existance of tournament and match
-      const [tournamentExists, existingMatch] = await Promise.all([
-        Tournament.exists({ _id: tournamentId }).session(session),
-        Match.exists({ tournamentId, matchNumber }).session(session),
-      ]);
+      // fetch tournament (we'll need status later)
+      const tournament = await Tournament.findById(tournamentId)
+        .select("status")
+        .session(session);
 
-      if (!tournamentExists) {
+      if (!tournament) {
         throw new ApiError(404, "Tournament not found");
       }
+
+      const existingMatch = await Match.exists({
+        tournamentId,
+        matchNumber,
+      }).session(session);
 
       if (existingMatch) {
         throw new ApiError(
@@ -74,7 +68,10 @@ export const createMatch = asyncHandler(async (req, res) => {
           "Match number already exists for this tournament"
         );
       }
-      // check team is approved for the tournament
+
+      // ---------------------------
+      // Validate teams
+      // ---------------------------
       if (hasTeams) {
         const approvedTeamsCount = await Registration.countDocuments({
           tournamentId,
@@ -83,40 +80,42 @@ export const createMatch = asyncHandler(async (req, res) => {
         }).session(session);
 
         if (approvedTeamsCount !== 2) {
-          throw new ApiError(
-            400,
-            "One or both teams are not registered or approved for this tournament."
-          );
+          throw new ApiError(400, "Teams must be approved for this tournament");
         }
       }
-      // check team has prev patches
-      if (hasPreviousMatches) {
-        const [matchAExists, matchBExists] = await Promise.all([
-          Match.exists({ _id: previousMatches.matchA }).session(session),
-          Match.exists({ _id: previousMatches.matchB }).session(session),
-        ]);
 
-        if (!matchAExists || !matchBExists) {
-          throw new ApiError(400, "One or both previous matches not found.");
+      // ---------------------------
+      // Validate previous matches
+      // ---------------------------
+      if (hasPreviousMatches) {
+        const count = await Match.countDocuments({
+          _id: { $in: [previousMatches.matchA, previousMatches.matchB] },
+        }).session(session);
+
+        if (count !== 2) {
+          throw new ApiError(400, "Invalid previous matches");
         }
       }
-      // validate umpire
+
+      // ---------------------------
+      // Validate umpires
+      // ---------------------------
       const umpireIds = [umpire1, umpire2, umpire3].filter(Boolean);
 
       if (umpireIds.length) {
-        const validUmpiresCount = await User.countDocuments({
+        const validCount = await User.countDocuments({
           _id: { $in: umpireIds },
           role: "umpire",
         }).session(session);
 
-        if (validUmpiresCount !== umpireIds.length) {
-          throw new ApiError(
-            400,
-            "One or more assigned umpires are not valid umpires."
-          );
+        if (validCount !== umpireIds.length) {
+          throw new ApiError(400, "Invalid umpire selection");
         }
       }
-      // create match
+
+      // ---------------------------
+      // Create match
+      // ---------------------------
       const [match] = await Match.create(
         [
           {
@@ -139,12 +138,31 @@ export const createMatch = asyncHandler(async (req, res) => {
       );
 
       createdMatch = match.toObject();
+
+      // ---------------------------
+      //  Tournament status update
+      // ---------------------------
+
+      const isFirstRound = hasTeams;
+
+      if (isFirstRound && tournament.status === "upcoming") {
+        await Tournament.updateOne(
+          { _id: tournamentId },
+          {
+            $set: {
+              status: "ongoing",
+              startedAt: new Date(),
+            },
+          },
+          { session }
+        );
+      }
     });
 
     return res
       .status(201)
       .json(new ApiResponse(201, createdMatch, "Match created successfully"));
   } finally {
-    await session.endSession();
+    session.endSession();
   }
 });
