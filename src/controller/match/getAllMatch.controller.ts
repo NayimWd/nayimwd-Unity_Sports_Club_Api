@@ -39,7 +39,8 @@ export const getAllMatch = asyncHandler(async (req, res) => {
     .select("-umpires")
     .populate("teamA", "teamName teamLogo")
     .populate("teamB", "teamName teamLogo")
-    .lean();
+    .sort({matchNumber: 1})
+    .lean()
 
   if (!matches.length) {
     return res

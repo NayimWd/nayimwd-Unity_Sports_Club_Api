@@ -30,18 +30,25 @@ export const createSchedule = asyncHandler(async (req, res) => {
     previousMatches,
   } = req.body;
 
-  if (
-    !teamA ||
-    !teamB ||
-    !tournamentId ||
-    !matchNumber ||
-    !round ||
-    !venueId ||
-    !matchDate ||
-    !matchTime
-  ) {
-    throw new ApiError(400, "Missing required fields");
-  }
+
+  const baseFields = [
+  tournamentId,
+  matchNumber,
+  round,
+  venueId,
+  matchDate,
+  matchTime,
+];
+
+ const conditionalFields = round === "round 1" ? [teamA, teamB] : [previousMatches];
+
+ const validateSchedule = [...baseFields, ...conditionalFields].some(field => !field);
+
+ if(validateSchedule) {
+  throw new ApiError(400, "Missing required fields");
+ }
+ 
+
 
   const session = await mongoose.startSession();
 

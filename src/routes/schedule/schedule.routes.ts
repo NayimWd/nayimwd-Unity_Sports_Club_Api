@@ -8,6 +8,7 @@ import {
   changeTeams,
   reSchedule,
   deleteSchedule,
+  getScheduleTeams,
 } from "../../controller/schedule";
 
 const router = Router();
@@ -21,6 +22,7 @@ type Schedule = {
   change_teams: "/change_teams/:scheduleId";
   all: "/all/:tournamentId";
   delete: "/delete/:scheduleId";
+  getTeam: "/teams/:scheduleId";
 };
 
 // endpoints
@@ -32,12 +34,15 @@ const ScheduleRoutes: Schedule = {
   change_teams: "/change_teams/:scheduleId",
   all: "/all/:tournamentId",
   delete: "/delete/:scheduleId",
+  getTeam: "/teams/:scheduleId",
 };
 
 // create schedule
 router.route(ScheduleRoutes.create).post(veryfyJWT, createSchedule);
 // get all schedules
 router.route(ScheduleRoutes.all).get(getSchedules);
+// get  schedules team
+router.route(ScheduleRoutes.getTeam).get(getScheduleTeams);
 // update schedule details
 router.route(ScheduleRoutes.update_details).patch(veryfyJWT, updateDetails);
 // update schedule timing

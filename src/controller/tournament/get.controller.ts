@@ -143,7 +143,7 @@ export const getLatestTournament = asyncHandler(async (req, res) => {
 
   //  if the latest tournament is ongoing, check point table
   if (latestTournament.status === "ongoing") {
-    const pointTable = await PointTable.findOne({
+    const pointTable = await PointTable.exists({
       tournamentId: latestTournament._id,
     });
 

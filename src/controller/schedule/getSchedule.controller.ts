@@ -33,7 +33,7 @@ export const getSchedules = asyncHandler(async (req, res) => {
     .populate("previousMatches.matchA", "matchNumber")
     .populate("previousMatches.matchB", "matchNumber")
     .populate("venueId", "name")
-    .sort({ matchDate: 1, matchTime: 1 })
+    .sort({ matchNumber: 1 })
     .lean();
 
   // Send response
@@ -48,3 +48,25 @@ export const getSchedules = asyncHandler(async (req, res) => {
     )
   );
 });
+
+
+export const getScheduleTeams = asyncHandler(async(req, res)=> {
+  const {scheduleId} = req.params;
+
+  if(!scheduleId){
+    throw new ApiError(400, "schedule id is required")
+  }
+
+  const teams = await Schedule.findById(scheduleId)
+  .select("teams previousMatches")
+  .lean();
+
+  if(!teams) {
+    throw new ApiError(404, "Team or match info not found")
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, teams, "Team or match info fetched")
+  )
+
+})
