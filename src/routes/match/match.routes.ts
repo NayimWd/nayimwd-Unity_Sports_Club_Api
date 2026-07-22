@@ -13,6 +13,7 @@ import {
   getMatchTeams,
   getMatchOverview,
   getMatchUmpire,
+  playersOfMatch,
 } from "../../controller/match";
 import {
   createMatchResult,
@@ -37,6 +38,7 @@ type Match = {
   teamOfMatch: "/teamsOfMatch/:matchId";
   matchOverview: "/overview/:tournamentId";
   matchUmpire: "/umpires/:matchId";
+  matchPlayer: "/players/:teamId"
 };
 
 // endpoints
@@ -54,7 +56,8 @@ const MatchRoutes: Match = {
   matchResult: "/matchResult/:matchId",
   teamOfMatch: "/teamsOfMatch/:matchId",
   matchOverview: "/overview/:tournamentId",
-  matchUmpire: "/umpires/:matchId"
+  matchUmpire: "/umpires/:matchId",
+  matchPlayer: "/players/:teamId",
 };
 
 // create match
@@ -85,5 +88,7 @@ router.route(MatchRoutes.teamOfMatch).get(getMatchTeams);
 router.route(MatchRoutes.matchOverview).get(getMatchOverview);
 // get match umpire
 router.route(MatchRoutes.matchUmpire).get(getMatchUmpire);
+// get players of the team in a match
+router.route(MatchRoutes.matchPlayer).get(playersOfMatch);
 
 export default router;

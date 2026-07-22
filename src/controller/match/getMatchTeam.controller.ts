@@ -14,7 +14,7 @@ export const getMatchTeams = asyncHandler(async (req, res) => {
 
   // check if match exists
   const match = await Match.findById(matchId)
-    .select("matchNumber teamA teamB")
+    .select("teamA teamB")
     .populate({
       path: "teamA",
       model: "Team",

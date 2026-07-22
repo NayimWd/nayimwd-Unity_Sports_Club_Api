@@ -9,6 +9,7 @@ import { updatePlayingSquad } from "./updatePlayingSquad.controller";
 import { getPlayingSquad } from "./getPlayinSquad.controller";
 import { getMatchTeams } from "./getMatchTeam.controller";
 import { getMatchUmpire } from "./getUmpire.controller";
+import { playersOfMatch } from "./playerOfMatch.controller";
 
 export {
   createMatch,
@@ -22,5 +23,6 @@ export {
   getPlayingSquad,
   getMatchTeams,
   getMatchOverview,
-  getMatchUmpire
+  getMatchUmpire,
+  playersOfMatch
 };

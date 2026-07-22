@@ -18,7 +18,7 @@ export const createInnings = asyncHandler(async (req, res) => {
 
   // extract data from req params and body
   const { tournamentId, matchId } = req.params;
-  const { teamId, inningsNumber, wicket, runs, over, extras } = req.body;
+  const { teamId, inningsNumber, wicket, runs, over, wide, noBalls, byes } = req.body;
 
   // validate data
   if (
@@ -29,7 +29,9 @@ export const createInnings = asyncHandler(async (req, res) => {
     !wicket ||
     !runs ||
     !over ||
-    !extras
+    !wide ||
+    !noBalls ||
+    !byes
   ) {
     throw new ApiError(400, "All fields are required");
   }
@@ -92,14 +94,14 @@ export const createInnings = asyncHandler(async (req, res) => {
   if (
     wicket < 0 ||
     runs < 0 ||
-    extras.wide < 0 ||
-    extras.noBalls < 0 ||
-    extras.byes < 0
+    wide < 0 ||
+    noBalls < 0 ||
+    byes < 0
   ) {
     throw new ApiError(400, "Runs, wickets, and extras cannot be negative.");
   }
   // calculate total extra and total runs
-  const totalExtras = extras.wide + extras.noBalls + extras.byes;
+  const totalExtras = wide + noBalls + byes;
   const totalRuns = runs + totalExtras;
 
   // create innings
@@ -109,9 +111,9 @@ export const createInnings = asyncHandler(async (req, res) => {
     teamId,
     inningsNumber: inningsNumber,
     extras: {
-      wide: extras.wide,
-      noBalls: extras.noBalls,
-      byes: extras.byes,
+      wide: wide,
+      noBalls: noBalls,
+      byes: byes,
       totalExtras: totalExtras,
     },
     wicket: wicket,
