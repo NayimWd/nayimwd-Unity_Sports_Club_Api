@@ -11,6 +11,7 @@ const matchResultSchema: Schema<IMatchResult> = new Schema(
     matchId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Match",
+      unique: true,
       required: true,
     },
     winner: {

@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+
+
 export const connectMongoDB = async () => {
   // set and validate mongodb url
   const mongoURL = process.env.MONGO_URI;

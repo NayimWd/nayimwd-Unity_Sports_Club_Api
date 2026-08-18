@@ -47,6 +47,15 @@ export const createMatchResult = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Tournament or Match not found.");
       }
 
+      // 2. Prevent duplicate result
+      const existingResult = await MatchResult.exists({
+        matchId,
+      });
+
+      if (existingResult) {
+        throw new ApiError(409, "Match result already exists");
+      }
+
       // ----------------------------
       // 2. match must be contain innings, validation innings
       // ----------------------------
@@ -259,6 +268,8 @@ export const createMatchResult = asyncHandler(async (req, res) => {
       // 9. if final match completed update tournament to completed
       // ----------------------------
       const finalSchedule = await Schedule.findOne({
+        tournamentId,
+        matchId,
         round: "final",
         status: "completed",
       }).session(session);
