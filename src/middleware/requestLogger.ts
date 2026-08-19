@@ -7,6 +7,11 @@ export const requestLogger = pinoHttp({
 
   genReqId: (req) => req.id,
 
+    autoLogging: {
+    ignore: (req) => req.url === "/favicon.ico" || req.url === "/health",
+  },
+
+
   customLogLevel(req, res, err) {
     if (res.statusCode >= 500 || err) return "error";
     if (res.statusCode >= 400) return "warn";
